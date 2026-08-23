@@ -8,6 +8,16 @@ namespace SuccinctLinq.Analyzers.Test.Helpers;
 
 internal static class AnalyzerTest
 {
+    private const string ImplicitUsings = """
+        global using System;
+        global using System.Collections.Generic;
+        global using System.IO;
+        global using System.Linq;
+        global using System.Net.Http;
+        global using System.Threading;
+        global using System.Threading.Tasks;
+        """;
+
     public static CSharpAnalyzerTest<T, DefaultVerifier> CreateContext<T>(
         LanguageVersion? languageVersion = null)
         where T : DiagnosticAnalyzer, new()
@@ -17,6 +27,7 @@ internal static class AnalyzerTest
             TestState =
             {
                 ReferenceAssemblies = ReferenceAssemblies.Net.Net100,
+                Sources = { ("ImplicitUsings.g.cs", ImplicitUsings) },
                 AdditionalReferences =
                 {
                     MetadataReference.CreateFromFile(typeof(T).Assembly.Location)

@@ -13,9 +13,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -37,9 +34,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -61,9 +55,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -85,9 +76,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -109,9 +97,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -133,10 +118,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System;
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -158,10 +139,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System;
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -183,9 +160,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -207,9 +181,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -231,9 +202,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -255,9 +223,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -282,9 +247,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-            using System.Linq;
-
             namespace MyNamespace;
 
             public static class MyClass
@@ -306,8 +268,6 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
-            using System.Collections.Generic;
-
             namespace MyNamespace;
 
             public static class Enumerable
