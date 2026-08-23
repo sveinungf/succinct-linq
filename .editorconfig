@@ -142,6 +142,26 @@ dotnet_diagnostic.IDE0301.severity = warning
 # IDE0305: Use collection expression for fluent
 dotnet_diagnostic.IDE0305.severity = warning
 
+[{*Test,*.Benchmark,*.Cmd}/**.cs]
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = none
+# CA1062: Validate arguments of public methods
+dotnet_diagnostic.CA1062.severity = none
+# CA1515: Consider making public types internal
+dotnet_diagnostic.CA1515.severity = none
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+# CA1720: Identifiers should not contain type names
+dotnet_diagnostic.CA1720.severity = none
+# CA1812: Avoid uninstantiated internal classes
+dotnet_diagnostic.CA1812.severity = none
+# CA1852: Seal internal types
+dotnet_diagnostic.CA1852.severity = none
+# CA2007: Do not directly await a Task
+dotnet_diagnostic.CA2007.severity = none
+# CA5394: Do not use insecure randomness
+dotnet_diagnostic.CA5394.severity = none
+
 
 ###############################
 # Meziantou.Analyzers Options #
