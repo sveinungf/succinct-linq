@@ -454,6 +454,56 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
+    public Task RedundantDistinct_SameComparerFactoryInvocationInDistinctAndToHashSet_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                private static IEqualityComparer<string> CreateComparer() => StringComparer.OrdinalIgnoreCase;
+
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Distinct(CreateComparer()).ToHashSet(CreateComparer());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_SameComparerCreationInDistinctAndToHashSet_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public sealed class MyComparer : IEqualityComparer<string>
+            {
+                public bool Equals(string? x, string? y) => string.Equals(x, y);
+                public int GetHashCode(string obj) => obj.GetHashCode();
+            }
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Distinct(new MyComparer()).ToHashSet(new MyComparer());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task RedundantDistinct_NonLinqEnumerable_NoWarning()
     {
         // Arrange

@@ -9,9 +9,10 @@ internal static class InvocationOperationExtensions
     {
         public IOperation? GetArgumentAtOrDefault(int index)
         {
-            return operation.TargetMethod.Parameters.Length > index
-                ? operation.Arguments.ElementAtOrDefault(index)
-                : null;
+            if (operation.TargetMethod.Parameters.Length <= index)
+                return null;
+
+            return operation.Arguments.ElementAtOrDefault(index)?.Value;
         }
     }
 }

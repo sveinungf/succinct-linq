@@ -80,6 +80,14 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         while (right is IConversionOperation rightConversion)
             right = rightConversion.Operand;
 
+        // Each invocation or object creation is re-evaluated and could
+        // produce a different comparer instance.
+        if (left is IInvocationOperation or IObjectCreationOperation ||
+            right is IInvocationOperation or IObjectCreationOperation)
+        {
+            return false;
+        }
+
         var leftSymbol = GetSymbol(left);
         var rightSymbol = GetSymbol(right);
         if (leftSymbol is not null || rightSymbol is not null)
@@ -97,7 +105,6 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         IParameterReferenceOperation parameterReference => parameterReference.Parameter,
         ILocalReferenceOperation localReference => localReference.Local,
         IMemberReferenceOperation memberReference => memberReference.Member,
-        IInvocationOperation invocation => invocation.TargetMethod,
         _ => null
     };
 }
