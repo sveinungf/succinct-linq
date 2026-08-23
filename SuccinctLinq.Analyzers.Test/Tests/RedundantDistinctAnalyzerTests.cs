@@ -387,6 +387,73 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
+    public Task RedundantDistinct_InstanceDistinctWithStaticToHashSetAndComparer_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(
+                    IEnumerable<string> items, IEqualityComparer<string> comparer)
+                {
+                    return Enumerable.ToHashSet(items.{|SLQ1001:Distinct(comparer)|}, comparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_SameLocalComparerInDistinctAndToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    var comparer = StringComparer.OrdinalIgnoreCase;
+                    return items.{|SLQ1001:Distinct(comparer)|}.ToHashSet(comparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DifferentLocalComparersInDistinctAndToHashSet_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    var distinctComparer = StringComparer.Ordinal;
+                    var toHashSetComparer = StringComparer.OrdinalIgnoreCase;
+                    return items.Distinct(distinctComparer).ToHashSet(toHashSetComparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task RedundantDistinct_NonLinqEnumerable_NoWarning()
     {
         // Arrange
