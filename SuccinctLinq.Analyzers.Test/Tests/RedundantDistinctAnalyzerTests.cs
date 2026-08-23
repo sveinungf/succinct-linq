@@ -13,11 +13,14 @@ public class RedundantDistinctAnalyzerTests
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
         context.TestCode = """
+            using System.Collections.Generic;
+            using System.Linq;
+
             namespace MyNamespace;
 
             public static class MyClass
             {
-                public HashSet<string> MyMethod(IEnumerable<string> items)
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
                     return items.{|SLQ1001:Distinct()|}.ToHashSet();
                 }
