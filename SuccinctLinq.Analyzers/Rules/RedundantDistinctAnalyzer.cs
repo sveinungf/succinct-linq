@@ -10,8 +10,6 @@ namespace SuccinctLinq.Analyzers.Rules;
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
 public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 {
-    private const string EnumerableFullName = "System.Linq.Enumerable";
-
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ1001",
         title: "Remove redundant Distinct() call",
@@ -60,5 +58,22 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
     private static bool IsLinqEnumerableMethod(IMethodSymbol method, string name)
         => string.Equals(method.Name, name, StringComparison.Ordinal)
             && method.Parameters.Length == 1
-            && string.Equals(method.ContainingType?.ToDisplayString(), EnumerableFullName, StringComparison.Ordinal);
+            && IsSystemLinqEnumerable(method.ContainingType);
+
+    private static bool IsSystemLinqEnumerable(INamedTypeSymbol? type)
+    {
+        return type is
+        {
+            Name: "Enumerable",
+            ContainingNamespace:
+            {
+                Name: "Linq",
+                ContainingNamespace:
+                {
+                    Name: "System",
+                    ContainingNamespace.IsGlobalNamespace: true
+                }
+            }
+        };
+    }
 }
