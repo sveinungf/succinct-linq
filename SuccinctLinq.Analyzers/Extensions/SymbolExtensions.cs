@@ -19,5 +19,24 @@ internal static class SymbolExtensions
                 }
             }
         };
+
+        public bool IsSystemCollectionsGenericIEqualityComparer => symbol is INamedTypeSymbol
+        {
+            Name: "IEqualityComparer",
+            TypeParameters.Length: 1,
+            ContainingNamespace:
+            {
+                Name: "Generic",
+                ContainingNamespace:
+                {
+                    Name: "Collections",
+                    ContainingNamespace:
+                    {
+                        Name: "System",
+                        ContainingNamespace.IsGlobalNamespace: true
+                    }
+                }
+            }
+        };
     }
 }

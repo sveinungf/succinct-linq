@@ -263,6 +263,130 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
+    public Task RedundantDistinct_SameComparerInDistinctAndToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(
+                    IEnumerable<string> items, IEqualityComparer<string> comparer)
+                {
+                    return items.{|SLQ1001:Distinct(comparer)|}.ToHashSet(comparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_SameComparerInStaticDistinctAndToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(
+                    IEnumerable<string> items, IEqualityComparer<string> comparer)
+                {
+                    return Enumerable.ToHashSet(Enumerable.{|SLQ1001:Distinct(items, comparer)|}, comparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_SameComparerFieldInDistinctAndToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1001:Distinct(StringComparer.OrdinalIgnoreCase)|}.ToHashSet(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DifferentComparersInDistinctAndToHashSet_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(
+                    IEnumerable<string> items,
+                    IEqualityComparer<string> distinctComparer,
+                    IEqualityComparer<string> toHashSetComparer)
+                {
+                    return items.Distinct(distinctComparer).ToHashSet(toHashSetComparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctAndToHashSetWithNonComparerParameter_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace System.Linq
+            {
+                public static class Enumerable
+                {
+                    public static IEnumerable<T> Distinct<T>(this IEnumerable<T> items, Marker marker) => items;
+                    public static HashSet<T> ToHashSet<T>(this IEnumerable<T> items, Marker marker) => new HashSet<T>();
+                }
+            }
+
+            public sealed class Marker
+            {
+            }
+
+            namespace MyNamespace
+            {
+                public static class MyClass
+                {
+                    public static HashSet<string> MyMethod(IEnumerable<string> items, Marker marker)
+                    {
+                        return items.Distinct(marker).ToHashSet(marker);
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task RedundantDistinct_NonLinqEnumerable_NoWarning()
     {
         // Arrange

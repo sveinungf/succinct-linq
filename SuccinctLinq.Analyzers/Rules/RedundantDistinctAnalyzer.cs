@@ -47,6 +47,9 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             return;
         }
 
+        if (!UsesSameComparer(distinct, toHashSet))
+            return;
+
         if (distinct.Syntax is not InvocationExpressionSyntax invocation)
             return;
 
@@ -59,4 +62,43 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
+
+    private static bool UsesSameComparer(IInvocationOperation distinct, IInvocationOperation toHashSet)
+    {
+        var distinctComparer = distinct.TargetMethod.Parameters.Length == 2 ? distinct.Arguments[1].Value : null;
+        var toHashSetComparer = toHashSet.TargetMethod.Parameters.Length == 2 ? toHashSet.Arguments[1].Value : null;
+
+        if (distinctComparer is null || toHashSetComparer is null)
+            return distinctComparer is null && toHashSetComparer is null;
+
+        return IsSameOperation(distinctComparer, toHashSetComparer);
+    }
+
+    private static bool IsSameOperation(IOperation left, IOperation right)
+    {
+        while (left is IConversionOperation leftConversion)
+            left = leftConversion.Operand;
+        while (right is IConversionOperation rightConversion)
+            right = rightConversion.Operand;
+
+        var leftSymbol = GetSymbol(left);
+        var rightSymbol = GetSymbol(right);
+        if (leftSymbol is not null || rightSymbol is not null)
+            return SymbolEqualityComparer.Default.Equals(leftSymbol, rightSymbol);
+
+        return left.Syntax.SyntaxTree == right.Syntax.SyntaxTree &&
+            string.Equals(
+                left.Syntax.NormalizeWhitespace().ToFullString(),
+                right.Syntax.NormalizeWhitespace().ToFullString(),
+                StringComparison.Ordinal);
+    }
+
+    private static ISymbol? GetSymbol(IOperation operation) => operation switch
+    {
+        IParameterReferenceOperation parameterReference => parameterReference.Parameter,
+        ILocalReferenceOperation localReference => localReference.Local,
+        IMemberReferenceOperation memberReference => memberReference.Member,
+        IInvocationOperation invocation => invocation.TargetMethod,
+        _ => null
+    };
 }
