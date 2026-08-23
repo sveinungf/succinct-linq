@@ -1,6 +1,8 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
+using Microsoft.CodeAnalysis.Text;
 using System.Collections.Immutable;
 
 namespace SuccinctLinq.Analyzers.Rules;
@@ -42,7 +44,17 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             !IsLinqEnumerableMethod(distinct.TargetMethod, "Distinct"))
             return;
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, distinct.Syntax.GetLocation()));
+        if (distinct.Syntax is not InvocationExpressionSyntax invocation)
+            return;
+
+        var name = invocation.Expression;
+        if (name is MemberAccessExpressionSyntax memberAccess)
+            name = memberAccess.Name;
+        var location = Location.Create(
+            invocation.SyntaxTree,
+            new TextSpan(name.Span.Start, invocation.Span.End - name.Span.Start));
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
     private static bool IsLinqEnumerableMethod(IMethodSymbol method, string name)
