@@ -65,8 +65,8 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 
     private static bool UsesSameComparer(IInvocationOperation distinct, IInvocationOperation toHashSet)
     {
-        var distinctComparer = distinct.TargetMethod.Parameters.Length == 2 ? distinct.Arguments[1].Value : null;
-        var toHashSetComparer = toHashSet.TargetMethod.Parameters.Length == 2 ? toHashSet.Arguments[1].Value : null;
+        var distinctComparer = distinct.GetArgumentAtOrDefault(1);
+        var toHashSetComparer = toHashSet.GetArgumentAtOrDefault(1);
 
         if (distinctComparer is null || toHashSetComparer is null)
             return distinctComparer is null && toHashSetComparer is null;
