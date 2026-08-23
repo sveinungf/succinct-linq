@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
+using SuccinctLinq.Analyzers.Extensions;
 using System.Collections.Immutable;
 
 namespace SuccinctLinq.Analyzers.Rules;
@@ -34,13 +35,17 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
     private static void Analyze(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation toHashSet ||
-            !IsLinqEnumerableMethod(toHashSet.TargetMethod, "ToHashSet"))
+            !toHashSet.TargetMethod.IsToHashSetMethod)
+        {
             return;
+        }
 
         var receiver = toHashSet.Instance ?? toHashSet.Arguments.FirstOrDefault()?.Value;
         if (receiver is not IInvocationOperation distinct ||
-            !IsLinqEnumerableMethod(distinct.TargetMethod, "Distinct"))
+            !distinct.TargetMethod.IsDistinctMethod)
+        {
             return;
+        }
 
         if (distinct.Syntax is not InvocationExpressionSyntax invocation)
             return;
@@ -53,27 +58,5 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             new TextSpan(name.Span.Start, invocation.Span.End - name.Span.Start));
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
-    }
-
-    private static bool IsLinqEnumerableMethod(IMethodSymbol method, string name)
-        => string.Equals(method.Name, name, StringComparison.Ordinal)
-            && method.Parameters.Length == 1
-            && IsSystemLinqEnumerable(method.ContainingType);
-
-    private static bool IsSystemLinqEnumerable(INamedTypeSymbol? type)
-    {
-        return type is
-        {
-            Name: "Enumerable",
-            ContainingNamespace:
-            {
-                Name: "Linq",
-                ContainingNamespace:
-                {
-                    Name: "System",
-                    ContainingNamespace.IsGlobalNamespace: true
-                }
-            }
-        };
     }
 }
