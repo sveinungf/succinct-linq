@@ -598,6 +598,99 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
+    public Task RedundantDistinct_DistinctReassignedToInitializedLocalVariableThenToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    IEnumerable<string> d = items;
+                    d = items.{|SLQ1001:Distinct()|};
+                    return d.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctReassignedToUninitializedLocalVariableThenToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    IEnumerable<string> d;
+                    d = items.{|SLQ1001:Distinct()|};
+                    return d.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctReassignedToLocalVariableWithAdditionalUse_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    IEnumerable<string> d = items;
+                    d = items.Distinct();
+                    Console.WriteLine(d.Count());
+                    return d.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_NonDistinctReassignmentAfterDistinct_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    IEnumerable<string> d = items.Distinct();
+                    d = items;
+                    return d.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task RedundantDistinct_DistinctInLocalVariableWithAdditionalUse_NoWarning()
     {
         // Arrange

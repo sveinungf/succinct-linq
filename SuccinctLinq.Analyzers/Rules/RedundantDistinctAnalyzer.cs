@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.Operations;
 using Microsoft.CodeAnalysis.Text;
 using SuccinctLinq.Analyzers.Extensions;
 using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SuccinctLinq.Analyzers.Rules;
 
@@ -68,35 +69,26 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
     private static IInvocationOperation? GetDistinctInitializer(ILocalReferenceOperation localReference)
     {
         var local = localReference.Local;
+        var usageStart = localReference.Syntax.Span.Start;
 
-        IOperation root = localReference;
-        while (root.Parent is not null)
-        {
-            root = root.Parent;
-        }
-
-        IOperation? distinct = null;
-        var usageCount = 0;
+        IOperation? lastWrite = null;
+        var hasExtraRead = false;
 
         var stack = new Stack<IOperation>();
-        stack.Push(root);
-        while (stack.Count > 0)
+        stack.Push(localReference.GetRootOperation());
+        while (stack.Count > 0 && !hasExtraRead)
         {
             var operation = stack.Pop();
 
-            if (operation is ILocalReferenceOperation reference &&
-                SymbolEqualityComparer.Default.Equals(reference.Local, local))
+            if (IsOtherReadOfLocal(operation, local, localReference))
             {
-                // The local variable must only be used by the ToHashSet() call.
-                if (++usageCount > 1)
-                    return null;
+                // The local variable must not be read by anything else.
+                hasExtraRead = true;
             }
-            else if (operation is IVariableDeclarationOperation declaration)
+            else if (TryGetWriteToLocal(operation, local, out var write) &&
+                     IsMostRecentWrite(write, usageStart, lastWrite))
             {
-                var declarator = declaration.Declarators.FirstOrDefault(d =>
-                    SymbolEqualityComparer.Default.Equals(d.Symbol, local));
-                if (declarator is not null)
-                    distinct = declarator.Initializer?.Value;
+                lastWrite = write;
             }
 
             foreach (var child in operation.ChildOperations)
@@ -105,10 +97,69 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             }
         }
 
-        return distinct is IInvocationOperation distinctInvocation &&
-            distinctInvocation.TargetMethod.IsDistinctMethod
-            ? distinctInvocation
-            : null;
+        if (hasExtraRead ||
+            lastWrite is not IInvocationOperation distinctInvocation ||
+            !distinctInvocation.TargetMethod.IsDistinctMethod)
+        {
+            return null;
+        }
+
+        return distinctInvocation;
+    }
+
+    private static bool IsOtherReadOfLocal(
+        IOperation operation,
+        ILocalSymbol local,
+        ILocalReferenceOperation usage)
+    {
+        if (operation is not ILocalReferenceOperation reference ||
+            !SymbolEqualityComparer.Default.Equals(reference.Local, local) ||
+            ReferenceEquals(reference, usage))
+        {
+            return false;
+        }
+
+        if (operation.Parent is IAssignmentOperation assignment &&
+            ReferenceEquals(assignment.Target, reference))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static bool TryGetWriteToLocal(
+        IOperation operation,
+        ILocalSymbol local,
+        [NotNullWhen(true)] out IOperation? write)
+    {
+        if (operation is IAssignmentOperation assignment &&
+            assignment.Target is ILocalReferenceOperation target &&
+            SymbolEqualityComparer.Default.Equals(target.Local, local))
+        {
+            write = assignment.Value;
+            return true;
+        }
+
+        if (operation is IVariableDeclarationOperation declaration)
+        {
+            var declarator = declaration.Declarators.FirstOrDefault(d =>
+                SymbolEqualityComparer.Default.Equals(d.Symbol, local));
+            if (declarator?.Initializer is { } initializer)
+            {
+                write = initializer.Value;
+                return true;
+            }
+        }
+
+        write = null;
+        return false;
+    }
+
+    private static bool IsMostRecentWrite(IOperation write, int usageStart, IOperation? current)
+    {
+        var start = write.Syntax.Span.Start;
+        return start < usageStart && (current is null || start > current.Syntax.Span.Start);
     }
 
     private static bool UsesSameComparer(IInvocationOperation distinct, IInvocationOperation toHashSet)
