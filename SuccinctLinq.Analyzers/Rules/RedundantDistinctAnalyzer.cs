@@ -76,17 +76,20 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 
         var stack = new Stack<IOperation>();
         stack.Push(localReference.GetRootOperation());
-        while (stack.Count > 0 && !hasExtraRead)
+
+        while (stack.Count > 0)
         {
             var operation = stack.Pop();
 
-            if (IsOtherReadOfLocal(operation, local, localReference))
+            if (IsOtherReadOfLocal(operation, localReference))
             {
                 // The local variable must not be read by anything else.
                 hasExtraRead = true;
+                break;
             }
-            else if (TryGetWriteToLocal(operation, local, out var write) &&
-                     IsMostRecentWrite(write, usageStart, lastWrite))
+
+            if (TryGetWriteToLocal(operation, local, out var write) &&
+                IsMostRecentWrite(write, usageStart, lastWrite))
             {
                 lastWrite = write;
             }
@@ -109,23 +112,17 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 
     private static bool IsOtherReadOfLocal(
         IOperation operation,
-        ILocalSymbol local,
         ILocalReferenceOperation usage)
     {
         if (operation is not ILocalReferenceOperation reference ||
-            !SymbolEqualityComparer.Default.Equals(reference.Local, local) ||
+            !SymbolEqualityComparer.Default.Equals(reference.Local, usage.Local) ||
             ReferenceEquals(reference, usage))
         {
             return false;
         }
 
-        if (operation.Parent is IAssignmentOperation assignment &&
-            ReferenceEquals(assignment.Target, reference))
-        {
-            return false;
-        }
-
-        return true;
+        return operation.Parent is not IAssignmentOperation assignment ||
+            !ReferenceEquals(assignment.Target, reference);
     }
 
     private static bool TryGetWriteToLocal(
