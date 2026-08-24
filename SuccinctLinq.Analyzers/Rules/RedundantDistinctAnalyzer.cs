@@ -40,26 +40,75 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         }
 
         var receiver = toHashSet.Instance ?? toHashSet.Arguments.FirstOrDefault()?.Value;
-        if (receiver is not IInvocationOperation distinct ||
-            !distinct.TargetMethod.IsDistinctMethod)
+
+        var distinct = receiver switch
         {
+            IInvocationOperation { TargetMethod.IsDistinctMethod: true } directInvocation => directInvocation,
+            ILocalReferenceOperation localReference => GetDistinctInitializer(localReference),
+            _ => null
+        };
+
+        if (distinct?.Syntax is not InvocationExpressionSyntax invocation)
             return;
-        }
 
         if (!UsesSameComparer(distinct, toHashSet))
-            return;
-
-        if (distinct.Syntax is not InvocationExpressionSyntax invocation)
             return;
 
         var name = invocation.Expression;
         if (name is MemberAccessExpressionSyntax memberAccess)
             name = memberAccess.Name;
+
         var location = Location.Create(
             invocation.SyntaxTree,
             new TextSpan(name.Span.Start, invocation.Span.End - name.Span.Start));
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
+    }
+
+    private static IInvocationOperation? GetDistinctInitializer(ILocalReferenceOperation localReference)
+    {
+        var local = localReference.Local;
+
+        IOperation root = localReference;
+        while (root.Parent is not null)
+        {
+            root = root.Parent;
+        }
+
+        IOperation? distinct = null;
+        var usageCount = 0;
+
+        var stack = new Stack<IOperation>();
+        stack.Push(root);
+        while (stack.Count > 0)
+        {
+            var operation = stack.Pop();
+
+            if (operation is ILocalReferenceOperation reference &&
+                SymbolEqualityComparer.Default.Equals(reference.Local, local))
+            {
+                // The local variable must only be used by the ToHashSet() call.
+                if (++usageCount > 1)
+                    return null;
+            }
+            else if (operation is IVariableDeclarationOperation declaration)
+            {
+                var declarator = declaration.Declarators.FirstOrDefault(d =>
+                    SymbolEqualityComparer.Default.Equals(d.Symbol, local));
+                if (declarator is not null)
+                    distinct = declarator.Initializer?.Value;
+            }
+
+            foreach (var child in operation.ChildOperations)
+            {
+                stack.Push(child);
+            }
+        }
+
+        return distinct is IInvocationOperation distinctInvocation &&
+            distinctInvocation.TargetMethod.IsDistinctMethod
+            ? distinctInvocation
+            : null;
     }
 
     private static bool UsesSameComparer(IInvocationOperation distinct, IInvocationOperation toHashSet)

@@ -529,4 +529,166 @@ public class RedundantDistinctAnalyzerTests
         // Act & Assert
         return context.RunAsync(Token);
     }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctInLocalVariableThenToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    var distinctItems = items.{|SLQ1001:Distinct()|};
+                    return distinctItems.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_StaticToHashSetOnDistinctInLocalVariable_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    var distinctItems = items.{|SLQ1001:Distinct()|};
+                    return Enumerable.ToHashSet(distinctItems);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_SameComparerInDistinctInLocalVariableAndToHashSet_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(
+                    IEnumerable<string> items, IEqualityComparer<string> comparer)
+                {
+                    var distinctItems = items.{|SLQ1001:Distinct(comparer)|};
+                    return distinctItems.ToHashSet(comparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctInLocalVariableWithAdditionalUse_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    var distinctItems = items.Distinct();
+                    Console.WriteLine(distinctItems.Count());
+                    return distinctItems.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctInLocalVariableWithDifferentComparers_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(
+                    IEnumerable<string> items,
+                    IEqualityComparer<string> distinctComparer,
+                    IEqualityComparer<string> toHashSetComparer)
+                {
+                    var distinctItems = items.Distinct(distinctComparer);
+                    return distinctItems.ToHashSet(toHashSetComparer);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctInLocalVariableUsedInTwoToHashSetCalls_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static (HashSet<string> First, HashSet<string> Second) MyMethod(
+                    IEnumerable<string> items)
+                {
+                    var distinctItems = items.Distinct();
+                    var first = distinctItems.ToHashSet();
+                    var second = distinctItems.ToHashSet();
+                    return (first, second);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_NonDistinctLocalVariableThenToHashSet_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    var distinctItems = items.ToList();
+                    return distinctItems.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
 }
