@@ -66,22 +66,22 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
-    private static IInvocationOperation? GetDistinctInitializer(ILocalReferenceOperation localReference)
+    private static IInvocationOperation? GetDistinctInitializer(ILocalReferenceOperation toHashSetLocalReference)
     {
-        var local = localReference.Local;
-        var usageStart = localReference.Syntax.Span.Start;
+        var local = toHashSetLocalReference.Local;
+        var usageStart = toHashSetLocalReference.Syntax.Span.Start;
 
         IOperation? lastWrite = null;
         var hasExtraRead = false;
 
         var stack = new Stack<IOperation>();
-        stack.Push(localReference.GetRootOperation());
+        stack.Push(toHashSetLocalReference.GetRootOperation());
 
         while (stack.Count > 0)
         {
             var operation = stack.Pop();
 
-            if (IsOtherReadOfLocal(operation, localReference))
+            if (IsOtherReadOfLocal(operation, toHashSetLocalReference))
             {
                 // The local variable must not be read by anything else.
                 hasExtraRead = true;
@@ -107,7 +107,25 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             return null;
         }
 
+        if (DistinctAndToHashSetInDifferentBranch(distinctInvocation, toHashSetLocalReference))
+            return null;
+
         return distinctInvocation;
+    }
+
+    private static bool DistinctAndToHashSetInDifferentBranch(IOperation distinctInvocation, IOperation toHashSetLocalReference)
+    {
+        var operation = distinctInvocation.Parent;
+
+        while (operation is not null)
+        {
+            if (operation.IsBranchBoundary)
+                return !operation.ContainsOperation(toHashSetLocalReference);
+
+            operation = operation.Parent;
+        }
+
+        return false;
     }
 
     private static bool IsOtherReadOfLocal(
