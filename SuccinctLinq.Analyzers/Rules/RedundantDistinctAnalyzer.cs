@@ -68,27 +68,32 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 
     private static IInvocationOperation? GetDistinctInitializer(ILocalReferenceOperation toHashSetLocalReference)
     {
-        var local = toHashSetLocalReference.Local;
-        var usageStart = toHashSetLocalReference.Syntax.Span.Start;
+        // When the usage is inside a lambda or local function, abort further analysis.
+        if (toHashSetLocalReference.IsInsideFunctionBoundary())
+            return null;
 
         IOperation? lastWrite = null;
-        var hasExtraRead = false;
+        var local = toHashSetLocalReference.Local;
+        var usageStart = toHashSetLocalReference.Syntax.Span.Start;
+        var root = toHashSetLocalReference.GetRootOperation();
 
-        var stack = new Stack<IOperation>();
-        stack.Push(toHashSetLocalReference.GetRootOperation());
+        var stack = new Stack<(IOperation Operation, bool IsInsideFunctionBoundary)>();
+        stack.Push((root, false));
 
         while (stack.Count > 0)
         {
-            var operation = stack.Pop();
+            var (operation, isInsideFunctionBoundary) = stack.Pop();
 
-            if (IsOtherReadOfLocal(operation, toHashSetLocalReference))
+            if (operation.ReadsLocalReference(toHashSetLocalReference))
             {
                 // The local variable must not be read by anything else.
-                hasExtraRead = true;
-                break;
+                return null;
             }
 
-            if (TryGetWriteToLocal(operation, local, out var write) &&
+            // A write inside a lambda or local function body may not execute
+            // before the usage, so it can't be the initializer.
+            if (!isInsideFunctionBoundary &&
+                TryGetWriteToLocal(operation, local, out var write) &&
                 IsMostRecentWrite(write, usageStart, lastWrite))
             {
                 lastWrite = write;
@@ -96,12 +101,11 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 
             foreach (var child in operation.ChildOperations)
             {
-                stack.Push(child);
+                stack.Push((child, isInsideFunctionBoundary || operation.IsFunctionBoundary));
             }
         }
 
-        if (hasExtraRead ||
-            lastWrite is not IInvocationOperation distinctInvocation ||
+        if (lastWrite is not IInvocationOperation distinctInvocation ||
             !distinctInvocation.TargetMethod.IsDistinctMethod)
         {
             return null;
@@ -126,21 +130,6 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         }
 
         return false;
-    }
-
-    private static bool IsOtherReadOfLocal(
-        IOperation operation,
-        ILocalReferenceOperation usage)
-    {
-        if (operation is not ILocalReferenceOperation reference ||
-            !SymbolEqualityComparer.Default.Equals(reference.Local, usage.Local) ||
-            ReferenceEquals(reference, usage))
-        {
-            return false;
-        }
-
-        return operation.Parent is not IAssignmentOperation assignment ||
-            !ReferenceEquals(assignment.Target, reference);
     }
 
     private static bool TryGetWriteToLocal(

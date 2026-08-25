@@ -11,6 +11,9 @@ internal static class OperationExtensions
             IConditionalOperation or ILoopOperation or ISwitchOperation or
             ISwitchExpressionOperation or ITranslatedQueryOperation;
 
+        public bool IsFunctionBoundary => operation is
+            IAnonymousFunctionOperation or ILocalFunctionOperation;
+
         public bool ContainsOperation(IOperation other)
         {
             for (var node = other.Parent; node is not null; node = node.Parent)
@@ -30,6 +33,34 @@ internal static class OperationExtensions
             }
 
             return operation;
+        }
+
+        public bool IsInsideFunctionBoundary()
+        {
+            var node = operation.Parent;
+
+            while (node is not null)
+            {
+                if (node.IsFunctionBoundary)
+                    return true;
+
+                node = node.Parent;
+            }
+
+            return false;
+        }
+
+        public bool ReadsLocalReference(ILocalReferenceOperation localReference)
+        {
+            if (operation is ILocalReferenceOperation reference &&
+                SymbolEqualityComparer.Default.Equals(reference.Local, localReference.Local) &&
+                !ReferenceEquals(reference, localReference))
+            {
+                return operation.Parent is not IAssignmentOperation assignment ||
+                    !ReferenceEquals(assignment.Target, reference);
+            }
+
+            return false;
         }
     }
 }
