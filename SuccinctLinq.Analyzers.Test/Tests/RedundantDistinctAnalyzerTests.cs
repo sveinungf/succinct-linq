@@ -945,6 +945,181 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
+    public Task RedundantDistinct_DistinctAssignedInBranchThenToHashSetInSiblingBranch_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static void MyMethod(IEnumerable<string> items, bool condition)
+                {
+                    IEnumerable<string> d = items;
+                    if (condition)
+                    {
+                        d = items.Distinct();
+                    }
+                    else
+                    {
+                        d.ToHashSet();
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctInTryBodyThenToHashSetInCatch_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static void MyMethod(IEnumerable<string> items)
+                {
+                    IEnumerable<string> d = items;
+                    try
+                    {
+                        d = items.Distinct();
+                    }
+                    catch
+                    {
+                        d.ToHashSet();
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctInTryBodyThenToHashSetAfterTry_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    IEnumerable<string> d = items;
+                    try
+                    {
+                        d = items.Distinct();
+                    }
+                    catch
+                    {
+                    }
+
+                    return d.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctAndToHashSetInTryBody_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static void MyMethod(IEnumerable<string> items)
+                {
+                    try
+                    {
+                        IEnumerable<string> d = items;
+                        d = items.{|SLQ1001:Distinct()|};
+                        d.ToHashSet();
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctInOneSwitchCaseThenToHashSetInAnotherCase_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static void MyMethod(IEnumerable<string> items, int key)
+                {
+                    IEnumerable<string> d = items;
+                    switch (key)
+                    {
+                        case 1:
+                            d = items.Distinct();
+                            break;
+                        case 2:
+                            d.ToHashSet();
+                            break;
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctAndToHashSetInSameSwitchCase_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static void MyMethod(IEnumerable<string> items, int key)
+                {
+                    switch (key)
+                    {
+                        case 1:
+                            IEnumerable<string> d = items;
+                            d = items.{|SLQ1001:Distinct()|};
+                            d.ToHashSet();
+                            break;
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task RedundantDistinct_WriteInUncalledLambdaThenToHashSet_NoWarning()
     {
         // Arrange

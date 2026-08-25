@@ -124,7 +124,17 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         while (operation is not null)
         {
             if (operation.IsBranchBoundary)
-                return !operation.ContainsOperation(toHashSetLocalReference);
+            {
+                // The write and the usage must be in the same branch of the
+                // boundary; a usage in a sibling branch may execute without
+                // the write having executed.
+                var writeBranch = operation.ChildOperations
+                    .First(child => ReferenceEquals(child, distinctInvocation) ||
+                        child.ContainsOperation(distinctInvocation));
+
+                return !ReferenceEquals(writeBranch, toHashSetLocalReference) &&
+                    !writeBranch.ContainsOperation(toHashSetLocalReference);
+            }
 
             operation = operation.Parent;
         }
