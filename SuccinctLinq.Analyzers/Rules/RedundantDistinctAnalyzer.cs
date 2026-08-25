@@ -192,6 +192,23 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
+        // The member symbol of an instance member reference doesn't include
+        // its receiver, so a.Comparer and b.Comparer must also compare the
+        // receiver operations.
+        if (left is IMemberReferenceOperation leftMember && right is IMemberReferenceOperation rightMember)
+        {
+            if (!SymbolEqualityComparer.Default.Equals(leftMember.Member, rightMember.Member))
+                return false;
+
+            var leftReceiver = leftMember.ChildOperations.FirstOrDefault();
+            var rightReceiver = rightMember.ChildOperations.FirstOrDefault();
+            if (leftReceiver is null && rightReceiver is null)
+                return true;
+
+            return leftReceiver is not null && rightReceiver is not null &&
+                IsSameOperation(leftReceiver, rightReceiver);
+        }
+
         var leftSymbol = GetSymbol(left);
         var rightSymbol = GetSymbol(right);
         if (leftSymbol is not null || rightSymbol is not null)
