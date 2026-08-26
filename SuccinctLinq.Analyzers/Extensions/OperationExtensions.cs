@@ -9,7 +9,9 @@ internal static class OperationExtensions
     {
         public bool IsBranchBoundary => operation is
             IConditionalOperation or ILoopOperation or ISwitchOperation or
-            ISwitchExpressionOperation or ITranslatedQueryOperation or ITryOperation;
+            ISwitchExpressionOperation or ITranslatedQueryOperation or ITryOperation or
+            ICoalesceOperation or IConditionalAccessOperation or
+            IBinaryOperation { OperatorKind: BinaryOperatorKind.ConditionalAnd or BinaryOperatorKind.ConditionalOr };
 
         public bool IsFunctionBoundary => operation is
             IAnonymousFunctionOperation or ILocalFunctionOperation;

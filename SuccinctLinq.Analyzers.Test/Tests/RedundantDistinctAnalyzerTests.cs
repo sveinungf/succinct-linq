@@ -1120,6 +1120,54 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
+    public Task RedundantDistinct_DistinctAssignedInAndAlsoSecondOperandThenToHashSetOutside_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static void MyMethod(IEnumerable<string> items, bool condition)
+                {
+                    IEnumerable<string> d = items;
+                    var result = condition && ((d = items.Distinct()) is not null);
+                    d.ToHashSet();
+                    Console.WriteLine(result);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_DistinctAssignedInOrElseSecondOperandThenToHashSetOutside_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static void MyMethod(IEnumerable<string> items, bool condition)
+                {
+                    IEnumerable<string> d = items;
+                    var result = condition || ((d = items.Distinct()) is not null);
+                    d.ToHashSet();
+                    Console.WriteLine(result);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task RedundantDistinct_WriteInUncalledLambdaThenToHashSet_NoWarning()
     {
         // Arrange
