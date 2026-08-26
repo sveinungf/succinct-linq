@@ -263,7 +263,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerInDistinctAndToHashSet_NoWarning()
+    public Task RedundantDistinct_SameParameterComparerInDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -285,7 +285,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerInStaticDistinctAndToHashSet_NoWarning()
+    public Task RedundantDistinct_SameParameterComparerInStaticDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -307,7 +307,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerFieldInDistinctAndToHashSet_ReportWarning()
+    public Task RedundantDistinct_SameStringComparerPropertyInDistinctAndToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -328,7 +328,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DifferentStringComparerMembersInDistinctAndToHashSet_NoWarning()
+    public Task RedundantDistinct_DifferentStringComparerPropertiesInDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -402,7 +402,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DifferentComparersInDistinctAndToHashSet_NoWarning()
+    public Task RedundantDistinct_DifferentParameterComparersInDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -461,7 +461,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_InstanceDistinctWithStaticToHashSetAndComparer_NoWarning()
+    public Task RedundantDistinct_InstanceDistinctWithStaticToHashSetAndParameterComparer_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -714,7 +714,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerInDistinctInLocalVariableAndToHashSet_NoWarning()
+    public Task RedundantDistinct_SameParameterComparerInDistinctInLocalVariableAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -853,7 +853,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInLocalVariableWithDifferentComparers_NoWarning()
+    public Task RedundantDistinct_DistinctInLocalVariableWithDifferentParameterComparers_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
