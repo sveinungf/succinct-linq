@@ -1,2 +1,4 @@
 M:Microsoft.CodeAnalysis.ISymbol.ToDisplayString(Microsoft.CodeAnalysis.SymbolDisplayFormat);Avoid allocations by checking type name and namespace
+M:System.Linq.Enumerable.First``1(System.Collections.Generic.IEnumerable{``0});Use FirstOrDefault() with a null check instead.
+M:System.Linq.Enumerable.First``1(System.Collections.Generic.IEnumerable{``0},System.Func{``0,System.Boolean});Use FirstOrDefault() with a null check instead.
 P:System.Nullable`1.Value;GetValueOrDefault() or the coalesce operator do less work

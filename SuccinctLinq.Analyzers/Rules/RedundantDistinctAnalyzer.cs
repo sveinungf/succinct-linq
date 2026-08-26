@@ -128,9 +128,9 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
                 // boundary; a usage in a sibling branch may execute without
                 // the write having executed.
                 var writeBranch = operation.ChildOperations
-                    .First(child => child.ContainsOperation(distinctInvocation));
+                    .FirstOrDefault(child => child.ContainsOperation(distinctInvocation));
 
-                return !writeBranch.ContainsOperation(toHashSetLocalReference);
+                return writeBranch is not null && !writeBranch.ContainsOperation(toHashSetLocalReference);
             }
 
             operation = operation.Parent;
