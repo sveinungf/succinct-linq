@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SuccinctLinq.Analyzers.Extensions;
 
@@ -16,8 +17,12 @@ internal static class OperationExtensions
         public bool IsFunctionBoundary => operation is
             IAnonymousFunctionOperation or ILocalFunctionOperation;
 
-        public bool IsReevaluated => operation is not
-            (ILiteralOperation or IDefaultValueOperation or ITypeOfOperation);
+        public bool IsNullOrDefault => operation switch
+        {
+            IDefaultValueOperation => true,
+            ILiteralOperation literal => literal.ConstantValue.HasValue && literal.ConstantValue.Value is null,
+            _ => false
+        };
 
         public bool ContainsOperation(IOperation other)
         {
@@ -65,6 +70,20 @@ internal static class OperationExtensions
                     !ReferenceEquals(assignment.Target, reference);
             }
 
+            return false;
+        }
+
+        public bool TryGetStringComparerMember([NotNullWhen(true)] out ISymbol? member)
+        {
+            if (operation is IMemberReferenceOperation { Instance: null } memberReference &&
+                memberReference.Member is IPropertySymbol or IFieldSymbol &&
+                memberReference.Member.ContainingType.IsSystemStringComparer)
+            {
+                member = memberReference.Member;
+                return true;
+            }
+
+            member = null;
             return false;
         }
     }

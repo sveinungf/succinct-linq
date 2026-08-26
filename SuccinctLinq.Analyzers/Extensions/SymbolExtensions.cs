@@ -38,5 +38,15 @@ internal static class SymbolExtensions
                 }
             }
         };
+
+        public bool IsSystemStringComparer => symbol is
+        {
+            Name: "StringComparer",
+            ContainingNamespace:
+            {
+                Name: "System",
+                ContainingNamespace.IsGlobalNamespace: true
+            }
+        };
     }
 }

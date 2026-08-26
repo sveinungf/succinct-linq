@@ -181,63 +181,26 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         if (distinctComparer is null || toHashSetComparer is null)
             return distinctComparer is null && toHashSetComparer is null;
 
-        return IsSameOperation(distinctComparer, toHashSetComparer);
+        distinctComparer = UnwrapConversions(distinctComparer);
+        toHashSetComparer = UnwrapConversions(toHashSetComparer);
+
+        // A null or default comparer argument falls back to the default
+        // equality comparer, so both arguments use the same comparer.
+        if (distinctComparer.IsNullOrDefault || toHashSetComparer.IsNullOrDefault)
+            return distinctComparer.IsNullOrDefault && toHashSetComparer.IsNullOrDefault;
+
+        // Only direct references to a built-in StringComparer member are
+        // known to always denote the same comparer instance.
+        return distinctComparer.TryGetStringComparerMember(out var distinctMember)
+            && toHashSetComparer.TryGetStringComparerMember(out var toHashSetMember)
+            && SymbolEqualityComparer.Default.Equals(distinctMember, toHashSetMember);
     }
 
-    private static bool IsSameOperation(IOperation left, IOperation right)
+    private static IOperation UnwrapConversions(IOperation operation)
     {
-        while (left is IConversionOperation leftConversion)
-            left = leftConversion.Operand;
-        while (right is IConversionOperation rightConversion)
-            right = rightConversion.Operand;
+        while (operation is IConversionOperation conversion)
+            operation = conversion.Operand;
 
-        // Each invocation or object creation is re-evaluated and could
-        // produce a different comparer instance.
-        if (left is IInvocationOperation or IObjectCreationOperation ||
-            right is IInvocationOperation or IObjectCreationOperation)
-        {
-            return false;
-        }
-
-        // The member symbol of an instance member reference doesn't include
-        // its receiver, so a.Comparer and b.Comparer must also compare the
-        // receiver operations.
-        if (left is IMemberReferenceOperation leftMember && right is IMemberReferenceOperation rightMember)
-        {
-            if (!SymbolEqualityComparer.Default.Equals(leftMember.Member, rightMember.Member))
-                return false;
-
-            var leftReceiver = leftMember.ChildOperations.FirstOrDefault();
-            var rightReceiver = rightMember.ChildOperations.FirstOrDefault();
-            if (leftReceiver is null && rightReceiver is null)
-                return true;
-
-            return leftReceiver is not null && rightReceiver is not null &&
-                IsSameOperation(leftReceiver, rightReceiver);
-        }
-
-        var leftVariable = GetVariable(left);
-        var rightVariable = GetVariable(right);
-        if (leftVariable is not null || rightVariable is not null)
-            return SymbolEqualityComparer.Default.Equals(leftVariable, rightVariable);
-
-        // A property read, conditional expression, or similar may
-        // produce a different comparer instance on each evaluation.
-        if (left.IsReevaluated || right.IsReevaluated)
-            return false;
-
-        return left.Syntax.SyntaxTree == right.Syntax.SyntaxTree &&
-            string.Equals(
-                left.Syntax.NormalizeWhitespace().ToFullString(),
-                right.Syntax.NormalizeWhitespace().ToFullString(),
-                StringComparison.Ordinal);
+        return operation;
     }
-
-    private static ISymbol? GetVariable(IOperation operation) => operation switch
-    {
-        IParameterReferenceOperation parameterReference => parameterReference.Parameter,
-        ILocalReferenceOperation localReference => localReference.Local,
-        IMemberReferenceOperation memberReference => memberReference.Member,
-        _ => null
-    };
 }

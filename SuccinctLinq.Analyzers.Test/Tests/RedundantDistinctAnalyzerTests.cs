@@ -263,7 +263,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerInDistinctAndToHashSet_ReportWarning()
+    public Task RedundantDistinct_SameComparerInDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -275,7 +275,7 @@ public class RedundantDistinctAnalyzerTests
                 public static HashSet<string> MyMethod(
                     IEnumerable<string> items, IEqualityComparer<string> comparer)
                 {
-                    return items.{|SLQ1001:Distinct(comparer)|}.ToHashSet(comparer);
+                    return items.Distinct(comparer).ToHashSet(comparer);
                 }
             }
             """;
@@ -285,7 +285,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerInStaticDistinctAndToHashSet_ReportWarning()
+    public Task RedundantDistinct_SameComparerInStaticDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -297,7 +297,7 @@ public class RedundantDistinctAnalyzerTests
                 public static HashSet<string> MyMethod(
                     IEnumerable<string> items, IEqualityComparer<string> comparer)
                 {
-                    return Enumerable.ToHashSet(Enumerable.{|SLQ1001:Distinct(items, comparer)|}, comparer);
+                    return Enumerable.ToHashSet(Enumerable.Distinct(items, comparer), comparer);
                 }
             }
             """;
@@ -328,7 +328,28 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameInstancePropertyComparerInDistinctAndToHashSet_ReportWarning()
+    public Task RedundantDistinct_DifferentStringComparerMembersInDistinctAndToHashSet_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Distinct(StringComparer.Ordinal).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task RedundantDistinct_SameInstancePropertyComparerInDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -344,7 +365,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items, ComparerHolder holder)
                 {
-                    return items.{|SLQ1001:Distinct(holder.Comparer)|}.ToHashSet(holder.Comparer);
+                    return items.Distinct(holder.Comparer).ToHashSet(holder.Comparer);
                 }
             }
             """;
@@ -440,7 +461,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_InstanceDistinctWithStaticToHashSetAndComparer_ReportWarning()
+    public Task RedundantDistinct_InstanceDistinctWithStaticToHashSetAndComparer_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -452,7 +473,7 @@ public class RedundantDistinctAnalyzerTests
                 public static HashSet<string> MyMethod(
                     IEnumerable<string> items, IEqualityComparer<string> comparer)
                 {
-                    return Enumerable.ToHashSet(items.{|SLQ1001:Distinct(comparer)|}, comparer);
+                    return Enumerable.ToHashSet(items.Distinct(comparer), comparer);
                 }
             }
             """;
@@ -462,7 +483,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameLocalComparerInDistinctAndToHashSet_ReportWarning()
+    public Task RedundantDistinct_SameLocalComparerInDistinctAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -474,7 +495,7 @@ public class RedundantDistinctAnalyzerTests
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
                     var comparer = StringComparer.OrdinalIgnoreCase;
-                    return items.{|SLQ1001:Distinct(comparer)|}.ToHashSet(comparer);
+                    return items.Distinct(comparer).ToHashSet(comparer);
                 }
             }
             """;
@@ -693,7 +714,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerInDistinctInLocalVariableAndToHashSet_ReportWarning()
+    public Task RedundantDistinct_SameComparerInDistinctInLocalVariableAndToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -705,7 +726,7 @@ public class RedundantDistinctAnalyzerTests
                 public static HashSet<string> MyMethod(
                     IEnumerable<string> items, IEqualityComparer<string> comparer)
                 {
-                    var distinctItems = items.{|SLQ1001:Distinct(comparer)|};
+                    var distinctItems = items.Distinct(comparer);
                     return distinctItems.ToHashSet(comparer);
                 }
             }
