@@ -16,10 +16,10 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         id: "SLQ1001",
         title: "Remove redundant Distinct() call",
         messageFormat: "Remove the redundant Distinct() call; ToHashSet() already removes duplicates",
-        category: "Simplification",
+        category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Enumerable.ToHashSet() already removes duplicate elements, so calling Distinct() immediately before it is redundant.");
+        description: "ToHashSet() already removes duplicate elements, so calling Distinct() immediately before it is redundant.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
