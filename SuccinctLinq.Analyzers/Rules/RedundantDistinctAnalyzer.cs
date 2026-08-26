@@ -35,14 +35,13 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
     private static void Analyze(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation toHashSet ||
-            !toHashSet.TargetMethod.IsToHashSetMethod)
+            !toHashSet.TargetMethod.IsToHashSetMethod ||
+            toHashSet.Arguments.Length == 0)
         {
             return;
         }
 
-        var receiver = toHashSet.Instance ?? toHashSet.Arguments.FirstOrDefault()?.Value;
-
-        var distinct = receiver switch
+        var distinct = toHashSet.Arguments[0].Value switch
         {
             IInvocationOperation { TargetMethod.IsDistinctMethod: true } directInvocation => directInvocation,
             ILocalReferenceOperation localReference => GetDistinctInitializer(localReference),
@@ -129,11 +128,9 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
                 // boundary; a usage in a sibling branch may execute without
                 // the write having executed.
                 var writeBranch = operation.ChildOperations
-                    .First(child => ReferenceEquals(child, distinctInvocation) ||
-                        child.ContainsOperation(distinctInvocation));
+                    .First(child => child.ContainsOperation(distinctInvocation));
 
-                return !ReferenceEquals(writeBranch, toHashSetLocalReference) &&
-                    !writeBranch.ContainsOperation(toHashSetLocalReference);
+                return !writeBranch.ContainsOperation(toHashSetLocalReference);
             }
 
             operation = operation.Parent;

@@ -1,4 +1,4 @@
-﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 
 namespace SuccinctLinq.Analyzers.Extensions;
 
@@ -23,7 +23,7 @@ internal static class SymbolExtensions
         public bool IsSystemCollectionsGenericIEqualityComparer => symbol is INamedTypeSymbol
         {
             Name: "IEqualityComparer",
-            TypeParameters.Length: 1,
+            Arity: 1,
             ContainingNamespace:
             {
                 Name: "Generic",
