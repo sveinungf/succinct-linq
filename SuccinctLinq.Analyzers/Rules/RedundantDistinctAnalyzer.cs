@@ -216,10 +216,15 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
                 IsSameOperation(leftReceiver, rightReceiver);
         }
 
-        var leftSymbol = GetSymbol(left);
-        var rightSymbol = GetSymbol(right);
-        if (leftSymbol is not null || rightSymbol is not null)
-            return SymbolEqualityComparer.Default.Equals(leftSymbol, rightSymbol);
+        var leftVariable = GetVariable(left);
+        var rightVariable = GetVariable(right);
+        if (leftVariable is not null || rightVariable is not null)
+            return SymbolEqualityComparer.Default.Equals(leftVariable, rightVariable);
+
+        // A property read, conditional expression, or similar may
+        // produce a different comparer instance on each evaluation.
+        if (left.IsReevaluated || right.IsReevaluated)
+            return false;
 
         return left.Syntax.SyntaxTree == right.Syntax.SyntaxTree &&
             string.Equals(
@@ -228,7 +233,7 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
                 StringComparison.Ordinal);
     }
 
-    private static ISymbol? GetSymbol(IOperation operation) => operation switch
+    private static ISymbol? GetVariable(IOperation operation) => operation switch
     {
         IParameterReferenceOperation parameterReference => parameterReference.Parameter,
         ILocalReferenceOperation localReference => localReference.Local,

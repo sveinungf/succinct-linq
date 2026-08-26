@@ -16,6 +16,9 @@ internal static class OperationExtensions
         public bool IsFunctionBoundary => operation is
             IAnonymousFunctionOperation or ILocalFunctionOperation;
 
+        public bool IsReevaluated => operation is not
+            (ILiteralOperation or IDefaultValueOperation or ITypeOfOperation);
+
         public bool ContainsOperation(IOperation other)
         {
             for (var node = other.Parent; node is not null; node = node.Parent)
