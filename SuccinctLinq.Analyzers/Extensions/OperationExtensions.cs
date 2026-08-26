@@ -75,9 +75,11 @@ internal static class OperationExtensions
 
         public bool TryGetStringComparerMember([NotNullWhen(true)] out ISymbol? member)
         {
-            if (operation is IMemberReferenceOperation { Instance: null } memberReference &&
-                memberReference.Member is IPropertySymbol or IFieldSymbol &&
-                memberReference.Member.ContainingType.IsSystemStringComparer)
+            if (operation is IMemberReferenceOperation
+                {
+                    Instance: null,
+                    Member: IPropertySymbol { ContainingType.IsSystemStringComparer: true }
+                } memberReference)
             {
                 member = memberReference.Member;
                 return true;
