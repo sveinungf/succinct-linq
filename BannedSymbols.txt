@@ -1,1 +1,2 @@
+M:Microsoft.CodeAnalysis.ISymbol.ToDisplayString(Microsoft.CodeAnalysis.SymbolDisplayFormat);Avoid allocations by checking type name and namespace
 P:System.Nullable`1.Value;GetValueOrDefault() or the coalesce operator do less work
