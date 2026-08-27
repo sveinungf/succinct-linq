@@ -19,8 +19,8 @@ internal static class OperationExtensions
 
         public bool IsNullOrDefault => operation switch
         {
-            IDefaultValueOperation => true,
-            ILiteralOperation literal => literal.ConstantValue.HasValue && literal.ConstantValue.Value is null,
+            IDefaultValueOperation { Type.TypeKind: TypeKind.Class or TypeKind.Interface } => true,
+            ILiteralOperation { ConstantValue: { HasValue: true, Value: null } } => true,
             _ => false
         };
 
