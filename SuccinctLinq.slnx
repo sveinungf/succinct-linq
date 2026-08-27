@@ -8,5 +8,6 @@
     <File Path="nuget.config" />
     <File Path="README.md" />
   </Folder>
+  <Project Path="SuccinctLinq.Analyzers.Test/SuccinctLinq.Analyzers.Test.csproj" Id="514e1467-a5d5-4eec-9cd1-0cd848e4fd55" />
   <Project Path="SuccinctLinq.Analyzers/SuccinctLinq.Analyzers.csproj" />
 </Solution>
