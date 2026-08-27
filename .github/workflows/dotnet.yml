@@ -11,6 +11,7 @@ jobs:
     permissions:
       contents: read
       checks: write
+      pull-requests: write
 
     runs-on: windows-latest
 
@@ -26,10 +27,8 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --report-trx --coverage --coverage-output-format cobertura
-    - name: Test Reporter
-      uses: dorny/test-reporter@v1
-      if: success() || failure()
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action/windows@v2
+      if: always()
       with:
-        name: Test Results
-        path: '**/*.trx'
-        reporter: dotnet-trx
+        files: '**/*.trx'
