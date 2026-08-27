@@ -9,8 +9,8 @@ on:
 jobs:
   build:
     permissions:
+      contents: read
       checks: write
-      pull-requests: write
 
     runs-on: windows-latest
 
@@ -28,7 +28,8 @@ jobs:
       run: dotnet test --no-build --report-trx --coverage --coverage-output-format cobertura
     - name: Test Reporter
       uses: dorny/test-reporter@v1
-      if: always()
+      if: success() || failure()
       with:
-        path: ${{ github.workspace }}/**/*.trx
+        name: Test Results
+        path: '**/*.trx'
         reporter: dotnet-trx
