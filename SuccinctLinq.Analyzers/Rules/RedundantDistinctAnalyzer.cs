@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
-using Microsoft.CodeAnalysis.Text;
 using SuccinctLinq.Analyzers.Extensions;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -14,8 +13,8 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ1001",
-        title: "Remove redundant Distinct() call",
-        messageFormat: "Remove the redundant Distinct() call; ToHashSet() already removes duplicates",
+        title: "Distinct() call is redundant",
+        messageFormat: "The Distinct() call is redundant; the following ToHashSet() already removes duplicates",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -54,14 +53,7 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         if (!UsesSameComparer(distinct, toHashSet))
             return;
 
-        var name = invocation.Expression;
-        if (name is MemberAccessExpressionSyntax memberAccess)
-            name = memberAccess.Name;
-
-        var location = Location.Create(
-            invocation.SyntaxTree,
-            new TextSpan(name.Span.Start, invocation.Span.End - name.Span.Start));
-
+        var location = invocation.GetMethodCallLocation();
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
