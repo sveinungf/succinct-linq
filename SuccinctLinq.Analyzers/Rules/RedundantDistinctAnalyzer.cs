@@ -173,8 +173,8 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         if (distinctComparer is null || toHashSetComparer is null)
             return distinctComparer is null && toHashSetComparer is null;
 
-        distinctComparer = UnwrapConversions(distinctComparer);
-        toHashSetComparer = UnwrapConversions(toHashSetComparer);
+        distinctComparer = distinctComparer.UnwrapConversions();
+        toHashSetComparer = toHashSetComparer.UnwrapConversions();
 
         // A null or default comparer argument falls back to the default
         // equality comparer, so both arguments use the same comparer.
@@ -186,13 +186,5 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         return distinctComparer.TryGetStringComparerMember(out var distinctMember)
             && toHashSetComparer.TryGetStringComparerMember(out var toHashSetMember)
             && SymbolEqualityComparer.Default.Equals(distinctMember, toHashSetMember);
-    }
-
-    private static IOperation UnwrapConversions(IOperation operation)
-    {
-        while (operation is IConversionOperation conversion)
-            operation = conversion.Operand;
-
-        return operation;
     }
 }
