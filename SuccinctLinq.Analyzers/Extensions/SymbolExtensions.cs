@@ -20,6 +20,25 @@ internal static class SymbolExtensions
             }
         };
 
+        public bool IsSystemCollectionsGenericIEnumerable => symbol is INamedTypeSymbol
+        {
+            Name: "IEnumerable",
+            Arity: 1,
+            ContainingNamespace:
+            {
+                Name: "Generic",
+                ContainingNamespace:
+                {
+                    Name: "Collections",
+                    ContainingNamespace:
+                    {
+                        Name: "System",
+                        ContainingNamespace.IsGlobalNamespace: true
+                    }
+                }
+            }
+        };
+
         public bool IsSystemCollectionsGenericIEqualityComparer => symbol is INamedTypeSymbol
         {
             Name: "IEqualityComparer",
@@ -36,6 +55,17 @@ internal static class SymbolExtensions
                         ContainingNamespace.IsGlobalNamespace: true
                     }
                 }
+            }
+        };
+
+        public bool IsSystemFuncWithArity2 => symbol is INamedTypeSymbol
+        {
+            Name: "Func",
+            Arity: 2,
+            ContainingNamespace:
+            {
+                Name: "System",
+                ContainingNamespace.IsGlobalNamespace: true
             }
         };
 
