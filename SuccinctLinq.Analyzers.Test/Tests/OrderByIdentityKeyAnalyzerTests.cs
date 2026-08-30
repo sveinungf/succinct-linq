@@ -360,4 +360,39 @@ public class OrderByIdentityKeyAnalyzerTests
         // Act & Assert
         return context.RunAsync(Token);
     }
+
+    [Fact]
+    public Task OrderByIdentityKey_OrderByWithNonComparerParameter_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace System.Linq
+            {
+                public static class Enumerable
+                {
+                    public static IEnumerable<T> OrderBy<T>(
+                        this IEnumerable<T> items, Func<T, T> keySelector, Marker marker) => items;
+                }
+            }
+
+            public sealed class Marker
+            {
+            }
+
+            namespace MyNamespace
+            {
+                public static class MyClass
+                {
+                    public static IEnumerable<string> MyMethod(IEnumerable<string> items, Marker marker)
+                    {
+                        return items.OrderBy(x => x, marker);
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
 }

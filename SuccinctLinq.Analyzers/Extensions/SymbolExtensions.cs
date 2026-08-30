@@ -20,42 +20,39 @@ internal static class SymbolExtensions
             }
         };
 
+        public bool IsSystemCollectionsGenericNamespace => symbol is
+        {
+            Name: "Generic",
+            ContainingNamespace:
+            {
+                Name: "Collections",
+                ContainingNamespace:
+                {
+                    Name: "System",
+                    ContainingNamespace.IsGlobalNamespace: true
+                }
+            }
+        };
+
+        public bool IsSystemCollectionsGenericIComparer => symbol is INamedTypeSymbol
+        {
+            Name: "IComparer",
+            Arity: 1,
+            ContainingNamespace.IsSystemCollectionsGenericNamespace: true
+        };
+
         public bool IsSystemCollectionsGenericIEnumerable => symbol is INamedTypeSymbol
         {
             Name: "IEnumerable",
             Arity: 1,
-            ContainingNamespace:
-            {
-                Name: "Generic",
-                ContainingNamespace:
-                {
-                    Name: "Collections",
-                    ContainingNamespace:
-                    {
-                        Name: "System",
-                        ContainingNamespace.IsGlobalNamespace: true
-                    }
-                }
-            }
+            ContainingNamespace.IsSystemCollectionsGenericNamespace: true
         };
 
         public bool IsSystemCollectionsGenericIEqualityComparer => symbol is INamedTypeSymbol
         {
             Name: "IEqualityComparer",
             Arity: 1,
-            ContainingNamespace:
-            {
-                Name: "Generic",
-                ContainingNamespace:
-                {
-                    Name: "Collections",
-                    ContainingNamespace:
-                    {
-                        Name: "System",
-                        ContainingNamespace.IsGlobalNamespace: true
-                    }
-                }
-            }
+            ContainingNamespace.IsSystemCollectionsGenericNamespace: true
         };
 
         public bool IsSystemFuncWithArity2 => symbol is INamedTypeSymbol

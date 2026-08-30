@@ -76,10 +76,7 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
         if (operations is not [IReturnOperation { ReturnedValue: { } value }])
             return false;
 
-        while (value is IConversionOperation conversion)
-        {
-            value = conversion.Operand;
-        }
+        value = value.UnwrapConversions();
 
         return value is IParameterReferenceOperation { Parameter: { } reference }
             && SymbolEqualityComparer.Default.Equals(reference, lambda.Symbol.Parameters[0]);

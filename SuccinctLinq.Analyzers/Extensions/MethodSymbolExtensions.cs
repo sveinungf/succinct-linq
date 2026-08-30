@@ -28,13 +28,18 @@ internal static class MethodSymbolExtensions
         };
 
         private bool HasOptionalComparerParameter =>
-            symbol.Parameters.Length == 1 ||
-            symbol.Parameters.Length == 2 &&
-            symbol.Parameters[1].Type.IsSystemCollectionsGenericIEqualityComparer;
+            symbol.Parameters.Length is 1 or 2
+            && symbol.GetParameterAtOrDefault(1) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true };
 
         private bool HasKeySelectorParameters =>
-            symbol.Parameters.Length is 2 or 3 &&
-            symbol.Parameters[0].Type.IsSystemCollectionsGenericIEnumerable &&
-            symbol.Parameters[1].Type.IsSystemFuncWithArity2;
+            symbol.GetParameterAtOrDefault(2) is null or { Type.IsSystemCollectionsGenericIComparer: true }
+            && symbol.Parameters is { Length: 2 or 3 } and
+            [
+                { Type.IsSystemCollectionsGenericIEnumerable: true },
+                { Type.IsSystemFuncWithArity2: true },
+                ..
+            ];
+
+        private IParameterSymbol? GetParameterAtOrDefault(int index) => symbol.Parameters.ElementAtOrDefault(index);
     }
 }
