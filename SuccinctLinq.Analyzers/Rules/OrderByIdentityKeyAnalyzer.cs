@@ -27,7 +27,12 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
 
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
-        context.RegisterOperationAction(Analyze, OperationKind.Invocation);
+        context.RegisterCompilationStartAction(startContext =>
+        {
+            // The Order() method is only available in .NET 7 and later.
+            if (startContext.Compilation.IsTargetFrameworkAtLeast(7))
+                startContext.RegisterOperationAction(Analyze, OperationKind.Invocation);
+        });
     }
 
     private static void Analyze(OperationAnalysisContext context)

@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis.Testing;
 using SuccinctLinq.Analyzers.Rules;
 using SuccinctLinq.Analyzers.Test.Helpers;
 
@@ -353,6 +354,72 @@ public class OrderByIdentityKeyAnalyzerTests
                     {
                         return items.OrderBy(marker);
                     }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByIdentityKey_TargetFrameworkBeforeNet7_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
+            referenceAssemblies: ReferenceAssemblies.Net.Net60);
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByIdentityKey_TargetFrameworkNetStandard_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
+            referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByIdentityKey_TargetFrameworkNet7_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
+            referenceAssemblies: ReferenceAssemblies.Net.Net70);
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1101:OrderBy(x => x)|};
                 }
             }
             """;
