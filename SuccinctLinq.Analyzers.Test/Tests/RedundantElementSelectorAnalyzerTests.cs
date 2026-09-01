@@ -135,6 +135,52 @@ public class RedundantElementSelectorAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_IdentityElementSelectorNullableSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string?> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.{|SLQ1002:ToDictionary(x => x!.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_ElementSelectorChangesNullability_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.ToDictionary(x => x!.Length, x => x!);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_GenericSource_ReportWarning()
     {
         // Arrange
