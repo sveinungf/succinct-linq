@@ -1,0 +1,344 @@
+using Microsoft.CodeAnalysis.Testing;
+using SuccinctLinq.Analyzers.Rules;
+using SuccinctLinq.Analyzers.Test.Helpers;
+
+namespace SuccinctLinq.Analyzers.Test.Tests;
+
+public class RedundantElementSelectorAnalyzerTests
+{
+    private static CancellationToken Token => TestContext.Current.CancellationToken;
+
+    [Fact]
+    public Task ToDictionary_IdentityElementSelector_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_IdentityElementSelectorInChain_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Where(x => x.Length > 0).{|SLQ1002:ToDictionary(x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_IdentityElementSelectorWithComparer_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => x, EqualityComparer<int>.Default)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_StaticInvocation_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ1002:ToDictionary(items, x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_FullyQualifiedStaticInvocation_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return System.Linq.Enumerable.{|SLQ1002:ToDictionary(items, x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_IdentityElementSelectorWithSameTypeCast_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => (string)x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_GenericSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<string, T> MyMethod<T>(IEnumerable<T> items)
+                {
+                    return items.{|SLQ1002:ToDictionary(x => x.ToString(), x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_MultipleCalls_ReportWarningForEach()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static (Dictionary<int, string> Words, Dictionary<string, int> Numbers) MyMethod(
+                    IEnumerable<string> words, IEnumerable<int> numbers)
+                {
+                    var dictionary = words.{|SLQ1002:ToDictionary(x => x.Length, x => x)|};
+                    var other = numbers.{|SLQ1002:ToDictionary(x => x.ToString(), x => x)|};
+                    return (dictionary, other);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_StatementBodyIdentityLambda_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => { return x; })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_DifferentElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToDictionary(x => x.Length, x => x.Length.ToString());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_DifferentElementType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<string, int> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToDictionary(x => x, x => x.Length);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_WithoutElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToDictionary(x => x.Length);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_IdentityKeySelectorWithoutElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<string, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToDictionary(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_MethodGroupElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToDictionary(x => x.Length, Identity);
+                }
+
+                public static T Identity<T>(T value) => value;
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_WithNonElementSelectorParameter_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace System.Linq
+            {
+                public static class Enumerable
+                {
+                    public static IEnumerable<T> ToDictionary<T>(
+                        this IEnumerable<T> items, Func<T, T> keySelector, Marker marker) => items;
+                }
+            }
+
+            public sealed class Marker
+            {
+            }
+
+            namespace MyNamespace
+            {
+                public static class MyClass
+                {
+                    public static IEnumerable<string> MyMethod(IEnumerable<string> items, Marker marker)
+                    {
+                        return items.ToDictionary(x => x, marker);
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+}

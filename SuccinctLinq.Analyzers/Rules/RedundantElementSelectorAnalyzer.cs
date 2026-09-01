@@ -8,16 +8,16 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
+public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ1101",
-        title: "OrderBy(x => x) can be simplified",
-        messageFormat: "OrderBy(x => x) can be simplified to Order()",
-        category: "Simplification",
+        id: "SLQ1002",
+        title: "Redundant element selector",
+        messageFormat: "The element selector is redundant; it simply returns the source element",
+        category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "An OrderBy() with the identity function (x => x) is equivalent to the more concise Order().");
+        description: "An element selector that simply returns the source element is redundant; the overload without an element selector is equivalent.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -27,42 +27,38 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
 
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
-        context.RegisterCompilationStartAction(startContext =>
-        {
-            // The Order() method is only available in .NET 7 and later.
-            if (startContext.Compilation.IsTargetFrameworkAtLeast(7))
-                startContext.RegisterOperationAction(Analyze, OperationKind.Invocation);
-        });
+        context.RegisterOperationAction(Analyze, OperationKind.Invocation);
     }
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation orderBy ||
-            !orderBy.TargetMethod.IsOrderByMethod ||
-            !HasIdentityKeySelector(orderBy))
+        if (context.Operation is not IInvocationOperation toDictionary ||
+            !toDictionary.TargetMethod.IsToDictionaryMethod ||
+            !HasRedundantElementSelector(toDictionary))
         {
             return;
         }
 
-        if (orderBy.Syntax is not InvocationExpressionSyntax invocation)
+        if (toDictionary.Syntax is not InvocationExpressionSyntax invocation)
             return;
 
         var location = invocation.GetMethodCallLocation();
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
-    private static bool HasIdentityKeySelector(IInvocationOperation orderBy)
+    private static bool HasRedundantElementSelector(IInvocationOperation toDictionary)
     {
-        // The key type must equal the element type, otherwise the key
-        // selector is not the identity function.
-        var method = orderBy.TargetMethod;
-        if (method.Arity < 2 ||
-            !SymbolEqualityComparer.Default.Equals(method.TypeArguments[0], method.TypeArguments[1]))
+        var method = toDictionary.TargetMethod;
+
+        // The element type must equal the source type, otherwise the
+        // element selector is not the identity function.
+        if (method.Arity < 3 ||
+            !SymbolEqualityComparer.Default.Equals(method.TypeArguments[0], method.TypeArguments[2]))
         {
             return false;
         }
 
-        var argument = orderBy.GetArgumentAtOrDefault(1);
+        var argument = toDictionary.GetArgumentAtOrDefault(2);
         while (argument is IDelegateCreationOperation creation)
         {
             argument = creation.Target;
