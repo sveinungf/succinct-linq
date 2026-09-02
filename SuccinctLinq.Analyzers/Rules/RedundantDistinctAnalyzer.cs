@@ -13,12 +13,12 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ1001",
-        title: "Distinct() call is redundant",
-        messageFormat: "The Distinct() call is redundant; the following ToHashSet() already removes duplicates",
+        title: "Distinct call is redundant",
+        messageFormat: "The Distinct call is redundant; the following ToHashSet call removes duplicates",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "ToHashSet() already removes duplicate elements, so calling Distinct() immediately before it is redundant.");
+        description: "ToHashSet already removes duplicate elements, so calling Distinct immediately before it is redundant.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
