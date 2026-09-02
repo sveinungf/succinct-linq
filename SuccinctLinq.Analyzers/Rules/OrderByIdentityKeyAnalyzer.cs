@@ -13,7 +13,7 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ1101",
         title: "OrderBy can be simplified",
-        messageFormat: "OrderBy can be simplified to Order",
+        messageFormat: "OrderBy can be simplified to Order without the (x => x)",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,

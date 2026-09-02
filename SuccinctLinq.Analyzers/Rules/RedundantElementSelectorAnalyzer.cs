@@ -13,11 +13,11 @@ public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ1002",
         title: "Redundant element selector",
-        messageFormat: "The element selector is redundant; it simply returns the source element",
+        messageFormat: "The element selector (x => x) is redundant and can be removed",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "An element selector that simply returns the source element is redundant; the overload without an element selector is equivalent.");
+        description: "An element selector (x => x) that simply returns the source element is redundant; using the overload without an element selector is equivalent.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
