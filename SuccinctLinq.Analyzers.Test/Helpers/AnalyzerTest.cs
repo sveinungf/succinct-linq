@@ -19,14 +19,15 @@ internal static class AnalyzerTest
         """;
 
     public static CSharpAnalyzerTest<T, DefaultVerifier> CreateContext<T>(
-        LanguageVersion? languageVersion = null)
+        LanguageVersion? languageVersion = null,
+        ReferenceAssemblies? referenceAssemblies = null)
         where T : DiagnosticAnalyzer, new()
     {
         var result = new CSharpAnalyzerTest<T, DefaultVerifier>
         {
             TestState =
             {
-                ReferenceAssemblies = ReferenceAssemblies.Net.Net100,
+                ReferenceAssemblies = referenceAssemblies ?? ReferenceAssemblies.Net.Net100,
                 Sources = { ("ImplicitUsings.g.cs", ImplicitUsings) },
                 AdditionalReferences =
                 {

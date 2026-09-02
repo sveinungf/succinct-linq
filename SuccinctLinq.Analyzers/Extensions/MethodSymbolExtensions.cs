@@ -10,19 +10,36 @@ internal static class MethodSymbolExtensions
         {
             Name: "Distinct",
             ContainingType.IsSystemLinqEnumerable: true,
-            HasExpectedParameters: true
+            HasOptionalComparerParameter: true
         };
 
         public bool IsToHashSetMethod => symbol is
         {
             Name: "ToHashSet",
             ContainingType.IsSystemLinqEnumerable: true,
-            HasExpectedParameters: true
+            HasOptionalComparerParameter: true
         };
 
-        private bool HasExpectedParameters =>
-            symbol.Parameters.Length == 1 ||
-            symbol.Parameters.Length == 2 &&
-            symbol.Parameters[1].Type.IsSystemCollectionsGenericIEqualityComparer;
+        public bool IsOrderByMethod => symbol is
+        {
+            Name: "OrderBy",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasKeySelectorParameters: true
+        };
+
+        private bool HasOptionalComparerParameter =>
+            symbol.Parameters.Length is 1 or 2
+            && symbol.GetParameterAtOrDefault(1) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true };
+
+        private bool HasKeySelectorParameters =>
+            symbol.GetParameterAtOrDefault(2) is null or { Type.IsSystemCollectionsGenericIComparer: true }
+            && symbol.Parameters is { Length: 2 or 3 } and
+            [
+                { Type.IsSystemCollectionsGenericIEnumerable: true },
+                { Type.IsSystemFuncWithArity2: true },
+                ..
+            ];
+
+        private IParameterSymbol? GetParameterAtOrDefault(int index) => symbol.Parameters.ElementAtOrDefault(index);
     }
 }

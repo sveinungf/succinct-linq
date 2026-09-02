@@ -45,6 +45,16 @@ internal static class OperationExtensions
             return operation;
         }
 
+        public IOperation UnwrapConversions()
+        {
+            while (operation is IConversionOperation conversion)
+            {
+                operation = conversion.Operand;
+            }
+
+            return operation;
+        }
+
         public bool IsInsideFunctionBoundary()
         {
             var node = operation.Parent;

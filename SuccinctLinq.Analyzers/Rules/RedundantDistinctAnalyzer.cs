@@ -2,7 +2,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
-using Microsoft.CodeAnalysis.Text;
 using SuccinctLinq.Analyzers.Extensions;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
@@ -14,12 +13,12 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ1001",
-        title: "Remove redundant Distinct() call",
-        messageFormat: "Remove the redundant Distinct() call; ToHashSet() already removes duplicates",
+        title: "Distinct call is redundant",
+        messageFormat: "The Distinct call is redundant; the following ToHashSet call removes duplicates",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "ToHashSet() already removes duplicate elements, so calling Distinct() immediately before it is redundant.");
+        description: "ToHashSet already removes duplicate elements, so calling Distinct immediately before it is redundant.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -54,14 +53,7 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         if (!UsesSameComparer(distinct, toHashSet))
             return;
 
-        var name = invocation.Expression;
-        if (name is MemberAccessExpressionSyntax memberAccess)
-            name = memberAccess.Name;
-
-        var location = Location.Create(
-            invocation.SyntaxTree,
-            new TextSpan(name.Span.Start, invocation.Span.End - name.Span.Start));
-
+        var location = invocation.GetMethodCallLocation();
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
@@ -181,8 +173,8 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         if (distinctComparer is null || toHashSetComparer is null)
             return distinctComparer is null && toHashSetComparer is null;
 
-        distinctComparer = UnwrapConversions(distinctComparer);
-        toHashSetComparer = UnwrapConversions(toHashSetComparer);
+        distinctComparer = distinctComparer.UnwrapConversions();
+        toHashSetComparer = toHashSetComparer.UnwrapConversions();
 
         // A null or default comparer argument falls back to the default
         // equality comparer, so both arguments use the same comparer.
@@ -194,13 +186,5 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         return distinctComparer.TryGetStringComparerMember(out var distinctMember)
             && toHashSetComparer.TryGetStringComparerMember(out var toHashSetMember)
             && SymbolEqualityComparer.Default.Equals(distinctMember, toHashSetMember);
-    }
-
-    private static IOperation UnwrapConversions(IOperation operation)
-    {
-        while (operation is IConversionOperation conversion)
-            operation = conversion.Operand;
-
-        return operation;
     }
 }
