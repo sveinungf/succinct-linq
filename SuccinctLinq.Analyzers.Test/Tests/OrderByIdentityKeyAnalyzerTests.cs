@@ -9,7 +9,7 @@ public class OrderByIdentityKeyAnalyzerTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
-    public Task OrderByIdentityKey_IdentityLambda_ReportWarning()
+    public Task OrderBy_IdentityLambda_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -30,7 +30,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_IdentityLambdaInChain_ReportWarning()
+    public Task OrderBy_IdentityLambdaInChain_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -51,7 +51,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_IdentityLambdaWithComparer_ReportWarning()
+    public Task OrderBy_IdentityLambdaWithComparer_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -72,7 +72,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_StaticOrderByInvocation_ReportWarning()
+    public Task OrderBy_StaticInvocation_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -93,7 +93,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_FullyQualifiedOrderByInvocation_ReportWarning()
+    public Task OrderBy_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -114,7 +114,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_IdentityLambdaWithSameTypeCast_ReportWarning()
+    public Task OrderBy_IdentityLambdaWithSameTypeCast_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -135,7 +135,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_GenericSource_ReportWarning()
+    public Task OrderBy_GenericSource_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -156,7 +156,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_MultipleCalls_ReportWarningForEach()
+    public Task OrderBy_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -180,7 +180,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_DifferentKeySelector_NoWarning()
+    public Task OrderBy_DifferentKeySelector_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -201,7 +201,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_DifferentKeyType_NoWarning()
+    public Task OrderBy_DifferentKeyType_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -222,7 +222,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_NullForgivingKeySelectorOnNullableValueSource_ReportWarning()
+    public Task OrderBy_NullForgivingKeySelectorOnNullableValueSource_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -245,7 +245,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_NullForgivingKeySelectorOnNullableReferenceSource_ReportWarning()
+    public Task OrderBy_NullForgivingKeySelectorOnNullableReferenceSource_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -268,7 +268,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_IdentityLambdaOnNullableSource_ReportWarning()
+    public Task OrderBy_IdentityLambdaOnNullableSource_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -291,7 +291,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_StatementBodyIdentityLambda_ReportWarning()
+    public Task OrderBy_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -312,7 +312,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_MethodGroupKeySelector_NoWarning()
+    public Task OrderBy_MethodGroupKeySelector_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -335,7 +335,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_DescendingIdentityLambda_NoWarning()
+    public Task OrderByDescending_IdentityLambda_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -356,7 +356,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_ThenByWithIdentityLambda_NoWarning()
+    public Task ThenBy_IdentityLambda_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -377,7 +377,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_Order_NoWarning()
+    public Task Order_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -398,7 +398,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_OrderByWithNonKeySelectorParameter_NoWarning()
+    public Task OrderBy_WithNonKeySelectorParameter_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
@@ -432,7 +432,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_TargetFrameworkBeforeNet7_NoWarning()
+    public Task OrderBy_TargetFrameworkBeforeNet7_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
@@ -454,7 +454,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_TargetFrameworkNetStandard_NoWarning()
+    public Task OrderBy_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
@@ -476,7 +476,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_TargetFrameworkNet7_ReportWarning()
+    public Task OrderBy_TargetFrameworkNet7_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
@@ -498,7 +498,7 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByIdentityKey_OrderByWithNonComparerParameter_NoWarning()
+    public Task OrderBy_WithNonComparerParameter_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();

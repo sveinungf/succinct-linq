@@ -41,7 +41,7 @@ Arguments after `--` are passed to the test host. Supported filters (run
 
 ```sh
 # Run a single test method
-dotnet test -- --filter-method "SuccinctLinq.Analyzers.Test.Tests.RedundantDistinctAnalyzerTests.RedundantDistinct_DistinctThenToHashSet_ReportWarning"
+dotnet test -- --filter-method "SuccinctLinq.Analyzers.Test.Tests.RedundantDistinctAnalyzerTests.Distinct_ThenToHashSet_ReportWarning"
 
 # Run all tests in a class (wildcards supported)
 dotnet test -- --filter-class "SuccinctLinq.Analyzers.Test.Tests.RedundantDistinctAnalyzerTests"
@@ -67,8 +67,10 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
 ## Test conventions
 
 - One `*Tests` class per analyzer in the namespace `SuccinctLinq.Analyzers.Test.Tests`.
-- Test methods are named `<Rule>_<Scenario>_<ExpectedResult>` (e.g.
-  `RedundantDistinct_DistinctThenToHashSet_ReportWarning`) and return `Task`.
+- Test methods are named `<MethodUnderTest>_<Scenario>_<ExpectedResult>`,
+  i.e. prefixed with the LINQ method the test exercises (e.g.
+  `ToDictionary_IdentityElementSelector_ReportWarning` in
+  `RedundantElementSelectorAnalyzerTests`) and return `Task`.
 - Each test class exposes `private static CancellationToken Token =>
   TestContext.Current.CancellationToken;` and passes it to the runner.
 - Build the test with `AnalyzerTest.CreateContext<YourAnalyzer>()`, set
