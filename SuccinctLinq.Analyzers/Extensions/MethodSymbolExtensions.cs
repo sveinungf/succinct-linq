@@ -34,6 +34,20 @@ internal static class MethodSymbolExtensions
             HasElementSelectorParameter: true
         };
 
+        public bool IsToLookupMethod => symbol is
+        {
+            Name: "ToLookup",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasElementSelectorParameter: true
+        };
+
+        public bool IsGroupByMethod => symbol is
+        {
+            Name: "GroupBy",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasElementSelectorParameter: true
+        };
+
         private bool HasOptionalComparerParameter =>
             symbol.Parameters.Length is 1 or 2
             && symbol.GetParameterAtOrDefault(1) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true };

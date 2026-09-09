@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis.Testing;
 using SuccinctLinq.Analyzers.Rules;
 using SuccinctLinq.Analyzers.Test.Helpers;
 
@@ -380,6 +379,497 @@ public class RedundantElementSelectorAnalyzerTests
                     {
                         return items.ToDictionary(x => x, marker);
                     }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_IdentityElementSelector_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToLookup(x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_IdentityElementSelectorInChain_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Where(x => x.Length > 0).{|SLQ1002:ToLookup(x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_IdentityElementSelectorWithComparer_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToLookup(x => x.Length, x => x, EqualityComparer<int>.Default)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_StaticInvocation_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ1002:ToLookup(items, x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_IdentityElementSelectorWithSameTypeCast_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToLookup(x => x.Length, x => (string)x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_IdentityElementSelectorNullableSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string?> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.{|SLQ1002:ToLookup(x => x!.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_ElementSelectorChangesNullability_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.ToLookup(x => x!.Length, x => x!);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_StatementBodyIdentityLambda_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:ToLookup(x => x.Length, x => { return x; })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_DifferentElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToLookup(x => x.Length, x => x.Length.ToString());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_DifferentElementType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<string, int> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToLookup(x => x, x => x.Length);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToLookup_WithoutElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToLookup(x => x.Length);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_IdentityElementSelector_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:GroupBy(x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_IdentityElementSelectorInChain_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Where(x => x.Length > 0).{|SLQ1002:GroupBy(x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_IdentityElementSelectorWithComparer_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:GroupBy(x => x.Length, x => x, EqualityComparer<int>.Default)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_StaticInvocation_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ1002:GroupBy(items, x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_IdentityElementSelectorWithSameTypeCast_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:GroupBy(x => x.Length, x => (string)x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_IdentityElementSelectorNullableSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string?>> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.{|SLQ1002:GroupBy(x => x!.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_ElementSelectorChangesNullability_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.GroupBy(x => x!.Length, x => x!);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_StatementBodyIdentityLambda_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1002:GroupBy(x => x.Length, x => { return x; })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_DifferentElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.GroupBy(x => x.Length, x => x.Length.ToString());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_DifferentElementType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<string, int>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.GroupBy(x => x, x => x.Length);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithoutElementSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.GroupBy(x => x.Length);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithResultSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<int> MyMethod(IEnumerable<string> items)
+                {
+                    return items.GroupBy(x => x.Length, x => x, (length, group) => group.Count(), EqualityComparer<int>.Default);
                 }
             }
             """;

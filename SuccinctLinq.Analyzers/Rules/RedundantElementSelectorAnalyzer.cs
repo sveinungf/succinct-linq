@@ -32,23 +32,25 @@ public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation toDictionary ||
-            !toDictionary.TargetMethod.IsToDictionaryMethod ||
-            !HasRedundantElementSelector(toDictionary))
+        if (context.Operation is not IInvocationOperation call ||
+            !call.TargetMethod.IsToDictionaryMethod &&
+            !call.TargetMethod.IsToLookupMethod &&
+            !call.TargetMethod.IsGroupByMethod ||
+            !HasRedundantElementSelector(call))
         {
             return;
         }
 
-        if (toDictionary.Syntax is not InvocationExpressionSyntax invocation)
+        if (call.Syntax is not InvocationExpressionSyntax invocation)
             return;
 
         var location = invocation.GetMethodCallLocation();
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
-    private static bool HasRedundantElementSelector(IInvocationOperation toDictionary)
+    private static bool HasRedundantElementSelector(IInvocationOperation call)
     {
-        var method = toDictionary.TargetMethod;
+        var method = call.TargetMethod;
 
         // The element type must equal the source type (including nullability),
         // otherwise the element selector is not the identity function.
@@ -58,7 +60,7 @@ public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        var argument = toDictionary.GetArgumentAtOrDefault(2);
+        var argument = call.GetArgumentAtOrDefault(2);
         while (argument is IDelegateCreationOperation creation)
         {
             argument = creation.Target;
