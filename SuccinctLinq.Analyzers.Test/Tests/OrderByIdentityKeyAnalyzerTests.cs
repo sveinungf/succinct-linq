@@ -222,6 +222,75 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
+    public Task OrderByIdentityKey_NullForgivingKeySelectorOnNullableValueSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<int?> MyMethod(IEnumerable<int?> items)
+                {
+                    return items.{|SLQ1101:OrderBy(x => x!)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByIdentityKey_NullForgivingKeySelectorOnNullableReferenceSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string?> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.{|SLQ1101:OrderBy(x => x!)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByIdentityKey_IdentityLambdaOnNullableSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<int?> MyMethod(IEnumerable<int?> items)
+                {
+                    return items.{|SLQ1101:OrderBy(x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderByIdentityKey_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
