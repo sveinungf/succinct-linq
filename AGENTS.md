@@ -35,8 +35,9 @@ dotnet run --project SuccinctLinq.Analyzers.Test
 
 ### Filtering tests
 
-Arguments after `--` are passed to the test host. Supported filters (see
-`--help` for the full list):
+Arguments after `--` are passed to the test host. Supported filters (run
+`dotnet run --project SuccinctLinq.Analyzers.Test -- --help` for the full list;
+`dotnet test -- --help` does not work):
 
 ```sh
 # Run a single test method
@@ -57,8 +58,8 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
 1. Add a `sealed` class named after the rule (e.g. `RedundantDistinctAnalyzer`) in
    `SuccinctLinq.Analyzers/Rules/`, deriving `DiagnosticAnalyzer` and decorated
    with `[DiagnosticAnalyzer(LanguageNames.CSharp)]`.
-2. Assign the next available `SLQ`-prefixed rule ID (existing: SLQ1001, SLQ1002,
-   SLQ1101).
+2. Assign the next available `SLQ`-prefixed rule ID, i.e. the smallest unused
+   number (existing: SLQ1001, SLQ1002, SLQ1101; next: SLQ1003).
 3. Register the rule in `SuccinctLinq.Analyzers/AnalyzerReleases.Unshipped.md`.
 4. Reuse or extend the shared helpers in `SuccinctLinq.Analyzers/Extensions/`.
 5. Add a test class in `SuccinctLinq.Analyzers.Test/Tests/` (see below).
@@ -67,11 +68,12 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
 
 - One `*Tests` class per analyzer in the namespace `SuccinctLinq.Analyzers.Test.Tests`.
 - Test methods are named `<Rule>_<Scenario>_<ExpectedResult>` (e.g.
-  `RedundantDistinct_DistinctThenToHashSet_ReportWarning`) and return `Task`,
-  passed `TestContext.Current.CancellationToken`.
+  `RedundantDistinct_DistinctThenToHashSet_ReportWarning`) and return `Task`.
+- Each test class exposes `private static CancellationToken Token =>
+  TestContext.Current.CancellationToken;` and passes it to the runner.
 - Build the test with `AnalyzerTest.CreateContext<YourAnalyzer>()`, set
-  `context.TestCode` as a raw string literal, and mark expected diagnostics with
-  `{|SLQ1001:Distinct()|}` markup.
+  `context.TestCode` as a raw string literal, mark expected diagnostics with
+  `{|SLQ1001:Distinct()|}` markup, and return `context.RunAsync(Token)`.
 
 ## Constraints
 
@@ -89,4 +91,5 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
 
 GitHub Actions (`.github/workflows/dotnet.yml`) runs on Windows with:
 `dotnet restore && dotnet build --no-restore && dotnet test --no-build
---report-trx --coverage`. Use the same commands locally to match CI.
+--report-trx --coverage --coverage-output-format cobertura`. Use the same
+commands locally to match CI.
