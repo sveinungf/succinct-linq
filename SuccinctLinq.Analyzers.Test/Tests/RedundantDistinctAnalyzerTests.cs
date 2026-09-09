@@ -8,7 +8,7 @@ public class RedundantDistinctAnalyzerTests
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
-    public Task RedundantDistinct_DistinctThenToHashSet_ReportWarning()
+    public Task Distinct_ThenToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -29,7 +29,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_ToHashSetWithoutDistinct_NoWarning()
+    public Task ToHashSet_WithoutDistinct_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -50,7 +50,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInLongerChain_ReportWarning()
+    public Task Distinct_InLongerChain_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -71,7 +71,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_IntermediateOperation_NoWarning()
+    public Task Distinct_IntermediateOperation_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -92,7 +92,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctThenToList_NoWarning()
+    public Task Distinct_ThenToList_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -113,7 +113,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctWithComparer_NoWarning()
+    public Task Distinct_WithComparer_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -134,7 +134,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_ToHashSetWithComparer_NoWarning()
+    public Task ToHashSet_WithComparer_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -155,7 +155,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_StaticDistinctInvocation_ReportWarning()
+    public Task Distinct_StaticInvocation_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -176,7 +176,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_FullyQualifiedDistinctInvocation_ReportWarning()
+    public Task Distinct_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -197,7 +197,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_StaticToHashSetInvocation_ReportWarning()
+    public Task Distinct_StaticToHashSetInvocation_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -218,7 +218,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_MultipleCalls_ReportWarningForEach()
+    public Task Distinct_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -242,7 +242,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_ChainedDistinctToHashSetPairs_ReportWarningForEach()
+    public Task Distinct_ChainedToHashSetPairs_ReportWarningForEach()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -263,7 +263,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameParameterComparerInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_SameParameterComparerInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -285,7 +285,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameParameterComparerInStaticDistinctAndToHashSet_NoWarning()
+    public Task Distinct_SameParameterComparerInStaticToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -307,7 +307,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameStringComparerPropertyInDistinctAndToHashSet_ReportWarning()
+    public Task Distinct_SameStringComparerPropertyInToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -328,7 +328,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DifferentStringComparerPropertiesInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_DifferentStringComparerPropertiesInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -349,7 +349,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameInstancePropertyComparerInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_SameInstancePropertyComparerInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -375,7 +375,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DifferentInstancePropertyComparersInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_DifferentInstancePropertyComparersInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -402,7 +402,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DifferentParameterComparersInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_DifferentParameterComparersInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -426,7 +426,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAndToHashSetWithNonComparerParameter_NoWarning()
+    public Task Distinct_WithNonComparerParameter_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -461,7 +461,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_InstanceDistinctWithStaticToHashSetAndParameterComparer_NoWarning()
+    public Task Distinct_WithStaticToHashSetAndParameterComparer_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -483,7 +483,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameLocalComparerInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_SameLocalComparerInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -505,7 +505,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DifferentLocalComparersInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_DifferentLocalComparersInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -528,7 +528,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerFactoryInvocationInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_SameComparerFactoryInvocationInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -551,7 +551,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameComparerCreationInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_SameComparerCreationInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -578,7 +578,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameConditionalComparerInDistinctAndToHashSet_NoWarning()
+    public Task Distinct_SameConditionalComparerInToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -601,7 +601,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameNullComparerInDistinctAndToHashSet_ReportWarning()
+    public Task Distinct_SameNullComparerInToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -622,7 +622,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameDefaultComparerInDistinctAndToHashSet_ReportWarning()
+    public Task Distinct_SameDefaultComparerInToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -643,7 +643,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_NonLinqEnumerable_NoWarning()
+    public Task Distinct_NonLinqEnumerable_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -670,7 +670,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInLocalVariableThenToHashSet_ReportWarning()
+    public Task Distinct_InLocalVariableThenToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -692,7 +692,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_StaticToHashSetOnDistinctInLocalVariable_ReportWarning()
+    public Task Distinct_InLocalVariableThenStaticToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -714,7 +714,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_SameParameterComparerInDistinctInLocalVariableAndToHashSet_NoWarning()
+    public Task Distinct_InLocalVariableWithSameParameterComparer_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -737,7 +737,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctReassignedToInitializedLocalVariableThenToHashSet_ReportWarning()
+    public Task Distinct_ReassignedToInitializedLocalVariableThenToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -760,7 +760,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctReassignedToUninitializedLocalVariableThenToHashSet_ReportWarning()
+    public Task Distinct_ReassignedToUninitializedLocalVariableThenToHashSet_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -783,7 +783,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctReassignedToLocalVariableWithAdditionalUse_NoWarning()
+    public Task Distinct_ReassignedToLocalVariableWithAdditionalUse_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -807,7 +807,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_NonDistinctReassignmentAfterDistinct_NoWarning()
+    public Task Distinct_NonDistinctReassignmentAfter_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -830,7 +830,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInLocalVariableWithAdditionalUse_NoWarning()
+    public Task Distinct_InLocalVariableWithAdditionalUse_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -853,7 +853,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInLocalVariableWithDifferentParameterComparers_NoWarning()
+    public Task Distinct_InLocalVariableWithDifferentParameterComparers_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -878,7 +878,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInLocalVariableUsedInTwoToHashSetCalls_NoWarning()
+    public Task Distinct_InLocalVariableUsedInTwoToHashSetCalls_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -903,7 +903,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_NonDistinctLocalVariableThenToHashSet_NoWarning()
+    public Task Distinct_NonDistinctLocalVariableThenToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -925,7 +925,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAssignedInBranchThenToHashSetOutside_NoWarning()
+    public Task Distinct_AssignedInBranchThenToHashSetOutside_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -956,7 +956,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAssignedInTernaryThenToHashSetOutside_NoWarning()
+    public Task Distinct_AssignedInTernaryThenToHashSetOutside_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -978,7 +978,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAssignedInLoopThenToHashSetOutside_NoWarning()
+    public Task Distinct_AssignedInLoopThenToHashSetOutside_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1005,7 +1005,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAssignedInBranchWithToHashSetInSameBranch_ReportWarning()
+    public Task Distinct_AssignedInBranchWithToHashSetInSameBranch_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1031,7 +1031,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAssignedInBranchThenToHashSetInSiblingBranch_NoWarning()
+    public Task Distinct_AssignedInBranchThenToHashSetInSiblingBranch_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1060,7 +1060,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInTryBodyThenToHashSetInCatch_NoWarning()
+    public Task Distinct_InTryBodyThenToHashSetInCatch_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1089,7 +1089,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInTryBodyThenToHashSetAfterTry_NoWarning()
+    public Task Distinct_InTryBodyThenToHashSetAfterTry_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1119,7 +1119,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAndToHashSetInTryBody_ReportWarning()
+    public Task Distinct_WithToHashSetInTryBody_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1148,7 +1148,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctInOneSwitchCaseThenToHashSetInAnotherCase_NoWarning()
+    public Task Distinct_InOneSwitchCaseThenToHashSetInAnotherCase_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1178,7 +1178,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAndToHashSetInSameSwitchCase_ReportWarning()
+    public Task Distinct_WithToHashSetInSameSwitchCase_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1206,7 +1206,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAssignedInAndAlsoSecondOperandThenToHashSetOutside_NoWarning()
+    public Task Distinct_AssignedInAndAlsoSecondOperandThenToHashSetOutside_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1230,7 +1230,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_DistinctAssignedInOrElseSecondOperandThenToHashSetOutside_NoWarning()
+    public Task Distinct_AssignedInOrElseSecondOperandThenToHashSetOutside_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1254,7 +1254,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_WriteInUncalledLambdaThenToHashSet_NoWarning()
+    public Task Distinct_WriteInUncalledLambdaThenToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1278,7 +1278,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_WriteInAsyncLambdaThenToHashSet_NoWarning()
+    public Task Distinct_WriteInAsyncLambdaThenToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1302,7 +1302,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_WriteInUncalledLocalFunctionThenToHashSet_NoWarning()
+    public Task Distinct_WriteInUncalledLocalFunctionThenToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1326,7 +1326,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_ToHashSetInLambdaThenLocalReassigned_NoWarning()
+    public Task Distinct_ToHashSetInLambdaThenLocalReassigned_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
@@ -1350,7 +1350,7 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
-    public Task RedundantDistinct_ReadInLambdaThenToHashSet_NoWarning()
+    public Task Distinct_ReadInLambdaThenToHashSet_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();

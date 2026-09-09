@@ -27,6 +27,27 @@ internal static class MethodSymbolExtensions
             HasKeySelectorParameters: true
         };
 
+        public bool IsToDictionaryMethod => symbol is
+        {
+            Name: "ToDictionary",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasElementSelectorParameter: true
+        };
+
+        public bool IsToLookupMethod => symbol is
+        {
+            Name: "ToLookup",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasElementSelectorParameter: true
+        };
+
+        public bool IsGroupByMethod => symbol is
+        {
+            Name: "GroupBy",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasElementSelectorParameter: true
+        };
+
         private bool HasOptionalComparerParameter =>
             symbol.Parameters.Length is 1 or 2
             && symbol.GetParameterAtOrDefault(1) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true };
@@ -36,6 +57,16 @@ internal static class MethodSymbolExtensions
             && symbol.Parameters is { Length: 2 or 3 } and
             [
                 { Type.IsSystemCollectionsGenericIEnumerable: true },
+                { Type.IsSystemFuncWithArity2: true },
+                ..
+            ];
+
+        private bool HasElementSelectorParameter =>
+            symbol.GetParameterAtOrDefault(3) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true }
+            && symbol.Parameters is { Length: 3 or 4 } and
+            [
+                { Type.IsSystemCollectionsGenericIEnumerable: true },
+                { Type.IsSystemFuncWithArity2: true },
                 { Type.IsSystemFuncWithArity2: true },
                 ..
             ];
