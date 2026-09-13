@@ -489,7 +489,7 @@ public class SelectToIndexAnalyzerTests
 
             public static class MyClass
             {
-                public static IEnumerable<string> MyMethod(IEnumerable<string> items)
+                public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
                     return items.Select((x, i) => (x, i));
                 }
