@@ -329,6 +329,90 @@ public class SelectToIndexAnalyzerTests
     }
 
     [Fact]
+    public Task Select_ElementFirstAnonymousObject_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => new { x, i })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexFirstAnonymousObject_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => new { i, x })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_AnonymousObjectWithNamedMembers_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => new { Value = x, Count = i })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_AnonymousObjectWithCast_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<object> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => new { Value = (string)x, i })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_DifferentElementSelector_NoWarning()
     {
         // Arrange
@@ -385,6 +469,113 @@ public class SelectToIndexAnalyzerTests
                     return items.Select((x, i) => (x, i, x.Length));
                 }
             }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_AnonymousObjectExtraMember_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => new { x, i, x.Length });
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_AnonymousObjectSingleMember_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => new { x });
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_AnonymousObjectTransformedMember_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => new { x, Index = i + 1 });
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_AnonymousObjectMissingIndex_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => new { x, Length = x.Length });
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_NonAnonymousObject_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<Pair> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => new Pair(x, i));
+                }
+            }
+
+            public sealed record Pair(string X, int I);
             """;
 
         // Act & Assert

@@ -17,7 +17,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "A Select with a selector that returns the element and its index as a tuple, such as (x, i) => (x, i), can be replaced with the more concise Index(); note that Index() yields the index before the element.");
+        description: "A Select with a selector that returns the element and its index as a tuple or anonymous object, such as (x, i) => (x, i) or (x, i) => new { x, i }, can be replaced with the more concise Index(); note that Index() yields the index before the element.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -39,7 +39,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
     {
         if (context.Operation is not IInvocationOperation select ||
             !select.TargetMethod.IsSelectMethod ||
-            !IsIdentityTupleSelector(select))
+            !IsIdentitySelector(select))
         {
             return;
         }
@@ -51,7 +51,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
-    private static bool IsIdentityTupleSelector(IInvocationOperation select)
+    private static bool IsIdentitySelector(IInvocationOperation select)
     {
         var argument = select.GetArgumentAtOrDefault(1);
         while (argument is IDelegateCreationOperation creation)
@@ -72,15 +72,30 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
             return false;
         }
 
-        if (value.UnwrapConversions() is not ITupleOperation { Elements: [var first, var second] })
+        value = value.UnwrapConversions();
+
+        IOperation? first = null;
+        IOperation? second = null;
+
+        if (value is ITupleOperation { Elements.Length: 2 } tuple)
         {
-            return false;
+            first = tuple.Elements.ElementAtOrDefault(0);
+            second = tuple.Elements.ElementAtOrDefault(1);
+        }
+        else if (value is IAnonymousObjectCreationOperation
+        {
+            Initializers: [IAssignmentOperation { } a, IAssignmentOperation { } b]
+        })
+        {
+            first = a.Value;
+            second = b.Value;
         }
 
-        // Index() yields the index before the element. Tuple element names
-        // are irrelevant because the caller can rename them at the use site.
+        if (first is null || second is null)
+            return false;
+
         return (IsParameterReference(first, index) && IsParameterReference(second, element)) ||
-            (IsParameterReference(first, element) && IsParameterReference(second, index));
+                (IsParameterReference(first, element) && IsParameterReference(second, index));
     }
 
     private static bool IsParameterReference(IOperation operation, IParameterSymbol parameter)
