@@ -58,8 +58,11 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
 1. Add a `sealed` class named after the rule (e.g. `RedundantDistinctAnalyzer`) in
    `SuccinctLinq.Analyzers/Rules/`, deriving `DiagnosticAnalyzer` and decorated
    with `[DiagnosticAnalyzer(LanguageNames.CSharp)]`.
-2. Assign the next available `SLQ`-prefixed rule ID, i.e. the smallest unused
-   number (existing: SLQ1001, SLQ1002, SLQ1101; next: SLQ1003).
+2. Assign the next available `SLQ`-prefixed rule ID. Rule IDs are grouped by
+   category: Redundancy rules start at SLQ1000 and Simplification rules start
+   at SLQ1100. Use the smallest unused number in the rule's category
+    (existing: SLQ1001, SLQ1002, SLQ1101, SLQ1102; next: SLQ1003 for
+    Redundancy, SLQ1103 for Simplification).
 3. Register the rule in `SuccinctLinq.Analyzers/AnalyzerReleases.Unshipped.md`.
 4. Reuse or extend the shared helpers in `SuccinctLinq.Analyzers/Extensions/`.
 5. Add a test class in `SuccinctLinq.Analyzers.Test/Tests/` (see below).
