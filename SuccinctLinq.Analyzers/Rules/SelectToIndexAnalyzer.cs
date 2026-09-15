@@ -17,7 +17,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "A Select with a selector that returns the element and its index as a tuple or anonymous object, such as (x, i) => (x, i) or (x, i) => new { x, i }, can be replaced with the more concise Index(); note that Index() yields the index before the element.");
+        description: "A Select that only returns the element and its index, such as (x, i) => (x, i) or (x, i) => new { x, i }, can be replaced with the more concise Index(). Note that Index() yields the index before the element.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
