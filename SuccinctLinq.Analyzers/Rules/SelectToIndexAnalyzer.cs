@@ -98,22 +98,41 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         if (first is null || second is null)
             return false;
 
-        // Index() yields the element unchanged, so the element must be
-        // referenced without any conversion; a conversion such as (string)x
-        // would change the element type.
-        if (second.DirectlyReferencesParameter(element) &&
-            IsIndexWithOffset(first, index, out var offset))
+        return TryMatchElementAndIndex(first, second, element, index, out startIndex);
+    }
+
+    private static bool TryMatchElementAndIndex(
+        IOperation first,
+        IOperation second,
+        IParameterSymbol element,
+        IParameterSymbol index,
+        out int startIndex)
+    {
+        startIndex = 0;
+
+        // Index() yields the element unchanged and an int index, so the
+        // element and the index must each be referenced without any
+        // conversion; a conversion such as (string)x or (long)i would
+        // change a result type.
+        if (first.ReferencesParameter(element) &&
+            IsIndexWithOffset(second, index, out var elementFirstOffset))
         {
-            startIndex = offset;
+            startIndex = elementFirstOffset;
             return true;
         }
 
-        return first.DirectlyReferencesParameter(element) && second.ReferencesParameter(index);
+        if (second.ReferencesParameter(element) &&
+            IsIndexWithOffset(first, index, out var indexFirstOffset))
+        {
+            startIndex = indexFirstOffset;
+            return true;
+        }
+
+        return false;
     }
 
     private static bool IsIndexWithOffset(IOperation operation, IParameterSymbol index, out int offset)
     {
-        operation = operation.UnwrapConversions();
         offset = 0;
 
         if (operation.ReferencesParameter(index))

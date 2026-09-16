@@ -17,7 +17,7 @@ internal static class AnonymousFunctionOperationExtensions
             if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
                 return false;
 
-            return value.ReferencesParameter(parameter);
+            return value.UnwrapConversions().ReferencesParameter(parameter);
         }
     }
 }
