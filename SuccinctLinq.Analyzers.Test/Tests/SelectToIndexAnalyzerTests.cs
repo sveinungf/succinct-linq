@@ -72,6 +72,174 @@ public class SelectToIndexAnalyzerTests
     }
 
     [Fact]
+    public Task Select_IndexOffsetTuple_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => (i + 1, x))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTupleLiteralFirst_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => (1 + i, x))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTupleSubtraction_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => (i - 1, x))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTupleZeroOffset_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => (i + 0, x))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTupleNamedElements_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => (Count: i + 1, Item: x))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTupleStaticInvocation_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ1102:Select(items, (x, i) => (i + 1, x))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTupleWithCast_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<object> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => (i + 1, (string)x))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTupleStatementBodyLambda_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => { return (i + 1, x); })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_ElementFirstTuple_ReportWarning()
     {
         // Arrange
@@ -413,6 +581,27 @@ public class SelectToIndexAnalyzerTests
     }
 
     [Fact]
+    public Task Select_IndexOffsetAnonymousObject_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ1102:Select((x, i) => new { Offset = i + 1, x })|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_DifferentElementSelector_NoWarning()
     {
         // Arrange
@@ -467,6 +656,111 @@ public class SelectToIndexAnalyzerTests
                 public static IEnumerable<(string, int, int)> MyMethod(IEnumerable<string> items)
                 {
                     return items.Select((x, i) => (x, i, x.Length));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_ElementFirstOffsetTuple_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => (x, i + 1));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetVariable_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items, int offset)
+                {
+                    return items.Select((x, i) => (i + offset, x));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetLongLiteral_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(long, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => (i + 1L, x));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetSubtractedIndex_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select((x, i) => (1 - i, x));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexOffsetTransformedElement_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(int, int)> MyMethod(IEnumerable<int> items)
+                {
+                    return items.Select((x, i) => (i + 1, x + 1));
                 }
             }
             """;

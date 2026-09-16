@@ -83,6 +83,13 @@ internal static class OperationExtensions
             return false;
         }
 
+        public bool ReferencesParameter(IParameterSymbol parameter)
+        {
+            operation = operation.UnwrapConversions();
+            return operation is IParameterReferenceOperation { Parameter: { } reference } &&
+                SymbolEqualityComparer.Default.Equals(reference, parameter);
+        }
+
         public bool TryGetStringComparerMember([NotNullWhen(true)] out ISymbol? member)
         {
             if (operation is IMemberReferenceOperation
