@@ -20,7 +20,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => x)|};
+                    return items.{|SLQ201:OrderBy(x => x)|};
                 }
             }
             """;
@@ -41,7 +41,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IEnumerable<int> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Where(x => x.Length > 0).{|SLQ1101:OrderBy(x => x)|}.Select(x => x.Length);
+                    return items.Where(x => x.Length > 0).{|SLQ201:OrderBy(x => x)|}.Select(x => x.Length);
                 }
             }
             """;
@@ -62,7 +62,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => x, StringComparer.Ordinal)|};
+                    return items.{|SLQ201:OrderBy(x => x, StringComparer.Ordinal)|};
                 }
             }
             """;
@@ -83,7 +83,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ1101:OrderBy(items, x => x)|};
+                    return Enumerable.{|SLQ201:OrderBy(items, x => x)|};
                 }
             }
             """;
@@ -104,7 +104,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return System.Linq.Enumerable.{|SLQ1101:OrderBy(items, x => x)|};
+                    return System.Linq.Enumerable.{|SLQ201:OrderBy(items, x => x)|};
                 }
             }
             """;
@@ -125,7 +125,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => (string)x)|};
+                    return items.{|SLQ201:OrderBy(x => (string)x)|};
                 }
             }
             """;
@@ -146,7 +146,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<T> MyMethod<T>(IEnumerable<T> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => x)|};
+                    return items.{|SLQ201:OrderBy(x => x)|};
                 }
             }
             """;
@@ -168,8 +168,8 @@ public class OrderByIdentityKeyAnalyzerTests
                 public static (IOrderedEnumerable<string> Words, IOrderedEnumerable<int> Numbers) MyMethod(
                     IEnumerable<string> words, IEnumerable<int> numbers)
                 {
-                    var orderedWords = words.{|SLQ1101:OrderBy(x => x)|};
-                    var orderedNumbers = numbers.{|SLQ1101:OrderBy(x => x)|};
+                    var orderedWords = words.{|SLQ201:OrderBy(x => x)|};
+                    var orderedNumbers = numbers.{|SLQ201:OrderBy(x => x)|};
                     return (orderedWords, orderedNumbers);
                 }
             }
@@ -235,7 +235,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<int?> MyMethod(IEnumerable<int?> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => x!)|};
+                    return items.{|SLQ201:OrderBy(x => x!)|};
                 }
             }
             """;
@@ -258,7 +258,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string?> MyMethod(IEnumerable<string?> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => x!)|};
+                    return items.{|SLQ201:OrderBy(x => x!)|};
                 }
             }
             """;
@@ -281,7 +281,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<int?> MyMethod(IEnumerable<int?> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => x)|};
+                    return items.{|SLQ201:OrderBy(x => x)|};
                 }
             }
             """;
@@ -302,7 +302,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => { return x; })|};
+                    return items.{|SLQ201:OrderBy(x => { return x; })|};
                 }
             }
             """;
@@ -488,7 +488,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1101:OrderBy(x => x)|};
+                    return items.{|SLQ201:OrderBy(x => x)|};
                 }
             }
             """;

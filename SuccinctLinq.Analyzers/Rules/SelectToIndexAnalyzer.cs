@@ -12,7 +12,7 @@ namespace SuccinctLinq.Analyzers.Rules;
 public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ1102",
+        id: "SLQ202",
         title: "Select can be simplified",
         messageFormat: "Select can be simplified to Index({0})",
         category: "Simplification",
