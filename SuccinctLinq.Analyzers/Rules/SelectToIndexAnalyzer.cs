@@ -98,14 +98,17 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         if (first is null || second is null)
             return false;
 
-        if (second.ReferencesParameter(element) &&
+        // Index() yields the element unchanged, so the element must be
+        // referenced without any conversion; a conversion such as (string)x
+        // would change the element type.
+        if (second.DirectlyReferencesParameter(element) &&
             IsIndexWithOffset(first, index, out var offset))
         {
             startIndex = offset;
             return true;
         }
 
-        return first.ReferencesParameter(element) && second.ReferencesParameter(index);
+        return first.DirectlyReferencesParameter(element) && second.ReferencesParameter(index);
     }
 
     private static bool IsIndexWithOffset(IOperation operation, IParameterSymbol index, out int offset)

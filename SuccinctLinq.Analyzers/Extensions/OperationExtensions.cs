@@ -85,7 +85,11 @@ internal static class OperationExtensions
 
         public bool ReferencesParameter(IParameterSymbol parameter)
         {
-            operation = operation.UnwrapConversions();
+            return operation.UnwrapConversions().DirectlyReferencesParameter(parameter);
+        }
+
+        public bool DirectlyReferencesParameter(IParameterSymbol parameter)
+        {
             return operation is IParameterReferenceOperation { Parameter: { } reference } &&
                 SymbolEqualityComparer.Default.Equals(reference, parameter);
         }

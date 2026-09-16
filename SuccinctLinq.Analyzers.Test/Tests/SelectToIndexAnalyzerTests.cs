@@ -198,7 +198,7 @@ public class SelectToIndexAnalyzerTests
     }
 
     [Fact]
-    public Task Select_IndexOffsetTupleWithCast_ReportWarning()
+    public Task Select_IndexOffsetTupleWithCast_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
@@ -209,7 +209,28 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(int, string)> MyMethod(IEnumerable<object> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (i + 1, (string)x))|};
+                    return items.Select((x, i) => (i + 1, (string)x));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IndexWideningCast_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(long, string)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ202:Select((x, i) => ((long)i, x))|};
                 }
             }
             """;
@@ -282,7 +303,7 @@ public class SelectToIndexAnalyzerTests
     }
 
     [Fact]
-    public Task Select_ElementFirstTupleWithSameTypeCast_ReportWarning()
+    public Task Select_ElementFirstTupleWithCast_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
@@ -293,7 +314,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<object> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => ((string)x, i))|};
+                    return items.Select((x, i) => ((string)x, i));
                 }
             }
             """;
@@ -560,7 +581,7 @@ public class SelectToIndexAnalyzerTests
     }
 
     [Fact]
-    public Task Select_AnonymousObjectWithCast_ReportWarning()
+    public Task Select_AnonymousObjectWithCast_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
@@ -571,7 +592,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<object> MyMethod(IEnumerable<object> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => new { Value = (string)x, i })|};
+                    return items.Select((x, i) => new { Value = (string)x, i });
                 }
             }
             """;
