@@ -1,7 +1,3 @@
-# AGENTS.md
-
-Instructions for AI coding agents working in this repository.
-
 ## Overview
 
 Succinct LINQ is a set of Roslyn analyzers for C# that suggest more succinct LINQ
@@ -58,8 +54,10 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
 1. Add a `sealed` class named after the rule (e.g. `RedundantDistinctAnalyzer`) in
    `SuccinctLinq.Analyzers/Rules/`, deriving `DiagnosticAnalyzer` and decorated
    with `[DiagnosticAnalyzer(LanguageNames.CSharp)]`.
-2. Assign the next available `SLQ`-prefixed rule ID, i.e. the smallest unused
-   number (existing: SLQ1001, SLQ1002, SLQ1101; next: SLQ1003).
+2. Assign the next available `SLQ`-prefixed rule ID. Rule IDs are grouped by
+   category: Redundancy rules start at SLQ101 and Simplification rules start
+   at SLQ201. Use the smallest unused number in the rule's category.
+   Look in `AnalyzerReleases.Shipped.md` and `AnalyzerReleases.Unshipped.md` for the last assigned rule ID in each category.
 3. Register the rule in `SuccinctLinq.Analyzers/AnalyzerReleases.Unshipped.md`.
 4. Reuse or extend the shared helpers in `SuccinctLinq.Analyzers/Extensions/`.
 5. Add a test class in `SuccinctLinq.Analyzers.Test/Tests/` (see below).
@@ -75,7 +73,7 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
   TestContext.Current.CancellationToken;` and passes it to the runner.
 - Build the test with `AnalyzerTest.CreateContext<YourAnalyzer>()`, set
   `context.TestCode` as a raw string literal, mark expected diagnostics with
-  `{|SLQ1001:Distinct()|}` markup, and return `context.RunAsync(Token)`.
+  `{|SLQ101:Distinct()|}` markup, and return `context.RunAsync(Token)`.
 
 ## Constraints
 

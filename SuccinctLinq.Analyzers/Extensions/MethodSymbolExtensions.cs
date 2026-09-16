@@ -48,6 +48,13 @@ internal static class MethodSymbolExtensions
             HasElementSelectorParameter: true
         };
 
+        public bool IsSelectMethod => symbol is
+        {
+            Name: "Select",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasIndexSelectorParameter: true
+        };
+
         private bool HasOptionalComparerParameter =>
             symbol.Parameters.Length is 1 or 2
             && symbol.GetParameterAtOrDefault(1) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true };
@@ -69,6 +76,13 @@ internal static class MethodSymbolExtensions
                 { Type.IsSystemFuncWithArity2: true },
                 { Type.IsSystemFuncWithArity2: true },
                 ..
+            ];
+
+        private bool HasIndexSelectorParameter =>
+            symbol.Parameters is
+            [
+                { Type.IsSystemCollectionsGenericIEnumerable: true },
+                { Type.IsSystemFuncWithArity3: true }
             ];
 
         private IParameterSymbol? GetParameterAtOrDefault(int index) => symbol.Parameters.ElementAtOrDefault(index);

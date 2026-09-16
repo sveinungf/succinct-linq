@@ -1,4 +1,3 @@
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 
 namespace SuccinctLinq.Analyzers.Extensions;
@@ -18,10 +17,7 @@ internal static class AnonymousFunctionOperationExtensions
             if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
                 return false;
 
-            value = value.UnwrapConversions();
-
-            return value is IParameterReferenceOperation { Parameter: { } reference }
-                && SymbolEqualityComparer.Default.Equals(reference, parameter);
+            return value.UnwrapConversions().ReferencesParameter(parameter);
         }
     }
 }

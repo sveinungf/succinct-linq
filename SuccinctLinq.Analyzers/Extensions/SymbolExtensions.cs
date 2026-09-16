@@ -57,8 +57,19 @@ internal static class SymbolExtensions
 
         public bool IsSystemFuncWithArity2 => symbol is INamedTypeSymbol
         {
+            IsSystemFunc: true,
+            Arity: 2
+        };
+
+        public bool IsSystemFuncWithArity3 => symbol is INamedTypeSymbol
+        {
+            IsSystemFunc: true,
+            Arity: 3
+        };
+
+        public bool IsSystemFunc => symbol is INamedTypeSymbol
+        {
             Name: "Func",
-            Arity: 2,
             ContainingNamespace:
             {
                 Name: "System",

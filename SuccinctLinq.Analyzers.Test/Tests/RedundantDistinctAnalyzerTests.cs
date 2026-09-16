@@ -19,7 +19,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1001:Distinct()|}.ToHashSet();
+                    return items.{|SLQ101:Distinct()|}.ToHashSet();
                 }
             }
             """;
@@ -61,7 +61,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<int> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Select(x => x.Length).{|SLQ1001:Distinct()|}.ToHashSet();
+                    return items.Select(x => x.Length).{|SLQ101:Distinct()|}.ToHashSet();
                 }
             }
             """;
@@ -166,7 +166,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ1001:Distinct(items)|}.ToHashSet();
+                    return Enumerable.{|SLQ101:Distinct(items)|}.ToHashSet();
                 }
             }
             """;
@@ -187,7 +187,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return System.Linq.Enumerable.{|SLQ1001:Distinct(items)|}.ToHashSet();
+                    return System.Linq.Enumerable.{|SLQ101:Distinct(items)|}.ToHashSet();
                 }
             }
             """;
@@ -208,7 +208,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.ToHashSet(Enumerable.{|SLQ1001:Distinct(items)|});
+                    return Enumerable.ToHashSet(Enumerable.{|SLQ101:Distinct(items)|});
                 }
             }
             """;
@@ -230,8 +230,8 @@ public class RedundantDistinctAnalyzerTests
                 public static (HashSet<int> Numbers, HashSet<string> Words) MyMethod(
                     IEnumerable<int> numbers, IEnumerable<string> words)
                 {
-                    var distinctNumbers = numbers.{|SLQ1001:Distinct()|}.ToHashSet();
-                    var distinctWords = words.{|SLQ1001:Distinct()|}.ToHashSet();
+                    var distinctNumbers = numbers.{|SLQ101:Distinct()|}.ToHashSet();
+                    var distinctWords = words.{|SLQ101:Distinct()|}.ToHashSet();
                     return (distinctNumbers, distinctWords);
                 }
             }
@@ -253,7 +253,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1001:Distinct()|}.ToHashSet().{|SLQ1001:Distinct()|}.ToHashSet();
+                    return items.{|SLQ101:Distinct()|}.ToHashSet().{|SLQ101:Distinct()|}.ToHashSet();
                 }
             }
             """;
@@ -318,7 +318,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1001:Distinct(StringComparer.OrdinalIgnoreCase)|}.ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    return items.{|SLQ101:Distinct(StringComparer.OrdinalIgnoreCase)|}.ToHashSet(StringComparer.OrdinalIgnoreCase);
                 }
             }
             """;
@@ -612,7 +612,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1001:Distinct(null)|}.ToHashSet(null);
+                    return items.{|SLQ101:Distinct(null)|}.ToHashSet(null);
                 }
             }
             """;
@@ -633,7 +633,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1001:Distinct(default)|}.ToHashSet(default);
+                    return items.{|SLQ101:Distinct(default)|}.ToHashSet(default);
                 }
             }
             """;
@@ -681,7 +681,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    var distinctItems = items.{|SLQ1001:Distinct()|};
+                    var distinctItems = items.{|SLQ101:Distinct()|};
                     return distinctItems.ToHashSet();
                 }
             }
@@ -703,7 +703,7 @@ public class RedundantDistinctAnalyzerTests
             {
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
-                    var distinctItems = items.{|SLQ1001:Distinct()|};
+                    var distinctItems = items.{|SLQ101:Distinct()|};
                     return Enumerable.ToHashSet(distinctItems);
                 }
             }
@@ -749,7 +749,7 @@ public class RedundantDistinctAnalyzerTests
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
                     IEnumerable<string> d = items;
-                    d = items.{|SLQ1001:Distinct()|};
+                    d = items.{|SLQ101:Distinct()|};
                     return d.ToHashSet();
                 }
             }
@@ -772,7 +772,7 @@ public class RedundantDistinctAnalyzerTests
                 public static HashSet<string> MyMethod(IEnumerable<string> items)
                 {
                     IEnumerable<string> d;
-                    d = items.{|SLQ1001:Distinct()|};
+                    d = items.{|SLQ101:Distinct()|};
                     return d.ToHashSet();
                 }
             }
@@ -1019,7 +1019,7 @@ public class RedundantDistinctAnalyzerTests
                     IEnumerable<string> d = items;
                     if (condition)
                     {
-                        d = items.{|SLQ1001:Distinct()|};
+                        d = items.{|SLQ101:Distinct()|};
                         d.ToHashSet();
                     }
                 }
@@ -1133,7 +1133,7 @@ public class RedundantDistinctAnalyzerTests
                     try
                     {
                         IEnumerable<string> d = items;
-                        d = items.{|SLQ1001:Distinct()|};
+                        d = items.{|SLQ101:Distinct()|};
                         d.ToHashSet();
                     }
                     catch
@@ -1193,7 +1193,7 @@ public class RedundantDistinctAnalyzerTests
                     {
                         case 1:
                             IEnumerable<string> d = items;
-                            d = items.{|SLQ1001:Distinct()|};
+                            d = items.{|SLQ101:Distinct()|};
                             d.ToHashSet();
                             break;
                     }

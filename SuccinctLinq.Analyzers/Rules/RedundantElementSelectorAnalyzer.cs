@@ -11,7 +11,7 @@ namespace SuccinctLinq.Analyzers.Rules;
 public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ1002",
+        id: "SLQ102",
         title: "Redundant element selector",
         messageFormat: "The element selector (x => x) is redundant and can be removed",
         category: "Redundancy",

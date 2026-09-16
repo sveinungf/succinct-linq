@@ -19,7 +19,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => x)|};
+                    return items.{|SLQ102:ToDictionary(x => x.Length, x => x)|};
                 }
             }
             """;
@@ -40,7 +40,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Where(x => x.Length > 0).{|SLQ1002:ToDictionary(x => x.Length, x => x)|};
+                    return items.Where(x => x.Length > 0).{|SLQ102:ToDictionary(x => x.Length, x => x)|};
                 }
             }
             """;
@@ -61,7 +61,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => x, EqualityComparer<int>.Default)|};
+                    return items.{|SLQ102:ToDictionary(x => x.Length, x => x, EqualityComparer<int>.Default)|};
                 }
             }
             """;
@@ -82,7 +82,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ1002:ToDictionary(items, x => x.Length, x => x)|};
+                    return Enumerable.{|SLQ102:ToDictionary(items, x => x.Length, x => x)|};
                 }
             }
             """;
@@ -103,7 +103,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return System.Linq.Enumerable.{|SLQ1002:ToDictionary(items, x => x.Length, x => x)|};
+                    return System.Linq.Enumerable.{|SLQ102:ToDictionary(items, x => x.Length, x => x)|};
                 }
             }
             """;
@@ -124,7 +124,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => (string)x)|};
+                    return items.{|SLQ102:ToDictionary(x => x.Length, x => (string)x)|};
                 }
             }
             """;
@@ -147,7 +147,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string?> MyMethod(IEnumerable<string?> items)
                 {
-                    return items.{|SLQ1002:ToDictionary(x => x!.Length, x => x)|};
+                    return items.{|SLQ102:ToDictionary(x => x!.Length, x => x)|};
                 }
             }
             """;
@@ -191,7 +191,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<string, T> MyMethod<T>(IEnumerable<T> items)
                 {
-                    return items.{|SLQ1002:ToDictionary(x => x.ToString(), x => x)|};
+                    return items.{|SLQ102:ToDictionary(x => x.ToString(), x => x)|};
                 }
             }
             """;
@@ -213,8 +213,8 @@ public class RedundantElementSelectorAnalyzerTests
                 public static (Dictionary<int, string> Words, Dictionary<string, int> Numbers) MyMethod(
                     IEnumerable<string> words, IEnumerable<int> numbers)
                 {
-                    var dictionary = words.{|SLQ1002:ToDictionary(x => x.Length, x => x)|};
-                    var other = numbers.{|SLQ1002:ToDictionary(x => x.ToString(), x => x)|};
+                    var dictionary = words.{|SLQ102:ToDictionary(x => x.Length, x => x)|};
+                    var other = numbers.{|SLQ102:ToDictionary(x => x.ToString(), x => x)|};
                     return (dictionary, other);
                 }
             }
@@ -236,7 +236,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToDictionary(x => x.Length, x => { return x; })|};
+                    return items.{|SLQ102:ToDictionary(x => x.Length, x => { return x; })|};
                 }
             }
             """;
@@ -399,7 +399,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static ILookup<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToLookup(x => x.Length, x => x)|};
+                    return items.{|SLQ102:ToLookup(x => x.Length, x => x)|};
                 }
             }
             """;
@@ -420,7 +420,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static ILookup<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Where(x => x.Length > 0).{|SLQ1002:ToLookup(x => x.Length, x => x)|};
+                    return items.Where(x => x.Length > 0).{|SLQ102:ToLookup(x => x.Length, x => x)|};
                 }
             }
             """;
@@ -441,7 +441,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static ILookup<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToLookup(x => x.Length, x => x, EqualityComparer<int>.Default)|};
+                    return items.{|SLQ102:ToLookup(x => x.Length, x => x, EqualityComparer<int>.Default)|};
                 }
             }
             """;
@@ -462,7 +462,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static ILookup<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ1002:ToLookup(items, x => x.Length, x => x)|};
+                    return Enumerable.{|SLQ102:ToLookup(items, x => x.Length, x => x)|};
                 }
             }
             """;
@@ -483,7 +483,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static ILookup<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToLookup(x => x.Length, x => (string)x)|};
+                    return items.{|SLQ102:ToLookup(x => x.Length, x => (string)x)|};
                 }
             }
             """;
@@ -506,7 +506,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static ILookup<int, string?> MyMethod(IEnumerable<string?> items)
                 {
-                    return items.{|SLQ1002:ToLookup(x => x!.Length, x => x)|};
+                    return items.{|SLQ102:ToLookup(x => x!.Length, x => x)|};
                 }
             }
             """;
@@ -550,7 +550,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static ILookup<int, string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:ToLookup(x => x.Length, x => { return x; })|};
+                    return items.{|SLQ102:ToLookup(x => x.Length, x => { return x; })|};
                 }
             }
             """;
@@ -634,7 +634,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:GroupBy(x => x.Length, x => x)|};
+                    return items.{|SLQ102:GroupBy(x => x.Length, x => x)|};
                 }
             }
             """;
@@ -655,7 +655,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Where(x => x.Length > 0).{|SLQ1002:GroupBy(x => x.Length, x => x)|};
+                    return items.Where(x => x.Length > 0).{|SLQ102:GroupBy(x => x.Length, x => x)|};
                 }
             }
             """;
@@ -676,7 +676,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:GroupBy(x => x.Length, x => x, EqualityComparer<int>.Default)|};
+                    return items.{|SLQ102:GroupBy(x => x.Length, x => x, EqualityComparer<int>.Default)|};
                 }
             }
             """;
@@ -697,7 +697,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ1002:GroupBy(items, x => x.Length, x => x)|};
+                    return Enumerable.{|SLQ102:GroupBy(items, x => x.Length, x => x)|};
                 }
             }
             """;
@@ -718,7 +718,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:GroupBy(x => x.Length, x => (string)x)|};
+                    return items.{|SLQ102:GroupBy(x => x.Length, x => (string)x)|};
                 }
             }
             """;
@@ -741,7 +741,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static IEnumerable<IGrouping<int, string?>> MyMethod(IEnumerable<string?> items)
                 {
-                    return items.{|SLQ1002:GroupBy(x => x!.Length, x => x)|};
+                    return items.{|SLQ102:GroupBy(x => x!.Length, x => x)|};
                 }
             }
             """;
@@ -785,7 +785,7 @@ public class RedundantElementSelectorAnalyzerTests
             {
                 public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ1002:GroupBy(x => x.Length, x => { return x; })|};
+                    return items.{|SLQ102:GroupBy(x => x.Length, x => { return x; })|};
                 }
             }
             """;

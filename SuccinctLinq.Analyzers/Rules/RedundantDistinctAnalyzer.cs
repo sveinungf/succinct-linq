@@ -12,7 +12,7 @@ namespace SuccinctLinq.Analyzers.Rules;
 public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ1001",
+        id: "SLQ101",
         title: "Distinct call is redundant",
         messageFormat: "The Distinct call is redundant; the following ToHashSet call removes duplicates",
         category: "Redundancy",
