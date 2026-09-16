@@ -4,7 +4,6 @@ using Microsoft.CodeAnalysis.Diagnostics;
 using Microsoft.CodeAnalysis.Operations;
 using SuccinctLinq.Analyzers.Extensions;
 using System.Collections.Immutable;
-using System.Globalization;
 
 namespace SuccinctLinq.Analyzers.Rules;
 
@@ -14,7 +13,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ202",
         title: "Select can be simplified",
-        messageFormat: "Select can be simplified to Index({0})",
+        messageFormat: "Select can be simplified to Index()",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -40,7 +39,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
     {
         if (context.Operation is not IInvocationOperation select ||
             !select.TargetMethod.IsSelectMethod ||
-            !TryGetIndexOffset(select, out var startIndex))
+            !TryGetElementAndIndex(select))
         {
             return;
         }
@@ -49,14 +48,11 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
             return;
 
         var location = invocation.GetMethodCallLocation();
-        var argument = startIndex == 0 ? "" : startIndex.ToString(CultureInfo.InvariantCulture);
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, argument));
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
-    private static bool TryGetIndexOffset(IInvocationOperation select, out int startIndex)
+    private static bool TryGetElementAndIndex(IInvocationOperation select)
     {
-        startIndex = 0;
-
         var argument = select.GetArgumentAtOrDefault(1);
         while (argument is IDelegateCreationOperation creation)
         {
@@ -98,81 +94,20 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         if (first is null || second is null)
             return false;
 
-        return TryMatchElementAndIndex(first, second, element, index, out startIndex);
+        return TryMatchElementAndIndex(first, second, element, index);
     }
 
     private static bool TryMatchElementAndIndex(
         IOperation first,
         IOperation second,
         IParameterSymbol element,
-        IParameterSymbol index,
-        out int startIndex)
+        IParameterSymbol index)
     {
-        startIndex = 0;
-
         // Index() yields the element unchanged and an int index, so the
         // element and the index must each be referenced without any
         // conversion; a conversion such as (string)x or (long)i would
         // change a result type.
-        if (first.ReferencesParameter(element) &&
-            IsIndexWithOffset(second, index, out var elementFirstOffset))
-        {
-            startIndex = elementFirstOffset;
-            return true;
-        }
-
-        if (second.ReferencesParameter(element) &&
-            IsIndexWithOffset(first, index, out var indexFirstOffset))
-        {
-            startIndex = indexFirstOffset;
-            return true;
-        }
-
-        return false;
-    }
-
-    private static bool IsIndexWithOffset(IOperation operation, IParameterSymbol index, out int offset)
-    {
-        offset = 0;
-
-        if (operation.ReferencesParameter(index))
-            return true;
-
-        IOperation? constant = null;
-        var isSubtraction = false;
-
-        if (operation is IBinaryOperation { OperatorKind: BinaryOperatorKind.Add } addition)
-        {
-            if (addition.LeftOperand.ReferencesParameter(index))
-                constant = addition.RightOperand;
-            else if (addition.RightOperand.ReferencesParameter(index))
-                constant = addition.LeftOperand;
-        }
-        else if (operation is IBinaryOperation { OperatorKind: BinaryOperatorKind.Subtract } subtraction)
-        {
-            // Only a form such as (i - 1, x) can be expressed as Index(n); (1 - i, x) cannot.
-            if (subtraction.LeftOperand.ReferencesParameter(index))
-            {
-                constant = subtraction.RightOperand;
-                isSubtraction = true;
-            }
-        }
-
-        if (constant is null)
-            return false;
-
-        constant = constant.UnwrapConversions();
-
-        if (constant is not ILiteralOperation
-            {
-                Type.SpecialType: SpecialType.System_Int32,
-                ConstantValue: { HasValue: true, Value: int value }
-            })
-        {
-            return false;
-        }
-
-        offset = isSubtraction ? -value : value;
-        return true;
+        return first.ReferencesParameter(element) && second.ReferencesParameter(index)
+            || second.ReferencesParameter(element) && first.ReferencesParameter(index);
     }
 }
