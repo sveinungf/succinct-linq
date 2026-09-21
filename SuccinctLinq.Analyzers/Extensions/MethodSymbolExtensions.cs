@@ -48,7 +48,7 @@ internal static class MethodSymbolExtensions
             HasElementSelectorParameter: true
         };
 
-        public bool IsOneParameterSelectMethod => symbol is
+        private bool IsOneParameterSelectMethod => symbol is
         {
             Name: "Select",
             ContainingType.IsSystemLinqEnumerable: true,
@@ -61,6 +61,8 @@ internal static class MethodSymbolExtensions
             ContainingType.IsSystemLinqEnumerable: true,
             HasFuncWithArity3Parameter: true
         };
+
+        public bool IsSelectMethod => symbol.IsOneParameterSelectMethod || symbol.IsTwoParameterSelectMethod;
 
         private bool HasOptionalComparerParameter =>
             symbol.Parameters.Length is 1 or 2

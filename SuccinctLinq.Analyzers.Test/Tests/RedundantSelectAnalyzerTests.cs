@@ -269,7 +269,7 @@ public class RedundantSelectAnalyzerTests
     }
 
     [Fact]
-    public Task Select_WithIndexSelectorReturningElement_NoWarning()
+    public Task Select_WithIndexSelectorReturningElement_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
@@ -280,7 +280,7 @@ public class RedundantSelectAnalyzerTests
             {
                 public static IEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Select((x, i) => x);
+                    return items.{|SLQ103:Select((x, i) => x)|};
                 }
             }
             """;

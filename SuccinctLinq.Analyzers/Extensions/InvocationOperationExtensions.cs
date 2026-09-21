@@ -9,14 +9,18 @@ internal static class InvocationOperationExtensions
     {
         public IOperation? GetArgumentAtOrDefault(int index) => operation.Arguments.ElementAtOrDefault(index)?.Value;
 
-        public bool HasIdentitySelector(int argumentIndex)
+        public bool HasIdentitySelector(int argumentIndex, SymbolEqualityComparer? comparer = null)
         {
+            ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(argumentIndex, 0);
+
             var method = operation.TargetMethod;
 
-            // The element type must equal the source type (including nullability),
+            // The element type must equal the source type,
             // otherwise the selector is not the identity function.
+            var actualComparer = comparer ?? SymbolEqualityComparer.IncludeNullability;
+
             if (method.TypeArguments.Length < argumentIndex + 1 ||
-                !SymbolEqualityComparer.IncludeNullability.Equals(method.TypeArguments[0], method.TypeArguments[argumentIndex]))
+                !actualComparer.Equals(method.TypeArguments[0], method.TypeArguments[argumentIndex]))
             {
                 return false;
             }

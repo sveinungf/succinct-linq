@@ -39,7 +39,7 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
     {
         if (context.Operation is not IInvocationOperation orderBy ||
             !orderBy.TargetMethod.IsOrderByMethod ||
-            !HasIdentityKeySelector(orderBy))
+            !orderBy.HasIdentitySelector(1, SymbolEqualityComparer.Default))
         {
             return;
         }
@@ -49,25 +49,5 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
 
         var location = invocation.GetMethodCallLocation();
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
-    }
-
-    private static bool HasIdentityKeySelector(IInvocationOperation orderBy)
-    {
-        // The key type must equal the element type, otherwise the key
-        // selector is not the identity function.
-        var method = orderBy.TargetMethod;
-        if (method.Arity < 2 ||
-            !SymbolEqualityComparer.Default.Equals(method.TypeArguments[0], method.TypeArguments[1]))
-        {
-            return false;
-        }
-
-        var argument = orderBy.GetArgumentAtOrDefault(1);
-        while (argument is IDelegateCreationOperation creation)
-        {
-            argument = creation.Target;
-        }
-
-        return argument is IAnonymousFunctionOperation lambda && lambda.IsIdentityFunction();
     }
 }
