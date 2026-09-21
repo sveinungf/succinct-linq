@@ -8,16 +8,16 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
+public sealed class RedundantSelectAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ102",
-        title: "Redundant element selector",
-        messageFormat: "The element selector (x => x) is redundant and can be removed",
+        id: "SLQ103",
+        title: "Select call is redundant",
+        messageFormat: "The identity element selector makes the Select call redundant and it can be removed",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "An element selector (x => x) that simply returns the source element is redundant; using the overload without an element selector is equivalent.");
+        description: "A Select call whose selector simply returns the source element (x => x) is redundant and can be removed.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -32,16 +32,14 @@ public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation call ||
-            !call.TargetMethod.IsToDictionaryMethod &&
-            !call.TargetMethod.IsToLookupMethod &&
-            !call.TargetMethod.IsGroupByMethod ||
-            !call.HasIdentitySelector(2))
+        if (context.Operation is not IInvocationOperation select ||
+            !select.TargetMethod.IsOneParameterSelectMethod ||
+            !select.HasIdentitySelector(1))
         {
             return;
         }
 
-        if (call.Syntax is not InvocationExpressionSyntax invocation)
+        if (select.Syntax is not InvocationExpressionSyntax invocation)
             return;
 
         var location = invocation.GetMethodCallLocation();

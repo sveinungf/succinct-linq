@@ -38,8 +38,8 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
     private static void Analyze(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation select ||
-            !select.TargetMethod.IsSelectMethod ||
-            !TryGetElementAndIndex(select))
+            !select.TargetMethod.IsTwoParameterSelectMethod ||
+            !HasTwoParameterIdentitySelector(select))
         {
             return;
         }
@@ -51,7 +51,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
     }
 
-    private static bool TryGetElementAndIndex(IInvocationOperation select)
+    private static bool HasTwoParameterIdentitySelector(IInvocationOperation select)
     {
         var argument = select.GetArgumentAtOrDefault(1);
         while (argument is IDelegateCreationOperation creation)
@@ -94,10 +94,10 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
         if (first is null || second is null)
             return false;
 
-        return TryMatchElementAndIndex(first, second, element, index);
+        return HasTwoParameterIdentitySelector(first, second, element, index);
     }
 
-    private static bool TryMatchElementAndIndex(
+    private static bool HasTwoParameterIdentitySelector(
         IOperation first,
         IOperation second,
         IParameterSymbol element,
