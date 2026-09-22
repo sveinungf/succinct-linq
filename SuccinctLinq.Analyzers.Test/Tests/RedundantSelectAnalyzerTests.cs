@@ -288,4 +288,68 @@ public class RedundantSelectAnalyzerTests
         // Act & Assert
         return context.RunAsync(Token);
     }
+
+    [Fact]
+    public Task Select_IndexReturningSelector_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<int> MyMethod(IEnumerable<int> items)
+                {
+                    return items.Select((i, x) => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_QuerySyntax_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return from x in items
+                           select x;
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_QueryableSelect_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IQueryable<string> MyMethod(IQueryable<string> query)
+                {
+                    return query.Select(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
 }
