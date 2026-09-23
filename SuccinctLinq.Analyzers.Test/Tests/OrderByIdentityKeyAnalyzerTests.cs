@@ -93,6 +93,48 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ201:OrderBy(keySelector: x => x, source: items)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_OutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ201:OrderBy(comparer: StringComparer.Ordinal, keySelector: x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderBy_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
@@ -126,6 +168,27 @@ public class OrderByIdentityKeyAnalyzerTests
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
                     return items.{|SLQ201:OrderBy(x => (string)x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_ValueChangingCast_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<double> MyMethod(IEnumerable<double> items)
+                {
+                    return items.OrderBy(x => (double)(int)x);
                 }
             }
             """;

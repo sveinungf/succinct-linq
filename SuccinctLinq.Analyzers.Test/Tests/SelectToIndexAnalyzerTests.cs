@@ -305,6 +305,48 @@ public class SelectToIndexAnalyzerTests
     }
 
     [Fact]
+    public Task Select_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ202:Select(selector: (x, i) => (x, i), source: items)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_NamedSelector_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ202:Select(selector: (x, i) => (x, i))|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_ElementFirstTupleFullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
