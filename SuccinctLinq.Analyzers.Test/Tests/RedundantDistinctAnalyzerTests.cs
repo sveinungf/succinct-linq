@@ -218,6 +218,69 @@ public class RedundantDistinctAnalyzerTests
     }
 
     [Fact]
+    public Task Distinct_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ101:Distinct(comparer: null, source: items)|}.ToHashSet();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToHashSet_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.ToHashSet(comparer: null, source: Enumerable.{|SLQ101:Distinct(items)|});
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Distinct_SameStringComparerInToHashSet_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ101:Distinct(comparer: StringComparer.OrdinalIgnoreCase, source: items)|}.ToHashSet(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Distinct_MultipleCalls_ReportWarningForEach()
     {
         // Arrange

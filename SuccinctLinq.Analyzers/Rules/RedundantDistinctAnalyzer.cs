@@ -40,7 +40,7 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var distinct = toHashSet.Arguments[0].Value switch
+        var distinct = toHashSet.GetArgumentAtOrDefault(0) switch
         {
             IInvocationOperation { TargetMethod.IsDistinctMethod: true } directInvocation => directInvocation,
             ILocalReferenceOperation localReference => GetDistinctInitializer(localReference),
@@ -170,21 +170,21 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
         var distinctComparer = distinct.GetArgumentAtOrDefault(1);
         var toHashSetComparer = toHashSet.GetArgumentAtOrDefault(1);
 
-        if (distinctComparer is null || toHashSetComparer is null)
-            return distinctComparer is null && toHashSetComparer is null;
-
-        distinctComparer = distinctComparer.UnwrapConversions();
-        toHashSetComparer = toHashSetComparer.UnwrapConversions();
-
-        // A null or default comparer argument falls back to the default
-        // equality comparer, so both arguments use the same comparer.
-        if (distinctComparer.IsNullOrDefault || toHashSetComparer.IsNullOrDefault)
-            return distinctComparer.IsNullOrDefault && toHashSetComparer.IsNullOrDefault;
-
         // Only direct references to a built-in StringComparer member are
         // known to always denote the same comparer instance.
-        return distinctComparer.TryGetStringComparerMember(out var distinctMember)
-            && toHashSetComparer.TryGetStringComparerMember(out var toHashSetMember)
-            && SymbolEqualityComparer.Default.Equals(distinctMember, toHashSetMember);
+        if (distinctComparer is { } distinctValue &&
+            toHashSetComparer is { } toHashSetValue &&
+            distinctValue.UnwrapConversions().TryGetStringComparerMember(out var distinctMember) &&
+            toHashSetValue.UnwrapConversions().TryGetStringComparerMember(out var toHashSetMember))
+        {
+            return SymbolEqualityComparer.Default.Equals(distinctMember, toHashSetMember);
+        }
+
+        // Otherwise both calls must fall back to the default equality
+        // comparer; a missing, null, or default comparer argument all do.
+        return IsDefaultComparer(distinctComparer) && IsDefaultComparer(toHashSetComparer);
     }
+
+    private static bool IsDefaultComparer(IOperation? comparer) =>
+        comparer is null || comparer.UnwrapConversions().IsNullOrDefault;
 }

@@ -92,6 +92,27 @@ public class RedundantElementSelectorAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.{|SLQ102:ToDictionary(keySelector: x => x.Length, elementSelector: x => x, source: items)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange

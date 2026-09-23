@@ -7,7 +7,28 @@ internal static class InvocationOperationExtensions
 {
     extension(IInvocationOperation operation)
     {
-        public IOperation? GetArgumentAtOrDefault(int index) => operation.Arguments.ElementAtOrDefault(index)?.Value;
+        public IOperation? GetArgumentAtOrDefault(int index)
+        {
+            ArgumentOutOfRangeException.ThrowIfNegative(index);
+
+            var method = operation.TargetMethod;
+
+            if (index >= method.Parameters.Length)
+                return null;
+
+            // The arguments are ordered as they appear in the source, so
+            // out-of-order named arguments may not match the parameter
+            // declaration order; resolve the argument by its parameter.
+            var parameter = method.Parameters[index];
+
+            foreach (var argument in operation.Arguments)
+            {
+                if (SymbolEqualityComparer.Default.Equals(argument.Parameter, parameter))
+                    return argument.Value;
+            }
+
+            return null;
+        }
 
         public bool HasIdentitySelector(int argumentIndex, SymbolEqualityComparer? comparer = null)
         {
