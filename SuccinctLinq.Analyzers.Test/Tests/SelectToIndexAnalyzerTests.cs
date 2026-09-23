@@ -20,7 +20,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (i, x))|};
+                    return items.{|SLQ201:Select((x, i) => (i, x))|};
                 }
             }
             """;
@@ -41,7 +41,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(int Index, string Item)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (Index: i, Item: x))|};
+                    return items.{|SLQ201:Select((x, i) => (Index: i, Item: x))|};
                 }
             }
             """;
@@ -62,7 +62,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(int, string)> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ202:Select(items, (x, i) => (i, x))|};
+                    return Enumerable.{|SLQ201:Select(items, (x, i) => (i, x))|};
                 }
             }
             """;
@@ -146,7 +146,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (x, i))|};
+                    return items.{|SLQ201:Select((x, i) => (x, i))|};
                 }
             }
             """;
@@ -167,7 +167,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<int> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Where(x => x.Length > 0).{|SLQ202:Select((x, i) => (x, i))|}.Select(t => t.Item2);
+                    return items.Where(x => x.Length > 0).{|SLQ201:Select((x, i) => (x, i))|}.Select(t => t.Item2);
                 }
             }
             """;
@@ -211,7 +211,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string?, int)> MyMethod(IEnumerable<string?> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (x, i))|};
+                    return items.{|SLQ201:Select((x, i) => (x, i))|};
                 }
             }
             """;
@@ -232,7 +232,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string Item, int Index)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (Item: x, Index: i))|};
+                    return items.{|SLQ201:Select((x, i) => (Item: x, Index: i))|};
                 }
             }
             """;
@@ -253,7 +253,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => { return (x, i); })|};
+                    return items.{|SLQ201:Select((x, i) => { return (x, i); })|};
                 }
             }
             """;
@@ -274,7 +274,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(T, int)> MyMethod<T>(IEnumerable<T> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (x, i))|};
+                    return items.{|SLQ201:Select((x, i) => (x, i))|};
                 }
             }
             """;
@@ -295,7 +295,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ202:Select(items, (x, i) => (x, i))|};
+                    return Enumerable.{|SLQ201:Select(items, (x, i) => (x, i))|};
                 }
             }
             """;
@@ -316,7 +316,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ202:Select(selector: (x, i) => (x, i), source: items)|};
+                    return Enumerable.{|SLQ201:Select(selector: (x, i) => (x, i), source: items)|};
                 }
             }
             """;
@@ -337,7 +337,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select(selector: (x, i) => (x, i))|};
+                    return items.{|SLQ201:Select(selector: (x, i) => (x, i))|};
                 }
             }
             """;
@@ -358,7 +358,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
-                    return System.Linq.Enumerable.{|SLQ202:Select(items, (x, i) => (x, i))|};
+                    return System.Linq.Enumerable.{|SLQ201:Select(items, (x, i) => (x, i))|};
                 }
             }
             """;
@@ -380,8 +380,8 @@ public class SelectToIndexAnalyzerTests
                 public static (IEnumerable<(string, int)> Words, IEnumerable<(int, int)> Numbers) MyMethod(
                     IEnumerable<string> words, IEnumerable<int> numbers)
                 {
-                    var indexedWords = words.{|SLQ202:Select((x, i) => (x, i))|};
-                    var indexedNumbers = numbers.{|SLQ202:Select((x, i) => (x, i))|};
+                    var indexedWords = words.{|SLQ201:Select((x, i) => (x, i))|};
+                    var indexedNumbers = numbers.{|SLQ201:Select((x, i) => (x, i))|};
                     return (indexedWords, indexedNumbers);
                 }
             }
@@ -403,7 +403,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string Value, int Count)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (Value: x, Count: i))|};
+                    return items.{|SLQ201:Select((x, i) => (Value: x, Count: i))|};
                 }
             }
             """;
@@ -424,7 +424,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(int Value, string Element)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (Value: i, Element: x))|};
+                    return items.{|SLQ201:Select((x, i) => (Value: i, Element: x))|};
                 }
             }
             """;
@@ -445,7 +445,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<object> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => new { x, i })|};
+                    return items.{|SLQ201:Select((x, i) => new { x, i })|};
                 }
             }
             """;
@@ -466,7 +466,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<object> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => new { i, x })|};
+                    return items.{|SLQ201:Select((x, i) => new { i, x })|};
                 }
             }
             """;
@@ -487,7 +487,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<object> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => new { Value = x, Count = i })|};
+                    return items.{|SLQ201:Select((x, i) => new { Value = x, Count = i })|};
                 }
             }
             """;
@@ -788,7 +788,7 @@ public class SelectToIndexAnalyzerTests
             {
                 public static IEnumerable<(string, int)> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:Select((x, i) => (x, i))|};
+                    return items.{|SLQ201:Select((x, i) => (x, i))|};
                 }
             }
             """;

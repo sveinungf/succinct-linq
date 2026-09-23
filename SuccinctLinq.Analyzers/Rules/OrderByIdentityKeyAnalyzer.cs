@@ -11,7 +11,7 @@ namespace SuccinctLinq.Analyzers.Rules;
 public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ201",
+        id: "SLQ202",
         title: "OrderBy can be simplified",
         messageFormat: "OrderBy can be simplified to Order without the (x => x)",
         category: "Simplification",

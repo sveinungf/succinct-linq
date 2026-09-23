@@ -38,8 +38,8 @@ Install-Package SuccinctLinq.Analyzers
 | [SLQ101](#slq101-distinct-call-is-redundant) | Redundancy | Warning | A `Distinct` call immediately before a `ToHashSet` call |
 | [SLQ102](#slq102-redundant-element-selector) | Redundancy | Warning | An identity element selector (`x => x`) on `ToDictionary`, `ToLookup`, or `GroupBy` |
 | [SLQ103](#slq103-select-call-is-redundant) | Redundancy | Warning | A `Select` call with an identity selector (`x => x`) |
-| [SLQ201](#slq201-orderby-can-be-simplified) | Simplification | Warning | An `OrderBy` with the identity key selector (`x => x`) |
-| [SLQ202](#slq202-select-can-be-simplified) | Simplification | Warning | A `Select` that only yields the element and its index |
+| [SLQ201](#slq201-select-can-be-simplified) | Simplification | Warning | A `Select` that only yields the element and its index |
+| [SLQ202](#slq202-orderby-can-be-simplified) | Simplification | Warning | An `OrderBy` with the identity key selector (`x => x`) |
 
 ### SLQ101: Distinct call is redundant
 
@@ -82,21 +82,7 @@ var nonEmpty = items.Where(x => x.Length > 0).Select(x => x);
 var nonEmpty = items.Where(x => x.Length > 0);
 ```
 
-### SLQ201: OrderBy can be simplified
-
-An `OrderBy` with the identity function (`x => x`) sorts using the default comparer and is equivalent to the more concise `Order` method, available in .NET 7 and later. 
-The rule only applies to projects targeting .NET 7+.
-
-```csharp
-// Before
-// SLQ201: OrderBy can be simplified to Order without the (x => x)
-var sorted = items.OrderBy(x => x);
-
-// After
-var sorted = items.Order();
-```
-
-### SLQ202: Select can be simplified
+### SLQ201: Select can be simplified
 
 A `Select` that only returns the element and its index, such as `(x, i) => (x, i)` or `(x, i) => new { x, i }`, can be replaced with the more concise `Index` method, 
 available in .NET 9 and later. The rule only applies to projects targeting .NET 9+. Note that `Index` yields the index before the element.
@@ -108,4 +94,18 @@ var indexed = items.Select((item, index) => (index, item));
 
 // After
 var indexed = items.Index();
+```
+
+### SLQ202: OrderBy can be simplified
+
+An `OrderBy` with the identity function (`x => x`) sorts using the default comparer and is equivalent to the more concise `Order` method, available in .NET 7 and later. 
+The rule only applies to projects targeting .NET 7+.
+
+```csharp
+// Before
+// SLQ201: OrderBy can be simplified to Order without the (x => x)
+var sorted = items.OrderBy(x => x);
+
+// After
+var sorted = items.Order();
 ```
