@@ -84,8 +84,25 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
   `ISymbol.ToDisplayString(SymbolDisplayFormat)` — check type names and
   namespaces instead of building display strings.
 - Code style is enforced at build time by `.editorconfig` and a large set of
-  analyzers (`AnalysisLevel` 10-all, `EnforceCodeStyleInBuild`). Source files
-  use CRLF line endings.
+  analyzers (`AnalysisLevel` 10-all, `EnforceCodeStyleInBuild`).
+
+## Line endings
+
+- Git stores every file with LF line endings (verify with
+  `git ls-files --eol`; the index shows `i/lf`), and `.editorconfig` declares
+  `end_of_line = lf`. Keep files LF so `git diff` stays minimal; never
+  convert files to CRLF.
+- Much of the worktree is actually CRLF on disk, yet `git status` shows it
+  clean: `core.checkstat=minimal` trusts cached stat info, so an untouched
+  CRLF file is never compared against the LF index. The moment a file is
+  modified, git re-checks it and the mismatch appears as a whole-file diff
+  (every line replaced). Editing tools can also silently rewrite line
+  endings (a fresh write may produce LF; an edit may keep the file's
+  existing CRLF).
+- After creating or editing files, check for stray CR characters
+  (`grep -c $'\r' <file>`) and review `git diff --stat`. If whole files show
+  as changed, normalize with `sed -i 's/\r$//' <file>` and re-run
+  `git diff --stat` to confirm only the intended lines are modified.
 
 ## CI
 
