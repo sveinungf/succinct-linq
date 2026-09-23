@@ -18,7 +18,10 @@ internal static class AnonymousFunctionOperationExtensions
             if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
                 return false;
 
-            return value.UnwrapConversions().ReferencesParameter(parameter);
+            // Only strip conversions that are guaranteed to yield the same
+            // element; a cast such as (double)(int)x compiles to conversions
+            // around a parameter reference but changes the value.
+            return value.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
     }
 }

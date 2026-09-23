@@ -197,6 +197,27 @@ public class RedundantElementSelectorAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_ValueChangingCast_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<double, double> MyMethod(IEnumerable<double> items)
+                {
+                    return items.ToDictionary(x => x, x => (double)(int)x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_IdentityElementSelectorNullableSource_ReportWarning()
     {
         // Arrange

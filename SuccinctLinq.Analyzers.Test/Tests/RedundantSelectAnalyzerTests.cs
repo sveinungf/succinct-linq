@@ -155,6 +155,27 @@ public class RedundantSelectAnalyzerTests
     }
 
     [Fact]
+    public Task Select_BoxUnboxRoundTripCast_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<int> MyMethod(IEnumerable<int> items)
+                {
+                    return items.{|SLQ103:Select(x => (int)(object)x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_IdentitySelectorNullableSource_ReportWarning()
     {
         // Arrange
@@ -192,6 +213,54 @@ public class RedundantSelectAnalyzerTests
                 public static IEnumerable<string> MyMethod(IEnumerable<string?> items)
                 {
                     return items.Select(x => x!);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_ValueChangingCast_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<double> MyMethod(IEnumerable<double> items)
+                {
+                    return items.Select(x => (double)(int)x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_UserDefinedConversionCast_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public struct Wrapper
+            {
+                public static explicit operator int(Wrapper wrapper) => 0;
+                public static explicit operator Wrapper(int value) => default;
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<int> MyMethod(IEnumerable<int> items)
+                {
+                    return items.Select(x => (int)(Wrapper)x);
                 }
             }
             """;

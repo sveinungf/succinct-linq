@@ -177,6 +177,27 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_ValueChangingCast_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<double> MyMethod(IEnumerable<double> items)
+                {
+                    return items.OrderBy(x => (double)(int)x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderBy_GenericSource_ReportWarning()
     {
         // Arrange
