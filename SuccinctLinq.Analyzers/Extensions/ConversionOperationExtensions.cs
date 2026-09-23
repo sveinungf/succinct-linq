@@ -34,7 +34,8 @@ internal static class ConversionOperationExtensions
         }
 
         private static bool IsValueType(ITypeSymbol type) =>
-            type.TypeKind is TypeKind.Struct or TypeKind.Enum;
+            type.TypeKind is TypeKind.Struct or TypeKind.Enum ||
+            type is ITypeParameterSymbol { HasValueTypeConstraint: true };
 
         private static bool IsBoxingTarget(ITypeSymbol type) =>
             type.TypeKind == TypeKind.Interface || type.SpecialType == SpecialType.System_Object;
