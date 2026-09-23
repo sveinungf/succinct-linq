@@ -11,7 +11,7 @@
     <Version>0.1.0</Version>
     <Authors>sveinungf</Authors>
     <Copyright>Copyright (c) 2026-present Sveinung</Copyright>
-    <Description>TODO</Description>
+    <Description>Succinct LINQ is a set of Roslyn analyzers for C# that flag redundant and verbose LINQ expressions and suggest more concise equivalents.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sveinungf/succinct-linq</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
