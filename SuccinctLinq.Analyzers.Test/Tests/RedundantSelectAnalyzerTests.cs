@@ -92,6 +92,27 @@ public class RedundantSelectAnalyzerTests
     }
 
     [Fact]
+    public Task Select_NamedSelector_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ103:Select(selector: x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange

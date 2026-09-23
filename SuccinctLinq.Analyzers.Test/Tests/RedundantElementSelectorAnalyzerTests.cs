@@ -113,6 +113,48 @@ public class RedundantElementSelectorAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_OutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ102:ToDictionary(elementSelector: x => x, keySelector: x => x.Length)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_OutOfOrderNamedArgumentsWithComparer_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ102:ToDictionary(keySelector: x => x.Length, comparer: EqualityComparer<int>.Default, elementSelector: x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
@@ -493,6 +535,27 @@ public class RedundantElementSelectorAnalyzerTests
     }
 
     [Fact]
+    public Task ToLookup_OutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static ILookup<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ102:ToLookup(elementSelector: x => x, keySelector: x => x.Length)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToLookup_IdentityElementSelectorWithSameTypeCast_ReportWarning()
     {
         // Arrange
@@ -719,6 +782,27 @@ public class RedundantElementSelectorAnalyzerTests
                 public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
                 {
                     return Enumerable.{|SLQ102:GroupBy(items, x => x.Length, x => x)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_OutOfOrderNamedArguments_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<IGrouping<int, string>> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ102:GroupBy(elementSelector: x => x, keySelector: x => x.Length)|};
                 }
             }
             """;
