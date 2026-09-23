@@ -239,6 +239,48 @@ public class RedundantSelectAnalyzerTests
     }
 
     [Fact]
+    public Task Select_UnboxCastThenBoxOnObjectSource_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<object> items)
+                {
+                    return items.Select(x => (object)(int)x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_UnboxCastThenBoxOnObjectSourceWithStructConstraint_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod<T>(IEnumerable<object> items) where T : struct
+                {
+                    return items.Select(x => (object)(T)x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_IdentitySelectorNullableSource_ReportWarning()
     {
         // Arrange

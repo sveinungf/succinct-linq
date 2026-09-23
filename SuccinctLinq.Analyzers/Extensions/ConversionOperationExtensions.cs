@@ -28,8 +28,23 @@ internal static class ConversionOperationExtensions
                 if (conversion.Operand.Type is not { } source || conversion.Type is not { } target)
                     return false;
 
-                return (IsValueType(source) && IsBoxingTarget(target)) ||
-                    (IsBoxingTarget(source) && IsValueType(target));
+                if (IsBoxingTarget(source) && IsValueType(target))
+                {
+                    // An unboxing conversion preserves the element only when it
+                    // reverses a boxing of the same value type, e.g. (T)(object)x.
+                    // An unboxing without such an operand, such as (T)x in an
+                    // IEnumerable<object>, can throw InvalidCastException.
+                    return conversion.Operand is IConversionOperation
+                        {
+                            Operand.Type: { } boxed,
+                            Type: { } boxedTarget
+                        } &&
+                        IsValueType(boxed) &&
+                        IsBoxingTarget(boxedTarget) &&
+                        SymbolEqualityComparer.IncludeNullability.Equals(boxed, target);
+                }
+
+                return IsValueType(source) && IsBoxingTarget(target);
             }
         }
 
