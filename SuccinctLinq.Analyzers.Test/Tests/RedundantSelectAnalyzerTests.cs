@@ -155,6 +155,27 @@ public class RedundantSelectAnalyzerTests
     }
 
     [Fact]
+    public Task Select_ExplicitReferenceDowncast_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<object> items)
+                {
+                    return items.Select(x => (object)(string)x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Select_BoxUnboxRoundTripCast_ReportWarning()
     {
         // Arrange

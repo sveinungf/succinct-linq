@@ -8,7 +8,9 @@ internal static class ConversionOperationExtensions
     extension(IConversionOperation conversion)
     {
         // Only conversions that are guaranteed to yield the exact same element.
-        // Numeric, user-defined, and nullable conversions may change the element (e.g. (double)(int)x).
+        // Numeric, user-defined, and nullable conversions may change the element
+        // (e.g. (double)(int)x), and explicit reference downcasts may throw
+        // InvalidCastException (e.g. (string)x), so only implicit ones are kept.
         public bool PreservesElement
         {
             get
@@ -17,7 +19,7 @@ internal static class ConversionOperationExtensions
                 if (!data.Exists || data.IsUserDefined || data.IsNumeric || data.IsNullable)
                     return false;
 
-                if (data.IsIdentity || data.IsReference)
+                if (data.IsIdentity || (data.IsReference && data.IsImplicit))
                     return true;
 
                 // Otherwise the conversion is element-preserving only if it
