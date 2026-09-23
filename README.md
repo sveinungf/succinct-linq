@@ -85,11 +85,12 @@ var nonEmpty = items.Where(x => x.Length > 0);
 ### SLQ201: Select can be simplified
 
 A `Select` that only returns the element and its index, such as `(x, i) => (x, i)` or `(x, i) => new { x, i }`, can be replaced with the more concise `Index` method, 
-available in .NET 9 and later. The rule only applies to projects targeting .NET 9+. Note that `Index` yields the index before the element.
+available in .NET 9 and later. The rule only applies to projects targeting .NET 9+. Be aware that `Index` yields the index before the element, 
+so replacing with `Index` may require adapting the code to use the index first, such as `(x, i) => (i, x)`.
 
 ```csharp
 // Before
-// SLQ202: Select can be simplified to Index()
+// SLQ201: Select can be simplified to Index()
 var indexed = items.Select((item, index) => (index, item));
 
 // After
@@ -103,7 +104,7 @@ The rule only applies to projects targeting .NET 7+.
 
 ```csharp
 // Before
-// SLQ201: OrderBy can be simplified to Order without the (x => x)
+// SLQ202: OrderBy can be simplified to Order without the (x => x)
 var sorted = items.OrderBy(x => x);
 
 // After

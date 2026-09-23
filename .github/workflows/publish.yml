@@ -29,4 +29,4 @@ jobs:
       with:
         user: ${{ secrets.NUGET_USER }}
     - name: NuGet push
-      run: dotnet nuget push artifacts/SuccinctLinq.Analyzers.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push artifacts/SuccinctLinq.Analyzers.*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json
