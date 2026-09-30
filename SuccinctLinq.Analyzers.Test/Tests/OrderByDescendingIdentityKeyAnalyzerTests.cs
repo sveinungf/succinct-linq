@@ -5,15 +5,15 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class OrderByIdentityKeyAnalyzerTests
+public class OrderByDescendingIdentityKeyAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
     [Fact]
-    public Task OrderBy_IdentityLambda_ReportWarning()
+    public Task OrderByDescending_IdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -21,7 +21,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => x)|};
+                    return items.{|SLQ203:OrderByDescending(x => x)|};
                 }
             }
             """;
@@ -31,10 +31,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_IdentityLambdaInChain_ReportWarning()
+    public Task OrderByDescending_IdentityLambdaInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -42,7 +42,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IEnumerable<int> MyMethod(IEnumerable<string> items)
                 {
-                    return items.Where(x => x.Length > 0).{|SLQ202:OrderBy(x => x)|}.Select(x => x.Length);
+                    return items.Where(x => x.Length > 0).{|SLQ203:OrderByDescending(x => x)|}.Select(x => x.Length);
                 }
             }
             """;
@@ -52,10 +52,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_IdentityLambdaWithComparer_ReportWarning()
+    public Task OrderByDescending_IdentityLambdaWithComparer_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -63,7 +63,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => x, StringComparer.Ordinal)|};
+                    return items.{|SLQ203:OrderByDescending(x => x, StringComparer.Ordinal)|};
                 }
             }
             """;
@@ -73,10 +73,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_IdentityLambdaWithComparer_MessageMentionsComparer()
+    public Task OrderByDescending_IdentityLambdaWithComparer_MessageMentionsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -84,24 +84,24 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.OrderBy(x => x, StringComparer.Ordinal);
+                    return items.OrderByDescending(x => x, StringComparer.Ordinal);
                 }
             }
             """;
         context.TestState.ExpectedDiagnostics.Add(
-            new DiagnosticResult("SLQ202", DiagnosticSeverity.Warning)
-                .WithSpan("/0/Test1.cs", 7, 22, 7, 61)
-                .WithMessage("Use Order(comparer) instead"));
+            new DiagnosticResult("SLQ203", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 71)
+                .WithMessage("Use OrderDescending(comparer) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
     }
 
     [Fact]
-    public Task OrderBy_IdentityLambda_MessageOmitsComparer()
+    public Task OrderByDescending_IdentityLambda_MessageOmitsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -109,24 +109,24 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.OrderBy(x => x);
+                    return items.OrderByDescending(x => x);
                 }
             }
             """;
         context.TestState.ExpectedDiagnostics.Add(
-            new DiagnosticResult("SLQ202", DiagnosticSeverity.Warning)
-                .WithSpan("/0/Test1.cs", 7, 22, 7, 37)
-                .WithMessage("Use Order() instead"));
+            new DiagnosticResult("SLQ203", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 47)
+                .WithMessage("Use OrderDescending() instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
     }
 
     [Fact]
-    public Task OrderBy_StaticInvocation_ReportWarning()
+    public Task OrderByDescending_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -134,7 +134,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ202:OrderBy(items, x => x)|};
+                    return Enumerable.{|SLQ203:OrderByDescending(items, x => x)|};
                 }
             }
             """;
@@ -144,10 +144,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
+    public Task OrderByDescending_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -155,7 +155,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return Enumerable.{|SLQ202:OrderBy(keySelector: x => x, source: items)|};
+                    return Enumerable.{|SLQ203:OrderByDescending(keySelector: x => x, source: items)|};
                 }
             }
             """;
@@ -165,10 +165,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_OutOfOrderNamedArguments_ReportWarning()
+    public Task OrderByDescending_OutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -176,7 +176,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:OrderBy(comparer: StringComparer.Ordinal, keySelector: x => x)|};
+                    return items.{|SLQ203:OrderByDescending(comparer: StringComparer.Ordinal, keySelector: x => x)|};
                 }
             }
             """;
@@ -186,10 +186,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_FullyQualifiedStaticInvocation_ReportWarning()
+    public Task OrderByDescending_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -197,7 +197,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return System.Linq.Enumerable.{|SLQ202:OrderBy(items, x => x)|};
+                    return System.Linq.Enumerable.{|SLQ203:OrderByDescending(items, x => x)|};
                 }
             }
             """;
@@ -207,10 +207,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_IdentityLambdaWithSameTypeCast_ReportWarning()
+    public Task OrderByDescending_IdentityLambdaWithSameTypeCast_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -218,7 +218,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => (string)x)|};
+                    return items.{|SLQ203:OrderByDescending(x => (string)x)|};
                 }
             }
             """;
@@ -228,10 +228,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_ValueChangingCast_NoWarning()
+    public Task OrderByDescending_ValueChangingCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -239,7 +239,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<double> MyMethod(IEnumerable<double> items)
                 {
-                    return items.OrderBy(x => (double)(int)x);
+                    return items.OrderByDescending(x => (double)(int)x);
                 }
             }
             """;
@@ -249,10 +249,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_GenericSource_ReportWarning()
+    public Task OrderByDescending_GenericSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -260,7 +260,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<T> MyMethod<T>(IEnumerable<T> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => x)|};
+                    return items.{|SLQ203:OrderByDescending(x => x)|};
                 }
             }
             """;
@@ -270,10 +270,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_MultipleCalls_ReportWarningForEach()
+    public Task OrderByDescending_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -282,8 +282,8 @@ public class OrderByIdentityKeyAnalyzerTests
                 public static (IOrderedEnumerable<string> Words, IOrderedEnumerable<int> Numbers) MyMethod(
                     IEnumerable<string> words, IEnumerable<int> numbers)
                 {
-                    var orderedWords = words.{|SLQ202:OrderBy(x => x)|};
-                    var orderedNumbers = numbers.{|SLQ202:OrderBy(x => x)|};
+                    var orderedWords = words.{|SLQ203:OrderByDescending(x => x)|};
+                    var orderedNumbers = numbers.{|SLQ203:OrderByDescending(x => x)|};
                     return (orderedWords, orderedNumbers);
                 }
             }
@@ -294,10 +294,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_DifferentKeySelector_NoWarning()
+    public Task OrderByDescending_DifferentKeySelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -305,7 +305,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.OrderBy(x => x.Length);
+                    return items.OrderByDescending(x => x.Length);
                 }
             }
             """;
@@ -315,10 +315,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_DifferentKeyType_NoWarning()
+    public Task OrderByDescending_DifferentKeyType_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -326,7 +326,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.OrderBy(x => (object)x);
+                    return items.OrderByDescending(x => (object)x);
                 }
             }
             """;
@@ -336,10 +336,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_NullForgivingKeySelectorOnNullableValueSource_ReportWarning()
+    public Task OrderByDescending_NullForgivingKeySelectorOnNullableValueSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -349,7 +349,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<int?> MyMethod(IEnumerable<int?> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => x!)|};
+                    return items.{|SLQ203:OrderByDescending(x => x!)|};
                 }
             }
             """;
@@ -359,10 +359,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_NullForgivingKeySelectorOnNullableReferenceSource_ReportWarning()
+    public Task OrderByDescending_NullForgivingKeySelectorOnNullableReferenceSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -372,7 +372,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string?> MyMethod(IEnumerable<string?> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => x!)|};
+                    return items.{|SLQ203:OrderByDescending(x => x!)|};
                 }
             }
             """;
@@ -382,10 +382,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_IdentityLambdaOnNullableSource_ReportWarning()
+    public Task OrderByDescending_IdentityLambdaOnNullableSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -395,7 +395,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<int?> MyMethod(IEnumerable<int?> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => x)|};
+                    return items.{|SLQ203:OrderByDescending(x => x)|};
                 }
             }
             """;
@@ -405,10 +405,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_StatementBodyIdentityLambda_ReportWarning()
+    public Task OrderByDescending_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -416,7 +416,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => { return x; })|};
+                    return items.{|SLQ203:OrderByDescending(x => { return x; })|};
                 }
             }
             """;
@@ -426,10 +426,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_MethodGroupKeySelector_NoWarning()
+    public Task OrderByDescending_MethodGroupKeySelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -437,7 +437,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.OrderBy(Identity);
+                    return items.OrderByDescending(Identity);
                 }
 
                 public static T Identity<T>(T value) => value;
@@ -449,10 +449,108 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderByDescending_IdentityLambda_NoWarning()
+    public Task OrderBy_IdentityLambda_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ThenByDescending_IdentityLambda_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderByDescending(x => x.Length).ThenByDescending(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderDescending_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderDescending();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByDescending_WithNonKeySelectorParameter_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace System.Linq
+            {
+                public static class Enumerable
+                {
+                    public static IEnumerable<T> OrderByDescending<T>(this IEnumerable<T> items, Marker marker) => items;
+                }
+            }
+
+            public sealed class Marker
+            {
+            }
+
+            namespace MyNamespace
+            {
+                public static class MyClass
+                {
+                    public static IEnumerable<string> MyMethod(IEnumerable<string> items, Marker marker)
+                    {
+                        return items.OrderByDescending(marker);
+                    }
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByDescending_TargetFrameworkBeforeNet7_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>(
+            referenceAssemblies: ReferenceAssemblies.Net.Net60);
         context.TestCode = """
             namespace MyNamespace;
 
@@ -470,108 +568,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task ThenBy_IdentityLambda_NoWarning()
+    public Task OrderByDescending_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
-        context.TestCode = """
-            namespace MyNamespace;
-
-            public static class MyClass
-            {
-                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
-                {
-                    return items.OrderBy(x => x.Length).ThenBy(x => x);
-                }
-            }
-            """;
-
-        // Act & Assert
-        return context.RunAsync(Token);
-    }
-
-    [Fact]
-    public Task Order_NoWarning()
-    {
-        // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
-        context.TestCode = """
-            namespace MyNamespace;
-
-            public static class MyClass
-            {
-                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
-                {
-                    return items.Order();
-                }
-            }
-            """;
-
-        // Act & Assert
-        return context.RunAsync(Token);
-    }
-
-    [Fact]
-    public Task OrderBy_WithNonKeySelectorParameter_NoWarning()
-    {
-        // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
-        context.TestCode = """
-            namespace System.Linq
-            {
-                public static class Enumerable
-                {
-                    public static IEnumerable<T> OrderBy<T>(this IEnumerable<T> items, Marker marker) => items;
-                }
-            }
-
-            public sealed class Marker
-            {
-            }
-
-            namespace MyNamespace
-            {
-                public static class MyClass
-                {
-                    public static IEnumerable<string> MyMethod(IEnumerable<string> items, Marker marker)
-                    {
-                        return items.OrderBy(marker);
-                    }
-                }
-            }
-            """;
-
-        // Act & Assert
-        return context.RunAsync(Token);
-    }
-
-    [Fact]
-    public Task OrderBy_TargetFrameworkBeforeNet7_NoWarning()
-    {
-        // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
-            referenceAssemblies: ReferenceAssemblies.Net.Net60);
-        context.TestCode = """
-            namespace MyNamespace;
-
-            public static class MyClass
-            {
-                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
-                {
-                    return items.OrderBy(x => x);
-                }
-            }
-            """;
-
-        // Act & Assert
-        return context.RunAsync(Token);
-    }
-
-    [Fact]
-    public Task OrderBy_TargetFrameworkNetStandard_NoWarning()
-    {
-        // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
         context.TestCode = """
             namespace MyNamespace;
@@ -580,7 +580,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.OrderBy(x => x);
+                    return items.OrderByDescending(x => x);
                 }
             }
             """;
@@ -590,10 +590,10 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_TargetFrameworkNet7_ReportWarning()
+    public Task OrderByDescending_TargetFrameworkNet7_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net70);
         context.TestCode = """
             namespace MyNamespace;
@@ -602,7 +602,7 @@ public class OrderByIdentityKeyAnalyzerTests
             {
                 public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ202:OrderBy(x => x)|};
+                    return items.{|SLQ203:OrderByDescending(x => x)|};
                 }
             }
             """;
@@ -612,16 +612,16 @@ public class OrderByIdentityKeyAnalyzerTests
     }
 
     [Fact]
-    public Task OrderBy_WithNonComparerParameter_NoWarning()
+    public Task OrderByDescending_WithNonComparerParameter_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
         context.TestCode = """
             namespace System.Linq
             {
                 public static class Enumerable
                 {
-                    public static IEnumerable<T> OrderBy<T>(
+                    public static IEnumerable<T> OrderByDescending<T>(
                         this IEnumerable<T> items, Func<T, T> keySelector, Marker marker) => items;
                 }
             }
@@ -636,7 +636,7 @@ public class OrderByIdentityKeyAnalyzerTests
                 {
                     public static IEnumerable<string> MyMethod(IEnumerable<string> items, Marker marker)
                     {
-                        return items.OrderBy(x => x, marker);
+                        return items.OrderByDescending(x => x, marker);
                     }
                 }
             }
