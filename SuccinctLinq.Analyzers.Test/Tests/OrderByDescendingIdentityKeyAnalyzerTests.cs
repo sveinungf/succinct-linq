@@ -98,6 +98,31 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     }
 
     [Fact]
+    public Task OrderByDescending_IdentityLambda_MessageOmitsComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderByDescending(x => x);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ203", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 47)
+                .WithMessage("Use OrderDescending() instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderByDescending_StaticInvocation_ReportWarning()
     {
         // Arrange
