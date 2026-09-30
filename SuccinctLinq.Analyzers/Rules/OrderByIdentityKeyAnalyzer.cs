@@ -13,7 +13,7 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ202",
         title: "OrderBy can be simplified",
-        messageFormat: "OrderBy can be simplified to Order without the (x => x)",
+        messageFormat: "Use Order{0} instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -48,6 +48,7 @@ public sealed class OrderByIdentityKeyAnalyzer : DiagnosticAnalyzer
             return;
 
         var location = invocation.GetMethodCallLocation();
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
+        var hasComparer = orderBy.TargetMethod.Parameters.Length > 2;
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
     }
 }

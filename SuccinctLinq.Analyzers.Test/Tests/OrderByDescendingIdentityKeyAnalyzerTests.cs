@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Testing;
 using SuccinctLinq.Analyzers.Rules;
 using SuccinctLinq.Analyzers.Test.Helpers;
@@ -66,6 +67,31 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
                 }
             }
             """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByDescending_IdentityLambdaWithComparer_MessageMentionsComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderByDescending(x => x, StringComparer.Ordinal);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ203", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 71)
+                .WithMessage("Use OrderDescending(comparer) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
