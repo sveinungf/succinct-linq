@@ -27,6 +27,13 @@ internal static class MethodSymbolExtensions
             HasKeySelectorParameters: true
         };
 
+        public bool IsOrderByDescendingMethod => symbol is
+        {
+            Name: "OrderByDescending",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasKeySelectorParameters: true
+        };
+
         public bool IsToDictionaryMethod => symbol is
         {
             Name: "ToDictionary",
