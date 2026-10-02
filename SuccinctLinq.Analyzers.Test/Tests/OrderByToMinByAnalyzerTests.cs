@@ -63,7 +63,7 @@ public class OrderByToMinByAnalyzerTests
             {
                 public static string MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ204:OrderBy(x => x, StringComparer.Ordinal).FirstOrDefault()|};
+                    return items.{|SLQ204:OrderBy(x => x.Length, Comparer<int>.Default).FirstOrDefault()|};
                 }
             }
             """;
@@ -84,13 +84,13 @@ public class OrderByToMinByAnalyzerTests
             {
                 public static string MyMethod(IEnumerable<string> items)
                 {
-                    return items.OrderBy(x => x, StringComparer.Ordinal).FirstOrDefault();
+                    return items.OrderBy(x => x.Length, Comparer<int>.Default).FirstOrDefault();
                 }
             }
             """;
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ204", DiagnosticSeverity.Warning)
-                .WithSpan("/0/Test1.cs", 7, 22, 7, 78)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 84)
                 .WithMessage("Use MinBy(comparer) instead"));
 
         // Act & Assert
@@ -339,6 +339,70 @@ public class OrderByToMinByAnalyzerTests
                     where T : struct
                 {
                     return items.OrderBy(x => x.GetHashCode()).FirstOrDefault();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_WithReferenceTypeKey_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => x).FirstOrDefault();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_WithNullableValueTypeKey_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => (int?)x.Length).FirstOrDefault();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_WithGenericKey_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static TSource MyMethod<TSource, TKey>(IEnumerable<TSource> items, Func<TSource, TKey> keySelector)
+                    where TSource : class
+                {
+                    return items.OrderBy(keySelector).FirstOrDefault();
                 }
             }
             """;

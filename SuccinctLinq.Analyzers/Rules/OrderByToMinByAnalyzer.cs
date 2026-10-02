@@ -17,7 +17,7 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Ordering a sequence and taking the first element finds the element with the minimum key, so MinBy expresses the same intent more concisely. The rule only applies when the elements are reference types.");
+        description: "Ordering a sequence and taking the first element finds the element with the minimum key, so MinBy expresses the same intent more concisely. The rule only applies when the elements are reference types and the key type is a non-nullable value type.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -37,14 +37,15 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation firstOrDefault ||
-            !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
-            firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapConversions() is not IInvocationOperation orderBy ||
-            !orderBy.TargetMethod.IsOrderByMethod ||
-            !orderBy.TargetMethod.TypeArguments[0].IsReferenceType)
-        {
-            return;
-        }
+            if (context.Operation is not IInvocationOperation firstOrDefault ||
+                !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
+                firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions() is not IInvocationOperation orderBy ||
+                !orderBy.TargetMethod.IsOrderByMethod ||
+                !orderBy.TargetMethod.TypeArguments[0].IsReferenceType ||
+                !orderBy.TargetMethod.TypeArguments[1].IsNonNullableValueType)
+            {
+                return;
+            }
 
         if (orderBy.Syntax is not InvocationExpressionSyntax orderByInvocation ||
             firstOrDefault.Syntax is not InvocationExpressionSyntax firstOrDefaultInvocation)

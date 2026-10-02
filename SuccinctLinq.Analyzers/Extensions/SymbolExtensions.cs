@@ -86,5 +86,22 @@ internal static class SymbolExtensions
                 ContainingNamespace.IsGlobalNamespace: true
             }
         };
+
+        public bool IsNonNullableValueType => symbol is ITypeSymbol
+        {
+            TypeKind: TypeKind.Struct or TypeKind.Enum,
+            IsSystemNullable: false
+        };
+
+        private bool IsSystemNullable => symbol is INamedTypeSymbol
+        {
+            Name: "Nullable",
+            Arity: 1,
+            ContainingNamespace:
+            {
+                Name: "System",
+                ContainingNamespace.IsGlobalNamespace: true
+            }
+        };
     }
 }
