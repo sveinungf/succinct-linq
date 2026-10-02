@@ -17,5 +17,15 @@ internal static class InvocationExpressionSyntaxExtensions
             var span = new TextSpan(name.Span.Start, invocation.Span.End - name.Span.Start);
             return Location.Create(invocation.SyntaxTree, span);
         }
+
+        public Location GetMethodChainLocation(InvocationExpressionSyntax chainedInvocation)
+        {
+            var name = invocation.Expression;
+            if (name is MemberAccessExpressionSyntax memberAccess)
+                name = memberAccess.Name;
+
+            var span = new TextSpan(name.Span.Start, chainedInvocation.Span.End - name.Span.Start);
+            return Location.Create(invocation.SyntaxTree, span);
+        }
     }
 }

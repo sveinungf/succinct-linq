@@ -27,6 +27,13 @@ internal static class MethodSymbolExtensions
             HasKeySelectorParameters: true
         };
 
+        public bool IsFirstOrDefaultMethod => symbol is
+        {
+            Name: "FirstOrDefault",
+            ContainingType.IsSystemLinqEnumerable: true,
+            Parameters.Length: 1
+        };
+
         public bool IsOrderByDescendingMethod => symbol is
         {
             Name: "OrderByDescending",

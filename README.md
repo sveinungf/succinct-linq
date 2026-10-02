@@ -40,6 +40,8 @@ Install-Package SuccinctLinq.Analyzers
 | [SLQ103](#slq103-select-call-is-redundant) | Redundancy | Warning | A `Select` call with an identity selector (`x => x`) |
 | [SLQ201](#slq201-select-can-be-simplified) | Simplification | Warning | A `Select` that only yields the element and its index |
 | [SLQ202](#slq202-orderby-can-be-simplified) | Simplification | Warning | An `OrderBy` with the identity key selector (`x => x`) |
+| [SLQ203](#slq203-orderbydescending-can-be-simplified) | Simplification | Warning | An `OrderByDescending` with the identity key selector (`x => x`) |
+| [SLQ204](#slq204-orderby-and-firstordefault-can-be-simplified) | Simplification | Warning | An `OrderBy` followed by a `FirstOrDefault` |
 
 ### SLQ101: Distinct call is redundant
 
@@ -109,4 +111,32 @@ var sorted = items.OrderBy(x => x);
 
 // After
 var sorted = items.Order();
+```
+
+### SLQ203: OrderByDescending can be simplified
+
+An `OrderByDescending` with the identity function (`x => x`) sorts using the default comparer and is equivalent to the more concise `OrderDescending` method, available in .NET 7 and later. 
+The rule only applies to projects targeting .NET 7+.
+
+```csharp
+// Before
+// SLQ203: OrderByDescending can be simplified to OrderDescending without the (x => x)
+var sorted = items.OrderByDescending(x => x);
+
+// After
+var sorted = items.OrderDescending();
+```
+
+### SLQ204: OrderBy and FirstOrDefault can be simplified
+
+Ordering a sequence and taking the first element finds the element with the minimum key, and the more concise `MinBy` method, available in .NET 6 and later, expresses the same intent. 
+The rule only applies to projects targeting .NET 6+ and to sequences whose elements are reference types.
+
+```csharp
+// Before
+// SLQ204: Use MinBy() instead
+var shortest = items.OrderBy(x => x.Length).FirstOrDefault();
+
+// After
+var shortest = items.MinBy(x => x.Length);
 ```

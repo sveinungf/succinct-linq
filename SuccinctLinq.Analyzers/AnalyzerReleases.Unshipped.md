@@ -8,3 +8,4 @@ SLQ103 | Redundancy | Warning | RedundantSelectAnalyzer
 SLQ201 | Simplification | Warning | SelectToIndexAnalyzer
 SLQ202 | Simplification | Warning | OrderByIdentityKeyAnalyzer
 SLQ203 | Simplification | Warning | OrderByDescendingIdentityKeyAnalyzer
+SLQ204 | Simplification | Warning | OrderByToMinByAnalyzer
