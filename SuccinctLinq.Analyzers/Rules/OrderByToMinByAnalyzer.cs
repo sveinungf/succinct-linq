@@ -44,7 +44,7 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
             // MinBy is only equivalent for reference-type elements:
             // On an empty sequence of value types, OrderBy(...).FirstOrDefault() returns the default value, while MinBy throws.
             !orderBy.TargetMethod.TypeArguments[0].IsReferenceType ||
-            // MinBy is only equivalent for non-nullable value-type keys:
+            // MinBy is only equivalent for non-nullable keys:
             // OrderBy(...) orders null values first, while MinBy ignores null values.
             !orderBy.TargetMethod.TypeArguments[1].IsNonNullableValueType)
         {
