@@ -37,15 +37,19 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-            if (context.Operation is not IInvocationOperation firstOrDefault ||
-                !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
-                firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions() is not IInvocationOperation orderBy ||
-                !orderBy.TargetMethod.IsOrderByMethod ||
-                !orderBy.TargetMethod.TypeArguments[0].IsReferenceType ||
-                !orderBy.TargetMethod.TypeArguments[1].IsNonNullableValueType)
-            {
-                return;
-            }
+        if (context.Operation is not IInvocationOperation firstOrDefault ||
+            !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
+            firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions() is not IInvocationOperation orderBy ||
+            !orderBy.TargetMethod.IsOrderByMethod ||
+            // MinBy is only equivalent for reference-type elements:
+            // On an empty sequence of value types, OrderBy(...).FirstOrDefault() returns the default value, while MinBy throws.
+            !orderBy.TargetMethod.TypeArguments[0].IsReferenceType ||
+            // MinBy is only equivalent for non-nullable value-type keys:
+            // OrderBy(...) orders null values first, while MinBy ignores null values.
+            !orderBy.TargetMethod.TypeArguments[1].IsNonNullableValueType)
+        {
+            return;
+        }
 
         if (orderBy.Syntax is not InvocationExpressionSyntax orderByInvocation ||
             firstOrDefault.Syntax is not InvocationExpressionSyntax firstOrDefaultInvocation)

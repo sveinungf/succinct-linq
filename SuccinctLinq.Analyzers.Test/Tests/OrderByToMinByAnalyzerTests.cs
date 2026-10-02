@@ -123,6 +123,27 @@ public class OrderByToMinByAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_WithNullComparer_ThenFirstOrDefault_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ204:OrderBy(x => x.Length, null).FirstOrDefault()|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderBy_StaticInvocation_ReportWarning()
     {
         // Arrange
@@ -156,6 +177,27 @@ public class OrderByToMinByAnalyzerTests
                 public static string MyMethod(IEnumerable<string> items)
                 {
                     return System.Linq.Enumerable.{|SLQ204:OrderBy(items, x => x.Length).FirstOrDefault()|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_ThenStaticFirstOrDefault_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return Enumerable.FirstOrDefault(items.{|SLQ204:OrderBy(x => x.Length))|};
                 }
             }
             """;
@@ -412,6 +454,29 @@ public class OrderByToMinByAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_WithStructConstrainedGenericKey_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static TSource MyMethod<TSource, TKey>(IEnumerable<TSource> items, Func<TSource, TKey> keySelector)
+                    where TSource : class
+                    where TKey : struct
+                {
+                    return items.OrderBy(keySelector).FirstOrDefault();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task FirstOrDefault_WithoutOrderBy_NoWarning()
     {
         // Arrange
@@ -475,6 +540,27 @@ public class OrderByToMinByAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_ThenFirst_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => x.Length).First();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderBy_ThenSelect_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
@@ -487,6 +573,27 @@ public class OrderByToMinByAnalyzerTests
                 public static string MyMethod(IEnumerable<string> items)
                 {
                     return items.OrderBy(x => x.Length).Select(x => x).FirstOrDefault();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_ThenToList_ThenFirstOrDefault_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => x.Length).ToList().FirstOrDefault();
                 }
             }
             """;
