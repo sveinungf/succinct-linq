@@ -43,9 +43,10 @@ public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
             !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
             firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions() is not IInvocationOperation orderByDescending ||
             !orderByDescending.TargetMethod.IsOrderByDescendingMethod ||
-            // MaxBy is only equivalent for reference-type elements:
-            // On an empty sequence of value types, OrderByDescending(...).FirstOrDefault() returns the default value, while MaxBy throws.
-            !orderByDescending.TargetMethod.TypeArguments[0].IsReferenceType)
+            // MaxBy is only equivalent for elements of nullable types:
+            // On an empty sequence of non-nullable value types,
+            // OrderByDescending(...).FirstOrDefault() returns the default value, while MaxBy throws.
+            !orderByDescending.TargetMethod.TypeArguments[0].IsNullableType)
         {
             return;
         }

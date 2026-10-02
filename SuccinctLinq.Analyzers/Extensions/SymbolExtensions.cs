@@ -93,6 +93,10 @@ internal static class SymbolExtensions
             IsSystemNullable: false
         };
 
+        /// <summary>A type whose default value is null.</summary>
+        public bool IsNullableType => symbol is ITypeSymbol { IsReferenceType: true }
+            or INamedTypeSymbol { IsSystemNullable: true };
+
         private bool IsSystemNullable => symbol is INamedTypeSymbol
         {
             Name: "Nullable",

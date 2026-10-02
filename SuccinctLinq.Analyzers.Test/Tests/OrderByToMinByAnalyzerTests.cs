@@ -325,6 +325,27 @@ public class OrderByToMinByAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_WithNullableValueTypeElements_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static DateTime? MyMethod(IEnumerable<DateTime?> items)
+                {
+                    return items.{|SLQ204:OrderBy(x => x?.Year ?? 0).FirstOrDefault()|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderBy_WithUnconstrainedGenericElements_NoWarning()
     {
         // Arrange

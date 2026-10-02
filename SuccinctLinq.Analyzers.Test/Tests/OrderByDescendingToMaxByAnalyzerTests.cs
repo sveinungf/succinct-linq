@@ -325,6 +325,27 @@ public class OrderByDescendingToMaxByAnalyzerTests
     }
 
     [Fact]
+    public Task OrderByDescending_WithNullableValueTypeElements_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static int? MyMethod(IEnumerable<int?> items)
+                {
+                    return items.{|SLQ205:OrderByDescending(x => x).FirstOrDefault()|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderByDescending_WithUnconstrainedGenericElements_NoWarning()
     {
         // Arrange
