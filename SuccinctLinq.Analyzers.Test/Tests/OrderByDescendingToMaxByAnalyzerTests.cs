@@ -144,6 +144,69 @@ public class OrderByDescendingToMaxByAnalyzerTests
     }
 
     [Fact]
+    public Task OrderByDescending_WithNullComparerAndNullableKey_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ205:OrderByDescending(x => x, null).FirstOrDefault()|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByDescending_WithComparerAndReferenceTypeKey_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderByDescending(x => x, StringComparer.Ordinal).FirstOrDefault();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderByDescending_WithComparerAndNullableValueTypeKey_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderByDescending(x => (int?)x.Length, Comparer<int?>.Default).FirstOrDefault();
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderByDescending_StaticInvocation_ReportWarning()
     {
         // Arrange

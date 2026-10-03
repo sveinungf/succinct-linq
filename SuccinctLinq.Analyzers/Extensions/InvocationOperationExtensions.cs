@@ -30,6 +30,14 @@ internal static class InvocationOperationExtensions
             return null;
         }
 
+        public bool HasNonNullArgument(int index)
+        {
+            var argument = operation.GetArgumentAtOrDefault(index)?.UnwrapConversions();
+
+            // An absent argument or a null literal means the default value is used at runtime.
+            return argument is not null && !argument.IsNullOrDefault;
+        }
+
         public bool HasIdentitySelector(int argumentIndex, SymbolEqualityComparer? comparer = null)
         {
             ArgumentOutOfRangeException.ThrowIfLessThanOrEqual(argumentIndex, 0);

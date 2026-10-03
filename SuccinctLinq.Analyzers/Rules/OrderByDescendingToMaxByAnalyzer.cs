@@ -37,8 +37,9 @@ public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        // Compared to OrderByToMinByAnalyzer, we don't need the non-nullable key constraint,
-        // because OrderByDescending orders null values last. If all elements are null, MaxBy will also return null.
+        // Compared to OrderByToMinByAnalyzer, we don't need the non-nullable key constraint
+        // when no custom comparer is used, because OrderByDescending orders null keys last
+        // while MaxBy ignores null keys, so both select the same element.
         if (context.Operation is not IInvocationOperation firstOrDefault ||
             !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
             firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions() is not IInvocationOperation orderByDescending ||
@@ -46,7 +47,11 @@ public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
             // MaxBy is only equivalent for elements of nullable types:
             // On an empty sequence of non-nullable value types,
             // OrderByDescending(...).FirstOrDefault() returns the default value, while MaxBy throws.
-            !orderByDescending.TargetMethod.TypeArguments[0].IsNullableType)
+            !orderByDescending.TargetMethod.TypeArguments[0].IsNullableType ||
+            // A custom comparer may rank null keys above non-null keys:
+            // OrderByDescending(..., comparer) then selects the null-key element,
+            // while MaxBy(..., comparer) ignores null keys.
+            orderByDescending.HasNonNullArgument(2) && orderByDescending.TargetMethod.TypeArguments[1].IsNullableType)
         {
             return;
         }
