@@ -37,33 +37,34 @@ public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
+        if (context.Operation is not IInvocationOperation { TargetMethod.IsFirstOrDefaultMethod: true } firstOrDefault)
+            return;
+
+        var preceding = firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions();
+        if (preceding is not IInvocationOperation { TargetMethod.IsOrderByDescendingMethod: true } orderByDesc)
+            return;
+
+        // MaxBy is only equivalent for elements of nullable types:
+        // On an empty sequence of non-nullable value types,
+        // OrderByDescending(...).FirstOrDefault() returns the default value, while MaxBy throws.
+        if (!orderByDesc.TargetMethod.TypeArguments[0].IsNullableType)
+            return;
+
         // Compared to OrderByToMinByAnalyzer, we don't need the non-nullable key constraint
         // when no custom comparer is used, because OrderByDescending orders null keys last
         // while MaxBy ignores null keys, so both select the same element.
-        if (context.Operation is not IInvocationOperation firstOrDefault ||
-            !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
-            firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions() is not IInvocationOperation orderByDescending ||
-            !orderByDescending.TargetMethod.IsOrderByDescendingMethod ||
-            // MaxBy is only equivalent for elements of nullable types:
-            // On an empty sequence of non-nullable value types,
-            // OrderByDescending(...).FirstOrDefault() returns the default value, while MaxBy throws.
-            !orderByDescending.TargetMethod.TypeArguments[0].IsNullableType ||
-            // A custom comparer may rank null keys above non-null keys:
-            // OrderByDescending(..., comparer) then selects the null-key element,
-            // while MaxBy(..., comparer) ignores null keys.
-            orderByDescending.HasNonNullArgument(2) && orderByDescending.TargetMethod.TypeArguments[1].IsNullableType)
-        {
+        // But a custom comparer may rank null keys above non-null keys.
+        var hasComparer = orderByDesc.HasNonNullArgument(2);
+        if (hasComparer && orderByDesc.TargetMethod.TypeArguments[1].IsNullableType)
             return;
-        }
 
-        if (orderByDescending.Syntax is not InvocationExpressionSyntax orderByDescendingInvocation ||
+        if (orderByDesc.Syntax is not InvocationExpressionSyntax orderByDescInvocation ||
             firstOrDefault.Syntax is not InvocationExpressionSyntax firstOrDefaultInvocation)
         {
             return;
         }
 
-        var location = orderByDescendingInvocation.GetMethodChainLocation(firstOrDefaultInvocation);
-        var hasComparer = orderByDescending.TargetMethod.Parameters.Length > 2;
+        var location = orderByDescInvocation.GetMethodChainLocation(firstOrDefaultInvocation);
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
     }
 }

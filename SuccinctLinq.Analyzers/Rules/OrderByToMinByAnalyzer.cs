@@ -37,20 +37,23 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation firstOrDefault ||
-            !firstOrDefault.TargetMethod.IsFirstOrDefaultMethod ||
-            firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions() is not IInvocationOperation orderBy ||
-            !orderBy.TargetMethod.IsOrderByMethod ||
-            // MinBy is only equivalent for elements of nullable types:
-            // On an empty sequence of non-nullable value types,
-            // OrderBy(...).FirstOrDefault() returns the default value, while MinBy throws.
-            !orderBy.TargetMethod.TypeArguments[0].IsNullableType ||
-            // MinBy is only equivalent for non-nullable keys:
-            // OrderBy(...) orders null values first, while MinBy ignores null values.
-            !orderBy.TargetMethod.TypeArguments[1].IsNonNullableValueType)
-        {
+        if (context.Operation is not IInvocationOperation { TargetMethod.IsFirstOrDefaultMethod: true } firstOrDefault)
             return;
-        }
+
+        var preceding = firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions();
+        if (preceding is not IInvocationOperation { TargetMethod.IsOrderByMethod: true } orderBy)
+            return;
+
+        // MinBy is only equivalent for elements of nullable types:
+        // On an empty sequence of non-nullable value types,
+        // OrderBy(...).FirstOrDefault() returns the default value, while MinBy throws.
+        if (!orderBy.TargetMethod.TypeArguments[0].IsNullableType)
+            return;
+
+        // MinBy is only equivalent for non-nullable keys:
+        // OrderBy(...) orders null values first, while MinBy ignores null values.
+        if (!orderBy.TargetMethod.TypeArguments[1].IsNonNullableValueType)
+            return;
 
         if (orderBy.Syntax is not InvocationExpressionSyntax orderByInvocation ||
             firstOrDefault.Syntax is not InvocationExpressionSyntax firstOrDefaultInvocation)
@@ -59,7 +62,7 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
         }
 
         var location = orderByInvocation.GetMethodChainLocation(firstOrDefaultInvocation);
-        var hasComparer = orderBy.TargetMethod.Parameters.Length > 2;
+        var hasComparer = orderBy.HasNonNullArgument(2);
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
     }
 }
