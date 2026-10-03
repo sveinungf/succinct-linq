@@ -131,7 +131,7 @@ var sorted = items.OrderDescending();
 ### SLQ204: OrderBy and FirstOrDefault can be simplified
 
 Ordering a sequence and taking the first element finds the element with the minimum key, and the more concise `MinBy` method, available in .NET 6 and later, expresses the same intent. 
-The rule only applies to projects targeting .NET 6+ and to sequences whose elements are reference types and whose key type is a non-nullable value type.
+The rule only applies to projects targeting .NET 6+ and to sequences whose elements are nullable types and whose key type is a non-nullable value type.
 
 ```csharp
 // Before
@@ -145,7 +145,7 @@ var shortest = items.MinBy(x => x.Length);
 ### SLQ205: OrderByDescending and FirstOrDefault can be simplified
 
 Ordering a sequence in descending order and taking the first element finds the element with the maximum key, and the more concise `MaxBy` method, available in .NET 6 and later, expresses the same intent. 
-The rule only applies to projects targeting .NET 6+ and to sequences whose elements are reference types.
+The rule only applies to projects targeting .NET 6+ and to sequences whose elements are nullable types.
 
 ```csharp
 // Before

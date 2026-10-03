@@ -17,7 +17,7 @@ public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Ordering a sequence in descending order and taking the first element finds the element with the maximum key, so MaxBy expresses the same intent more concisely. The rule only applies when the elements are reference types.");
+        description: "Ordering a sequence in descending order and taking the first element finds the element with the maximum key, so MaxBy expresses the same intent more concisely. The rule only applies when the elements are nullable types and, when a custom comparer is used, the key type is a non-nullable value type.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 

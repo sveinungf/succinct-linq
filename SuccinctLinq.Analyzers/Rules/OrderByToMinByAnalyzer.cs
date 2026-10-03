@@ -17,7 +17,7 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Ordering a sequence and taking the first element finds the element with the minimum key, so MinBy expresses the same intent more concisely. The rule only applies when the elements are reference types and the key type is a non-nullable value type.");
+        description: "Ordering a sequence and taking the first element finds the element with the minimum key, so MinBy expresses the same intent more concisely. The rule only applies when the elements are nullable types and the key type is a non-nullable value type.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
