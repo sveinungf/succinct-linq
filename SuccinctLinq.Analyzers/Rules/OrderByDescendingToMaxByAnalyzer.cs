@@ -8,16 +8,16 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
+public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ204",
-        title: "OrderBy followed by FirstOrDefault can be simplified",
-        messageFormat: "Use MinBy{0} instead",
+        id: "SLQ205",
+        title: "OrderByDescending followed by FirstOrDefault can be simplified",
+        messageFormat: "Use MaxBy{0} instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Ordering a sequence and taking the first element finds the element with the minimum key, so MinBy expresses the same intent more concisely. The rule only applies when the elements are nullable types and the key type is a non-nullable value type.");
+        description: "Ordering a sequence in descending order and taking the first element finds the element with the maximum key, so MaxBy expresses the same intent more concisely. The rule only applies when the elements are nullable types and, when a custom comparer is used, the key type is a non-nullable value type.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -29,7 +29,7 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
         context.EnableConcurrentExecution();
         context.RegisterCompilationStartAction(startContext =>
         {
-            // The MinBy() method is only available in .NET 6 and later.
+            // The MaxBy() method is only available in .NET 6 and later.
             if (startContext.Compilation.IsTargetFrameworkAtLeast(6))
                 startContext.RegisterOperationAction(Analyze, OperationKind.Invocation);
         });
@@ -41,28 +41,30 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
             return;
 
         var preceding = firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions();
-        if (preceding is not IInvocationOperation { TargetMethod.IsOrderByMethod: true } orderBy)
+        if (preceding is not IInvocationOperation { TargetMethod.IsOrderByDescendingMethod: true } orderByDesc)
             return;
 
-        // MinBy is only equivalent for elements of nullable types:
+        // MaxBy is only equivalent for elements of nullable types:
         // On an empty sequence of non-nullable value types,
-        // OrderBy(...).FirstOrDefault() returns the default value, while MinBy throws.
-        if (!orderBy.TargetMethod.TypeArguments[0].IsNullableType)
+        // OrderByDescending(...).FirstOrDefault() returns the default value, while MaxBy throws.
+        if (!orderByDesc.TargetMethod.TypeArguments[0].IsNullableType)
             return;
 
-        // MinBy is only equivalent for non-nullable keys:
-        // OrderBy(...) orders null values first, while MinBy ignores null values.
-        if (!orderBy.TargetMethod.TypeArguments[1].IsNonNullableValueType)
+        // Compared to OrderByToMinByAnalyzer, we don't need the non-nullable key constraint
+        // when no custom comparer is used, because OrderByDescending orders null keys last
+        // while MaxBy ignores null keys, so both select the same element.
+        // But a custom comparer may rank null keys above non-null keys.
+        var hasComparer = orderByDesc.HasNonNullArgument(2);
+        if (hasComparer && orderByDesc.TargetMethod.TypeArguments[1].IsNullableType)
             return;
 
-        if (orderBy.Syntax is not InvocationExpressionSyntax orderByInvocation ||
+        if (orderByDesc.Syntax is not InvocationExpressionSyntax orderByDescInvocation ||
             firstOrDefault.Syntax is not InvocationExpressionSyntax firstOrDefaultInvocation)
         {
             return;
         }
 
-        var location = orderByInvocation.GetMethodChainLocation(firstOrDefaultInvocation);
-        var hasComparer = orderBy.HasNonNullArgument(2);
+        var location = orderByDescInvocation.GetMethodChainLocation(firstOrDefaultInvocation);
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
     }
 }

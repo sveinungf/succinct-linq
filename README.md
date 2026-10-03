@@ -42,6 +42,7 @@ Install-Package SuccinctLinq.Analyzers
 | [SLQ202](#slq202-orderby-can-be-simplified) | Simplification | Warning | An `OrderBy` with the identity key selector (`x => x`) |
 | [SLQ203](#slq203-orderbydescending-can-be-simplified) | Simplification | Warning | An `OrderByDescending` with the identity key selector (`x => x`) |
 | [SLQ204](#slq204-orderby-and-firstordefault-can-be-simplified) | Simplification | Warning | An `OrderBy` followed by a `FirstOrDefault` |
+| [SLQ205](#slq205-orderbydescending-and-firstordefault-can-be-simplified) | Simplification | Warning | An `OrderByDescending` followed by a `FirstOrDefault` |
 
 ### SLQ101: Distinct call is redundant
 
@@ -130,7 +131,7 @@ var sorted = items.OrderDescending();
 ### SLQ204: OrderBy and FirstOrDefault can be simplified
 
 Ordering a sequence and taking the first element finds the element with the minimum key, and the more concise `MinBy` method, available in .NET 6 and later, expresses the same intent. 
-The rule only applies to projects targeting .NET 6+ and to sequences whose elements are reference types and whose key type is a non-nullable value type.
+The rule only applies to projects targeting .NET 6+ and to sequences whose elements are nullable types and whose key type is a non-nullable value type.
 
 ```csharp
 // Before
@@ -139,4 +140,18 @@ var shortest = items.OrderBy(x => x.Length).FirstOrDefault();
 
 // After
 var shortest = items.MinBy(x => x.Length);
+```
+
+### SLQ205: OrderByDescending and FirstOrDefault can be simplified
+
+Ordering a sequence in descending order and taking the first element finds the element with the maximum key, and the more concise `MaxBy` method, available in .NET 6 and later, expresses the same intent. 
+The rule only applies to projects targeting .NET 6+ and to sequences whose elements are nullable types. When a non-null custom comparer is supplied, the key type must also be a non-nullable value type.
+
+```csharp
+// Before
+// SLQ205: Use MaxBy() instead
+var longest = items.OrderByDescending(x => x.Length).FirstOrDefault();
+
+// After
+var longest = items.MaxBy(x => x.Length);
 ```
