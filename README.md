@@ -43,6 +43,7 @@ Install-Package SuccinctLinq.Analyzers
 | [SLQ203](#slq203-orderbydescending-can-be-simplified) | Simplification | Warning | An `OrderByDescending` with the identity key selector (`x => x`) |
 | [SLQ204](#slq204-orderby-and-firstordefault-can-be-simplified) | Simplification | Warning | An `OrderBy` followed by a `FirstOrDefault` |
 | [SLQ205](#slq205-orderbydescending-and-firstordefault-can-be-simplified) | Simplification | Warning | An `OrderByDescending` followed by a `FirstOrDefault` |
+| [SLQ206](#slq206-groupby-and-select-can-be-simplified) | Simplification | Warning | A `GroupBy` followed by a `Select` that takes the first element of each group |
 
 ### SLQ101: Distinct call is redundant
 
@@ -154,4 +155,18 @@ var longest = items.OrderByDescending(x => x.Length).FirstOrDefault();
 
 // After
 var longest = items.MaxBy(x => x.Length);
+```
+
+### SLQ206: GroupBy and Select can be simplified
+
+Grouping elements by a key and taking the first element of each group keeps the first element of each distinct key, and the more concise `DistinctBy` method, available in .NET 6 and later, expresses the same intent.
+The rule only applies to projects targeting .NET 6+ and to `GroupBy` calls without an element selector.
+
+```csharp
+// Before
+// SLQ206: Use DistinctBy() instead
+var unique = elements.GroupBy(x => x.Id).Select(x => x.First());
+
+// After
+var unique = elements.DistinctBy(x => x.Id);
 ```

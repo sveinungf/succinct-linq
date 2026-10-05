@@ -13,25 +13,11 @@ internal static class MethodSymbolExtensions
             HasOptionalComparerParameter: true
         };
 
-        public bool IsToHashSetMethod => symbol is
-        {
-            Name: "ToHashSet",
-            ContainingType.IsSystemLinqEnumerable: true,
-            HasOptionalComparerParameter: true
-        };
-
         public bool IsOrderByMethod => symbol is
         {
             Name: "OrderBy",
             ContainingType.IsSystemLinqEnumerable: true,
             HasKeySelectorParameters: true
-        };
-
-        public bool IsFirstOrDefaultMethod => symbol is
-        {
-            Name: "FirstOrDefault",
-            ContainingType.IsSystemLinqEnumerable: true,
-            Parameters.Length: 1
         };
 
         public bool IsOrderByDescendingMethod => symbol is
@@ -41,14 +27,35 @@ internal static class MethodSymbolExtensions
             HasKeySelectorParameters: true
         };
 
-        public bool IsToDictionaryMethod => symbol is
+        public bool IsFirstMethod => symbol is
+        {
+            Name: "First",
+            ContainingType.IsSystemLinqEnumerable: true,
+            Parameters.Length: 1
+        };
+
+        public bool IsFirstOrDefaultMethod => symbol is
+        {
+            Name: "FirstOrDefault",
+            ContainingType.IsSystemLinqEnumerable: true,
+            Parameters.Length: 1
+        };
+
+        public bool IsToDictionaryWithElementSelectorMethod => symbol is
         {
             Name: "ToDictionary",
             ContainingType.IsSystemLinqEnumerable: true,
             HasElementSelectorParameter: true
         };
 
-        public bool IsToLookupMethod => symbol is
+        public bool IsToHashSetMethod => symbol is
+        {
+            Name: "ToHashSet",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasOptionalComparerParameter: true
+        };
+
+        public bool IsToLookupWithElementSelectorMethod => symbol is
         {
             Name: "ToLookup",
             ContainingType.IsSystemLinqEnumerable: true,
@@ -56,6 +63,14 @@ internal static class MethodSymbolExtensions
         };
 
         public bool IsGroupByMethod => symbol is
+        {
+            Name: "GroupBy",
+            ContainingType.IsSystemLinqEnumerable: true,
+            HasKeySelector: true,
+            HasElementSelector: false
+        };
+
+        public bool IsGroupByWithElementSelectorMethod => symbol is
         {
             Name: "GroupBy",
             ContainingType.IsSystemLinqEnumerable: true,
@@ -78,6 +93,10 @@ internal static class MethodSymbolExtensions
 
         public bool IsSelectMethod => symbol.IsOneParameterSelectMethod || symbol.IsTwoParameterSelectMethod;
 
+        // TODO: Use these more
+        private bool HasKeySelector => symbol.GetParameterAtOrDefault(1) is { Type.IsSystemFuncWithArity2: true };
+        private bool HasElementSelector => symbol.GetParameterAtOrDefault(2) is { Type.IsSystemFuncWithArity2: true };
+
         private bool HasOptionalComparerParameter =>
             symbol.Parameters.Length is 1 or 2
             && symbol.GetParameterAtOrDefault(1) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true };
@@ -86,8 +105,8 @@ internal static class MethodSymbolExtensions
             symbol.GetParameterAtOrDefault(2) is null or { Type.IsSystemCollectionsGenericIComparer: true }
             && symbol.Parameters is { Length: 2 or 3 } and
             [
-                { Type.IsSystemCollectionsGenericIEnumerable: true },
-                { Type.IsSystemFuncWithArity2: true },
+            { Type.IsSystemCollectionsGenericIEnumerable: true },
+            { Type.IsSystemFuncWithArity2: true },
                 ..
             ];
 
@@ -95,24 +114,24 @@ internal static class MethodSymbolExtensions
             symbol.GetParameterAtOrDefault(3) is null or { Type.IsSystemCollectionsGenericIEqualityComparer: true }
             && symbol.Parameters is { Length: 3 or 4 } and
             [
-                { Type.IsSystemCollectionsGenericIEnumerable: true },
-                { Type.IsSystemFuncWithArity2: true },
-                { Type.IsSystemFuncWithArity2: true },
+            { Type.IsSystemCollectionsGenericIEnumerable: true },
+            { Type.IsSystemFuncWithArity2: true },
+            { Type.IsSystemFuncWithArity2: true },
                 ..
             ];
 
         private bool HasFuncWithArity2Parameter =>
             symbol.Parameters is
             [
-                { Type.IsSystemCollectionsGenericIEnumerable: true },
-                { Type.IsSystemFuncWithArity2: true }
+            { Type.IsSystemCollectionsGenericIEnumerable: true },
+            { Type.IsSystemFuncWithArity2: true }
             ];
 
         private bool HasFuncWithArity3Parameter =>
             symbol.Parameters is
             [
-                { Type.IsSystemCollectionsGenericIEnumerable: true },
-                { Type.IsSystemFuncWithArity3: true }
+            { Type.IsSystemCollectionsGenericIEnumerable: true },
+            { Type.IsSystemFuncWithArity3: true }
             ];
 
         private IParameterSymbol? GetParameterAtOrDefault(int index) => symbol.Parameters.ElementAtOrDefault(index);
