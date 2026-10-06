@@ -37,7 +37,7 @@ public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation { TargetMethod.IsSelectMethod: true } select)
+        if (context.Operation is not IInvocationOperation { TargetMethod.IsAnySelectMethod: true } select)
             return;
 
         var preceding = select.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions();
