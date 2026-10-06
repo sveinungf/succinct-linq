@@ -25,8 +25,8 @@ internal static class AnonymousFunctionOperationExtensions
         }
 
         // A lambda that returns the first element of its first parameter,
-        // e.g. group => group.First(). Extra parameters, such as the index
-        // in Select((group, i) => group.First()), may be ignored.
+        // e.g. group => group.First() or group => group.FirstOrDefault().
+        // Extra parameters, such as the index in Select((group, i) => group.First()), may be ignored.
         public bool IsFirstFunction()
         {
             var parameters = lambda.Symbol.Parameters;
@@ -38,7 +38,7 @@ internal static class AnonymousFunctionOperationExtensions
 
             return value.UnwrapPreservingConversions() is IInvocationOperation
             {
-                TargetMethod.IsFirstMethod: true,
+                TargetMethod.IsFirstOrFirstOrDefaultMethod: true,
                 Arguments: [var source]
             } && source.Value.UnwrapConversions().ReferencesParameter(parameter);
         }

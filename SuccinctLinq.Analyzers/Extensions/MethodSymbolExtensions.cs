@@ -42,6 +42,8 @@ internal static class MethodSymbolExtensions
             Parameters.Length: 1
         };
 
+        public bool IsFirstOrFirstOrDefaultMethod => symbol.IsFirstMethod || symbol.IsFirstOrDefaultMethod;
+
         public bool IsToDictionaryWithElementSelectorMethod => symbol is
         {
             Name: "ToDictionary",

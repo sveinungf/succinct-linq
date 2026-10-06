@@ -50,7 +50,6 @@ public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
             selector = creation.Target;
         }
 
-        // TODO: Should also work for FirstOrDefault?
         if (selector is not IAnonymousFunctionOperation lambda ||
             !lambda.IsFirstFunction())
         {

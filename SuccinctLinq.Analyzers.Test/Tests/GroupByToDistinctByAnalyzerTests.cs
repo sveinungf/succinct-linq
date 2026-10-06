@@ -358,7 +358,7 @@ public class GroupByToDistinctByAnalyzerTests
     }
 
     [Fact]
-    public Task GroupBy_ThenSelectFirstOrDefault_NoWarning()
+    public Task GroupBy_ThenSelectFirstOrDefault_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
@@ -374,7 +374,59 @@ public class GroupByToDistinctByAnalyzerTests
             {
                 public static IEnumerable<Item> MyMethod(IEnumerable<Item> items)
                 {
-                    return items.GroupBy(x => x.Id).Select(g => g.FirstOrDefault());
+                    return items.{|SLQ206:GroupBy(x => x.Id).Select(g => g.FirstOrDefault())|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithComparer_ThenSelectFirstOrDefault_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Item> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.{|SLQ206:GroupBy(x => x.Id, EqualityComparer<int>.Default).Select(g => g.FirstOrDefault())|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_ThenSelectFirstOrDefaultWithPredicate_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Item> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => g.FirstOrDefault(y => y.Id > 0));
                 }
             }
             """;
