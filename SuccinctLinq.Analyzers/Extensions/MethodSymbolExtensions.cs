@@ -77,7 +77,8 @@ internal static class MethodSymbolExtensions
             Name: "GroupBy",
             ContainingType.IsSystemLinqEnumerable: true,
             SelectorFirst: true,
-            SelectorSecond: true
+            SelectorSecond: true,
+            HasResultSelector: false
         };
 
         private bool IsSelectMethod => symbol is
@@ -99,6 +100,8 @@ internal static class MethodSymbolExtensions
         private bool SelectorFirst => symbol.GetParameterAtOrDefault(1) is { Type.IsSystemFuncWithArity2: true };
         private bool SelectorFirstWithTwoParameters => symbol.GetParameterAtOrDefault(1) is { Type.IsSystemFuncWithArity3: true };
         private bool SelectorSecond => symbol.GetParameterAtOrDefault(2) is { Type.IsSystemFuncWithArity2: true };
+
+        private bool HasResultSelector => symbol.Parameters.Any(p => p.Type.IsSystemFuncWithArity3);
 
         private IParameterSymbol? GetParameterAtOrDefault(int index) => symbol.Parameters.ElementAtOrDefault(index);
     }
