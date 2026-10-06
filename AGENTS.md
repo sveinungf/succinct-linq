@@ -62,6 +62,8 @@ dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
 4. Reuse or extend the shared helpers in `SuccinctLinq.Analyzers/Extensions/`.
 5. Add a test class in `SuccinctLinq.Analyzers.Test/Tests/` (see below).
 
+Do not update `README.md` when adding a new rule.
+
 ## Test conventions
 
 - One `*Tests` class per analyzer in the namespace `SuccinctLinq.Analyzers.Test.Tests`.
