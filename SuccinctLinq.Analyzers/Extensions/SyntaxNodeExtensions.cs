@@ -21,11 +21,14 @@ internal static class SyntaxNodeExtensions
 
         private bool ContainsLiteral() =>
             node.DescendantTokens().Any(static token =>
-                token.IsKind(SyntaxKind.StringLiteralToken) ||
                 token.IsKind(SyntaxKind.CharacterLiteralToken) ||
-                token.IsKind(SyntaxKind.SingleLineRawStringLiteralToken) ||
+                token.IsKind(SyntaxKind.InterpolatedStringTextToken) ||
                 token.IsKind(SyntaxKind.MultiLineRawStringLiteralToken) ||
-                token.IsKind(SyntaxKind.InterpolatedStringTextToken));
+                token.IsKind(SyntaxKind.SingleLineRawStringLiteralToken) ||
+                token.IsKind(SyntaxKind.StringLiteralToken) ||
+                token.IsKind(SyntaxKind.Utf8StringLiteralToken) ||
+                token.IsKind(SyntaxKind.Utf8SingleLineRawStringLiteralToken) ||
+                token.IsKind(SyntaxKind.Utf8MultiLineRawStringLiteralToken));
 
         private bool ContainsComment() =>
             node.DescendantTokens().Any(static token =>
