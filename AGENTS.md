@@ -80,7 +80,7 @@ Do not update `README.md` when adding a new rule.
 ## Constraints
 
 - The analyzer project targets `netstandard2.0` (the Polyfill package supplies
-  missing APIs). Keep analyzer code allocation-free and thread-safe;
+  missing APIs). Keep analyzer code allocation-free (when feasible) and thread-safe;
   `EnforceExtendedAnalyzerRules` is enabled.
 - `BannedSymbols.txt` bans `Enumerable.First`, `Nullable.Value`, and
   `ISymbol.ToDisplayString(SymbolDisplayFormat)` — check type names and
