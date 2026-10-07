@@ -71,7 +71,8 @@ internal static class MethodSymbolExtensions
             Name: "GroupBy",
             ContainingType.IsSystemLinqEnumerable: true,
             SelectorFirst: true,
-            SelectorSecond: false
+            SelectorSecond: false,
+            HasResultSelector: false
         };
 
         public bool IsGroupByWithElementSelectorMethod => symbol is
