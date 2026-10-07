@@ -9,13 +9,13 @@ internal static class SyntaxNodeExtensions
     {
         /// <summary>
         /// Collapses whitespace in the diagnostic message to a single space
-        /// unless doing so would alter a string or character literal.
+        /// unless doing so would alter a string or character literal or a comment.
         /// </summary>
         public string GetSingleLineText()
         {
             var fullString = node.ToFullString();
 
-            return node.ContainsLiteral()
+            return node.ContainsLiteral() || node.ContainsComment()
                 ? fullString
                 : fullString.CollapseWhitespace();
         }
@@ -27,5 +27,14 @@ internal static class SyntaxNodeExtensions
                 token.IsKind(SyntaxKind.SingleLineRawStringLiteralToken) ||
                 token.IsKind(SyntaxKind.MultiLineRawStringLiteralToken) ||
                 token.IsKind(SyntaxKind.InterpolatedStringTextToken));
+
+        private bool ContainsComment() =>
+            node.DescendantTokens().Any(static token =>
+                token.LeadingTrivia.Any(static trivia => IsComment(trivia)) ||
+                token.TrailingTrivia.Any(static trivia => IsComment(trivia)));
     }
+
+    private static bool IsComment(SyntaxTrivia trivia) =>
+        trivia.IsKind(SyntaxKind.SingleLineCommentTrivia) ||
+        trivia.IsKind(SyntaxKind.MultiLineCommentTrivia);
 }

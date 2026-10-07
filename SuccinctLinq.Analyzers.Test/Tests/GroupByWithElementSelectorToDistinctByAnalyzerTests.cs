@@ -179,6 +179,37 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_WithKeySelectorContainingLineComment_MessageKeepsComment()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => // key
+                        x.Id, x => x.ToString()).Select(g => g.First());
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 12, 22, 13, 60)
+                .WithMessage("Use DistinctBy(x => // key\n            x.Id).Select(x => x.ToString()) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithComparerContainingStringLiteral_MessageKeepsSyntaxUntouched()
     {
         // Arrange
