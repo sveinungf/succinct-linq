@@ -250,6 +250,36 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_WithIdentityElementSelector_MessageOmitsSelect()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Item> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id, x => x).Select(g => g.First());
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 12, 22, 12, 71)
+                .WithMessage("Use DistinctBy(x => x.Id) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithNullComparerAndElementSelector_ThenSelectFirst_ReportWarning()
     {
         // Arrange

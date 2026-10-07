@@ -13,11 +13,11 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ207",
         title: "GroupBy with element selector followed by Select of First can be simplified",
-        messageFormat: "Use DistinctBy({0}{1}).Select({2}) instead",
+        messageFormat: "Use DistinctBy({0}{1}){2} instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Grouping elements by a key, projecting each element, and taking the first element of each group keeps the first element of each distinct key. A DistinctBy followed by a Select expresses the same intent more concisely.");
+        description: "Grouping elements by a key, projecting each element, and taking the first element of each group keeps the first element of each distinct key. A DistinctBy, optionally followed by a Select, expresses the same intent more concisely.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -65,10 +65,17 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
         var location = groupByInvocation.GetMethodChainLocation(selectInvocation);
 
         var keySelectorText = groupBy.GetSyntaxTextForArgumentOrDefault(1) ?? "...";
-        var elementSelectorText = groupBy.GetSyntaxTextForArgumentOrDefault(2) ?? "...";
         var comparerText = groupBy.GetSyntaxTextForArgumentOrDefault(3);
         var comparerTextArg = comparerText is not null ? $", {comparerText}" : "";
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerTextArg, elementSelectorText));
+        // When the element selector is the identity, DistinctBy alone is sufficient.
+        var selectText = "";
+        if (!groupBy.HasIdentitySelector(2))
+        {
+            var elementSelectorText = groupBy.GetSyntaxTextForArgumentOrDefault(2) ?? "...";
+            selectText = $".Select({elementSelectorText})";
+        }
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerTextArg, selectText));
     }
 }
