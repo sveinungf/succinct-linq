@@ -88,7 +88,7 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
     }
 
     [Fact]
-    public Task GroupBy_WithComparerAndElementSelector_MessageMentionsComparer()
+    public Task GroupBy_WithComparerAndElementSelector_MessageShowsExactComparer()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
@@ -111,7 +111,109 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 12, 113)
-                .WithMessage("Use DistinctBy(comparer) followed by Select of the element selector instead"));
+                .WithMessage("Use DistinctBy(EqualityComparer<int>.Default).Select(elementSelector) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithComparerVariableAndElementSelector_MessageShowsComparerVariable()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item> items, IEqualityComparer<int> myComparer)
+                {
+                    return items.GroupBy(x => x.Id, x => x.ToString(), myComparer).Select(g => g.First());
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 12, 22, 12, 94)
+                .WithMessage("Use DistinctBy(myComparer).Select(elementSelector) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithComparerOnNextLineAndElementSelector_MessageShowsExactComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item> items, IEqualityComparer<int> c)
+                {
+                    return items.GroupBy(x => x.Id, x => x.ToString(),
+                        c).Select(g => g.First());
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 12, 22, 13, 38)
+                .WithMessage("Use DistinctBy(c).Select(elementSelector) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithComparerContainingStringLiteral_MessageKeepsSyntaxUntouched()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public sealed class NamedComparer : IEqualityComparer<int>
+            {
+                public NamedComparer(string _)
+                {
+                }
+
+                public bool Equals(int x, int y) => x == y;
+
+                public int GetHashCode(int obj) => obj.GetHashCode();
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id, x => x.ToString(), new NamedComparer("a b")).Select(g => g.First());
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 23, 22, 23, 108)
+                .WithMessage("Use DistinctBy(new NamedComparer(\"a b\")).Select(elementSelector) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -141,7 +243,7 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 12, 82)
-                .WithMessage("Use DistinctBy() followed by Select of the element selector instead"));
+                .WithMessage("Use DistinctBy().Select(elementSelector) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

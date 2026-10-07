@@ -63,7 +63,11 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
         }
 
         var location = groupByInvocation.GetMethodChainLocation(selectInvocation);
-        var hasComparer = groupBy.HasNonNullArgument(3);
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
+        var comparer = groupBy.GetArgumentAtOrDefault(3)?.UnwrapConversions();
+        var comparerText = comparer is { IsNullOrDefault: false }
+            ? $"({comparer.Syntax.GetSingleLineText()})"
+            : "()";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
     }
 }
