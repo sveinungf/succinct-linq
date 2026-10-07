@@ -30,6 +30,12 @@ internal static class InvocationOperationExtensions
             return null;
         }
 
+        public string? GetSyntaxTextForArgumentOrDefault(int index)
+        {
+            var argument = operation.GetArgumentAtOrDefault(index);
+            return argument?.UnwrapConversions().Syntax.GetSingleLineText();
+        }
+
         public bool HasNonNullArgument(int index)
         {
             var argument = operation.GetArgumentAtOrDefault(index)?.UnwrapConversions();

@@ -13,7 +13,7 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ207",
         title: "GroupBy with element selector followed by Select of First can be simplified",
-        messageFormat: "Use DistinctBy({0}).Select({1}) instead",
+        messageFormat: "Use DistinctBy({0}{1}).Select({2}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -63,15 +63,12 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
         }
 
         var location = groupByInvocation.GetMethodChainLocation(selectInvocation);
-        var comparer = groupBy.GetArgumentAtOrDefault(3)?.UnwrapConversions();
-        var comparerText = comparer is { IsNullOrDefault: false }
-            ? comparer.Syntax.GetSingleLineText()
-            : "";
-        var elementSelector = groupBy.GetArgumentAtOrDefault(2)?.UnwrapConversions();
-        var elementSelectorText = elementSelector is not null
-            ? elementSelector.Syntax.GetSingleLineText()
-            : "...";
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText, elementSelectorText));
+        var keySelectorText = groupBy.GetSyntaxTextForArgumentOrDefault(1) ?? "...";
+        var elementSelectorText = groupBy.GetSyntaxTextForArgumentOrDefault(2) ?? "...";
+        var comparerText = groupBy.GetSyntaxTextForArgumentOrDefault(3);
+        var comparerTextArg = comparerText is not null ? $", {comparerText}" : "";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerTextArg, elementSelectorText));
     }
 }
