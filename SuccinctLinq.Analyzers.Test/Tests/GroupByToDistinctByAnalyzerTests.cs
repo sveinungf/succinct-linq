@@ -515,6 +515,36 @@ public class GroupByToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstWithDowncast_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public interface IGroup : IGrouping<int, Item>
+            {
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Item> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => ((IGroup)g).First());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task SelectFirst_WithoutGroupBy_NoWarning()
     {
         // Arrange

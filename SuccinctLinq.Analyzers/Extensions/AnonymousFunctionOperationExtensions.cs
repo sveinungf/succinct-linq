@@ -40,7 +40,7 @@ internal static class AnonymousFunctionOperationExtensions
             {
                 TargetMethod.IsFirstOrFirstOrDefaultMethod: true,
                 Arguments: [var source]
-            } && source.Value.UnwrapConversions().ReferencesParameter(parameter);
+            } && source.Value.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
     }
 }
