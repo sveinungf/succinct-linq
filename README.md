@@ -44,6 +44,7 @@ Install-Package SuccinctLinq.Analyzers
 | [SLQ204](#slq204-orderby-and-firstordefault-can-be-simplified) | Simplification | Warning | An `OrderBy` followed by a `FirstOrDefault` |
 | [SLQ205](#slq205-orderbydescending-and-firstordefault-can-be-simplified) | Simplification | Warning | An `OrderByDescending` followed by a `FirstOrDefault` |
 | [SLQ206](#slq206-groupby-and-select-can-be-simplified) | Simplification | Warning | A `GroupBy` followed by a `Select` that takes the first element of each group |
+| [SLQ207](#slq207-groupby-with-element-selector-and-select-can-be-simplified) | Simplification | Warning | A `GroupBy` with an element selector followed by a `Select` that takes the first element of each group |
 
 ### SLQ101: Distinct call is redundant
 
@@ -169,4 +170,19 @@ var unique = elements.GroupBy(x => x.Id).Select(x => x.First());
 
 // After
 var unique = elements.DistinctBy(x => x.Id);
+```
+
+### SLQ207: GroupBy with element selector and Select can be simplified
+
+Grouping elements by a key, projecting each element, and taking the first element of each group keeps the first projected element of each distinct key, and the more concise `DistinctBy` method, available in .NET 6 and later, expresses the same intent. 
+The rule only applies to projects targeting .NET 6+. Be aware that `GroupBy` invokes the element selector for every element, whereas the suggested `DistinctBy` followed by `Select` invokes it only for the first element of each distinct key, 
+so if the element selector has side effects or can throw, the refactored code may behave differently.
+
+```csharp
+// Before
+// SLQ207: Use DistinctBy(x => x.Id).Select(x => x.ToString()) instead
+var unique = elements.GroupBy(x => x.Id, x => x.ToString()).Select(x => x.First());
+
+// After
+var unique = elements.DistinctBy(x => x.Id).Select(x => x.ToString());
 ```

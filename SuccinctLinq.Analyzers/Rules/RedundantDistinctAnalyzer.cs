@@ -40,7 +40,7 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             return;
         }
 
-        var distinct = toHashSet.GetArgumentAtOrDefault(0) switch
+        var distinct = toHashSet.GetArgument(0) switch
         {
             IInvocationOperation { TargetMethod.IsDistinctMethod: true } directInvocation => directInvocation,
             ILocalReferenceOperation localReference => GetDistinctInitializer(localReference),
@@ -167,8 +167,8 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
 
     private static bool UsesSameComparer(IInvocationOperation distinct, IInvocationOperation toHashSet)
     {
-        var distinctComparer = distinct.GetArgumentAtOrDefault(1);
-        var toHashSetComparer = toHashSet.GetArgumentAtOrDefault(1);
+        var distinctComparer = distinct.GetArgument(1);
+        var toHashSetComparer = toHashSet.GetArgument(1);
 
         // Only direct references to a built-in StringComparer member are
         // known to always denote the same comparer instance.

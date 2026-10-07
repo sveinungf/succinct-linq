@@ -7,7 +7,7 @@ internal static class InvocationOperationExtensions
 {
     extension(IInvocationOperation operation)
     {
-        public IOperation? GetArgumentAtOrDefault(int index)
+        public IOperation? GetArgument(int index)
         {
             ArgumentOutOfRangeException.ThrowIfNegative(index);
 
@@ -32,7 +32,7 @@ internal static class InvocationOperationExtensions
 
         public bool HasNonNullArgument(int index)
         {
-            var argument = operation.GetArgumentAtOrDefault(index)?.UnwrapConversions();
+            var argument = operation.GetArgument(index)?.UnwrapConversions();
 
             // An absent argument or a null literal means the default value is used at runtime.
             return argument is not null && !argument.IsNullOrDefault;
@@ -54,7 +54,7 @@ internal static class InvocationOperationExtensions
                 return false;
             }
 
-            var argument = operation.GetArgumentAtOrDefault(argumentIndex);
+            var argument = operation.GetArgument(argumentIndex);
             while (argument is IDelegateCreationOperation creation)
             {
                 argument = creation.Target;

@@ -53,7 +53,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
 
     private static bool HasTwoParameterIdentitySelector(IInvocationOperation select)
     {
-        var argument = select.GetArgumentAtOrDefault(1);
+        var argument = select.GetArgument(1);
         while (argument is IDelegateCreationOperation creation)
         {
             argument = creation.Target;
