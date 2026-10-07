@@ -9,7 +9,7 @@ internal static class SyntaxNodeExtensions
     {
         /// <summary>
         /// Collapses whitespace in the diagnostic message to a single space
-        /// unless doing so would alter a string or character literal.
+        /// unless doing so would alter a string literal.
         /// </summary>
         public string GetSingleLineText()
         {
@@ -23,7 +23,8 @@ internal static class SyntaxNodeExtensions
         private bool ContainsLiteral() =>
             node.DescendantTokens().Any(static token =>
                 token.IsKind(SyntaxKind.StringLiteralToken) ||
-                token.IsKind(SyntaxKind.CharacterLiteralToken) ||
-                token.IsKind(SyntaxKind.InterpolatedStringExpression));
+                token.IsKind(SyntaxKind.SingleLineRawStringLiteralToken) ||
+                token.IsKind(SyntaxKind.MultiLineRawStringLiteralToken) ||
+                token.IsKind(SyntaxKind.InterpolatedStringTextToken));
     }
 }
