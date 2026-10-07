@@ -23,5 +23,24 @@ internal static class AnonymousFunctionOperationExtensions
             // around a parameter reference but changes the value.
             return value.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
+
+        // A lambda that returns the first element of its first parameter,
+        // e.g. group => group.First() or group => group.FirstOrDefault().
+        // Extra parameters, such as the index in Select((group, i) => group.First()), may be ignored.
+        public bool IsFirstFunction()
+        {
+            var parameters = lambda.Symbol.Parameters;
+            if (parameters is not [var parameter, ..])
+                return false;
+
+            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
+                return false;
+
+            return value.UnwrapPreservingConversions() is IInvocationOperation
+            {
+                TargetMethod.IsFirstOrFirstOrDefaultMethod: true,
+                Arguments: [var source]
+            } && source.Value.UnwrapPreservingConversions().ReferencesParameter(parameter);
+        }
     }
 }

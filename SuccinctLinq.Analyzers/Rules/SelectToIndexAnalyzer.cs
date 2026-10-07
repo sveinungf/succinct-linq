@@ -38,7 +38,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
     private static void Analyze(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation select ||
-            !select.TargetMethod.IsTwoParameterSelectMethod ||
+            !select.TargetMethod.IsSelectWithTwoParametersMethod ||
             !HasTwoParameterIdentitySelector(select))
         {
             return;

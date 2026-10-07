@@ -33,7 +33,7 @@ public sealed class RedundantSelectAnalyzer : DiagnosticAnalyzer
     private static void Analyze(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation select ||
-            !select.TargetMethod.IsSelectMethod ||
+            !select.TargetMethod.IsAnySelectMethod ||
             !select.HasIdentitySelector(1))
         {
             return;

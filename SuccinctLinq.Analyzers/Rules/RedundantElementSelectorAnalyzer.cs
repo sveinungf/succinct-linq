@@ -33,9 +33,9 @@ public sealed class RedundantElementSelectorAnalyzer : DiagnosticAnalyzer
     private static void Analyze(OperationAnalysisContext context)
     {
         if (context.Operation is not IInvocationOperation call ||
-            !call.TargetMethod.IsToDictionaryMethod &&
-            !call.TargetMethod.IsToLookupMethod &&
-            !call.TargetMethod.IsGroupByMethod ||
+            !call.TargetMethod.IsToDictionaryWithElementSelectorMethod &&
+            !call.TargetMethod.IsToLookupWithElementSelectorMethod &&
+            !call.TargetMethod.IsGroupByWithElementSelectorMethod ||
             !call.HasIdentitySelector(2))
         {
             return;
