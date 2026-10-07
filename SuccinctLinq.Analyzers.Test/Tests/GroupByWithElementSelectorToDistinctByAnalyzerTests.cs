@@ -111,7 +111,7 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 12, 113)
-                .WithMessage("Use DistinctBy(EqualityComparer<int>.Default).Select(elementSelector) instead"));
+                .WithMessage("Use DistinctBy(EqualityComparer<int>.Default).Select(x => x.ToString()) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -141,7 +141,7 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 12, 94)
-                .WithMessage("Use DistinctBy(myComparer).Select(elementSelector) instead"));
+                .WithMessage("Use DistinctBy(myComparer).Select(x => x.ToString()) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -172,7 +172,7 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 13, 38)
-                .WithMessage("Use DistinctBy(c).Select(elementSelector) instead"));
+                .WithMessage("Use DistinctBy(c).Select(x => x.ToString()) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -213,7 +213,7 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 23, 22, 23, 108)
-                .WithMessage("Use DistinctBy(new NamedComparer(\"a b\")).Select(elementSelector) instead"));
+                .WithMessage("Use DistinctBy(new NamedComparer(\"a b\")).Select(x => x.ToString()) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -243,7 +243,7 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ207", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 12, 82)
-                .WithMessage("Use DistinctBy().Select(elementSelector) instead"));
+                .WithMessage("Use DistinctBy().Select(x => x.ToString()) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

@@ -13,11 +13,11 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ207",
         title: "GroupBy with element selector followed by Select of First can be simplified",
-        messageFormat: "Use DistinctBy{0}.Select(elementSelector) instead",
+        messageFormat: "Use DistinctBy({0}).Select({1}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Grouping elements by a key, projecting each element, and taking the first element of each group keeps the first element of each distinct key, so DistinctBy followed by a Select of the element selector expresses the same intent more concisely.");
+        description: "Grouping elements by a key, projecting each element, and taking the first element of each group keeps the first element of each distinct key. A DistinctBy followed by a Select expresses the same intent more concisely.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -65,9 +65,13 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
         var location = groupByInvocation.GetMethodChainLocation(selectInvocation);
         var comparer = groupBy.GetArgumentAtOrDefault(3)?.UnwrapConversions();
         var comparerText = comparer is { IsNullOrDefault: false }
-            ? $"({comparer.Syntax.GetSingleLineText()})"
-            : "()";
+            ? comparer.Syntax.GetSingleLineText()
+            : "";
+        var elementSelector = groupBy.GetArgumentAtOrDefault(2)?.UnwrapConversions();
+        var elementSelectorText = elementSelector is not null
+            ? elementSelector.Syntax.GetSingleLineText()
+            : "...";
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText, elementSelectorText));
     }
 }
