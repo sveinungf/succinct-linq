@@ -40,11 +40,11 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
         if (context.Operation is not IInvocationOperation { TargetMethod.IsAnySelectMethod: true } select)
             return;
 
-        var preceding = select.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions();
+        var preceding = select.GetArgument(0)?.UnwrapPreservingConversions();
         if (preceding is not IInvocationOperation { TargetMethod.IsGroupByWithElementSelectorMethod: true } groupBy)
             return;
 
-        var selector = select.GetArgumentAtOrDefault(1);
+        var selector = select.GetArgument(1);
         while (selector is IDelegateCreationOperation creation)
         {
             selector = creation.Target;
@@ -64,18 +64,21 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
 
         var location = groupByInvocation.GetMethodChainLocation(selectInvocation);
 
-        var keySelectorText = groupBy.GetSyntaxTextForArgumentOrDefault(1) ?? "...";
-        var comparerText = groupBy.GetSyntaxTextForArgumentOrDefault(3);
-        var comparerTextArg = comparerText is not null ? $", {comparerText}" : "";
+        var keySelectorText = groupBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
+
+        // The comparer argument is optional.
+        var comparerText = groupBy.GetArgument(3) is { } comparerArg
+            ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
+            : "";
 
         // When the element selector is the identity, DistinctBy alone is sufficient.
         var selectText = "";
         if (!groupBy.HasIdentitySelector(2))
         {
-            var elementSelectorText = groupBy.GetSyntaxTextForArgumentOrDefault(2) ?? "...";
+            var elementSelectorText = groupBy.GetArgument(2)?.GetSingleLineSyntaxText() ?? "{elementSelector}";
             selectText = $".Select({elementSelectorText})";
         }
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerTextArg, selectText));
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText, selectText));
     }
 }

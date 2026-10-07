@@ -80,6 +80,11 @@ internal static class OperationExtensions
             return false;
         }
 
+        public string? GetSingleLineSyntaxText()
+        {
+            return operation.UnwrapConversions().Syntax.GetSingleLineText();
+        }
+
         public bool ReadsLocalReference(ILocalReferenceOperation localReference)
         {
             if (operation is ILocalReferenceOperation reference &&

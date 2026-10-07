@@ -40,7 +40,7 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
         if (context.Operation is not IInvocationOperation { TargetMethod.IsFirstOrDefaultMethod: true } firstOrDefault)
             return;
 
-        var preceding = firstOrDefault.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions();
+        var preceding = firstOrDefault.GetArgument(0)?.UnwrapPreservingConversions();
         if (preceding is not IInvocationOperation { TargetMethod.IsOrderByMethod: true } orderBy)
             return;
 

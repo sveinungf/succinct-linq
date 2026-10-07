@@ -8,16 +8,15 @@ internal static class SyntaxNodeExtensions
     extension(SyntaxNode node)
     {
         /// <summary>
-        /// Collapses whitespace in the diagnostic message to a single space
-        /// unless doing so would alter a string or character literal or a comment.
+        /// Collapses whitespace in the diagnostic message to a single space.
+        /// Returns null if doing so would alter a string or character literal
+        /// or a comment.
         /// </summary>
-        public string GetSingleLineText()
+        public string? GetSingleLineText()
         {
-            var fullString = node.ToFullString();
-
             return node.ContainsLiteral() || node.ContainsComment()
-                ? fullString
-                : fullString.CollapseWhitespace();
+                ? null
+                : node.ToFullString().CollapseWhitespace();
         }
 
         private bool ContainsLiteral() =>

@@ -40,11 +40,11 @@ public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
         if (context.Operation is not IInvocationOperation { TargetMethod.IsAnySelectMethod: true } select)
             return;
 
-        var preceding = select.GetArgumentAtOrDefault(0)?.UnwrapPreservingConversions();
+        var preceding = select.GetArgument(0)?.UnwrapPreservingConversions();
         if (preceding is not IInvocationOperation { TargetMethod.IsGroupByMethod: true } groupBy)
             return;
 
-        var selector = select.GetArgumentAtOrDefault(1);
+        var selector = select.GetArgument(1);
         while (selector is IDelegateCreationOperation creation)
         {
             selector = creation.Target;
