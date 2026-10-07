@@ -16,7 +16,7 @@ internal static class SyntaxNodeExtensions
         {
             return node.ContainsLiteral() || node.ContainsComment()
                 ? null
-                : node.ToFullString().CollapseWhitespace();
+                : node.ToString().CollapseWhitespace();
         }
 
         private bool ContainsLiteral() =>
