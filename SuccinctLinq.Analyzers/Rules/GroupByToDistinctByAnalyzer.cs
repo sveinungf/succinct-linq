@@ -13,7 +13,7 @@ public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ206",
         title: "GroupBy followed by Select of First can be simplified",
-        messageFormat: "Use DistinctBy{0} instead",
+        messageFormat: "Use DistinctBy({0}{1}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -63,7 +63,14 @@ public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
         }
 
         var location = groupByInvocation.GetMethodChainLocation(selectInvocation);
-        var hasComparer = groupBy.HasNonNullArgument(2);
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
+
+        var keySelectorText = groupBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
+
+        // The comparer argument is optional.
+        var comparerText = groupBy.GetArgument(2) is { } comparerArg
+            ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
+            : "";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText));
     }
 }

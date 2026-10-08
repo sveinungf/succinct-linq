@@ -111,7 +111,7 @@ public class GroupByToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ206", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 12, 94)
-                .WithMessage("Use DistinctBy(comparer) instead"));
+                .WithMessage("Use DistinctBy(x => x.Id, EqualityComparer<int>.Default) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -141,7 +141,7 @@ public class GroupByToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ206", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 12, 22, 12, 63)
-                .WithMessage("Use DistinctBy() instead"));
+                .WithMessage("Use DistinctBy(x => x.Id) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
