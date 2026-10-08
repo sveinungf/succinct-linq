@@ -13,7 +13,7 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ204",
         title: "OrderBy followed by FirstOrDefault can be simplified",
-        messageFormat: "Use MinBy{0} instead",
+        messageFormat: "Use MinBy({0}{1}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -62,7 +62,14 @@ public sealed class OrderByToMinByAnalyzer : DiagnosticAnalyzer
         }
 
         var location = orderByInvocation.GetMethodChainLocation(firstOrDefaultInvocation);
-        var hasComparer = orderBy.HasNonNullArgument(2);
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
+
+        var keySelectorText = orderBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
+
+        // The comparer argument is optional.
+        var comparerText = orderBy.GetArgument(2) is { } comparerArg
+            ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
+            : "";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText));
     }
 }

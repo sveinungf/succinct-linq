@@ -91,7 +91,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ203", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 71)
-                .WithMessage("Use OrderDescending(comparer) instead"));
+                .WithMessage("Use OrderDescending(StringComparer.Ordinal) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

@@ -13,7 +13,7 @@ public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ205",
         title: "OrderByDescending followed by FirstOrDefault can be simplified",
-        messageFormat: "Use MaxBy{0} instead",
+        messageFormat: "Use MaxBy({0}{1}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -65,6 +65,14 @@ public sealed class OrderByDescendingToMaxByAnalyzer : DiagnosticAnalyzer
         }
 
         var location = orderByDescInvocation.GetMethodChainLocation(firstOrDefaultInvocation);
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
+
+        var keySelectorText = orderByDesc.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
+
+        // The comparer argument is optional.
+        var comparerText = orderByDesc.GetArgument(2) is { } comparerArg
+            ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
+            : "";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText));
     }
 }

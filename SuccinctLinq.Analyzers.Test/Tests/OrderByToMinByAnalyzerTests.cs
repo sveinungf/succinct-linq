@@ -91,7 +91,7 @@ public class OrderByToMinByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ204", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 84)
-                .WithMessage("Use MinBy(comparer) instead"));
+                .WithMessage("Use MinBy(x => x.Length, Comparer<int>.Default) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -116,7 +116,7 @@ public class OrderByToMinByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ204", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 61)
-                .WithMessage("Use MinBy() instead"));
+                .WithMessage("Use MinBy(x => x.Length) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

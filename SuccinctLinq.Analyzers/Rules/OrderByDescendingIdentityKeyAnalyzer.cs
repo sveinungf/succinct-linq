@@ -13,7 +13,7 @@ public sealed class OrderByDescendingIdentityKeyAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ203",
         title: "OrderByDescending can be simplified",
-        messageFormat: "Use OrderDescending{0} instead",
+        messageFormat: "Use OrderDescending({0}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -48,7 +48,12 @@ public sealed class OrderByDescendingIdentityKeyAnalyzer : DiagnosticAnalyzer
             return;
 
         var location = invocation.GetMethodCallLocation();
-        var hasComparer = orderByDescending.TargetMethod.Parameters.Length > 2;
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, hasComparer ? "(comparer)" : "()"));
+
+        // The comparer argument is optional.
+        var comparerText = orderByDescending.GetArgument(2) is { } comparerArg
+            ? comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"
+            : "";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
     }
 }
