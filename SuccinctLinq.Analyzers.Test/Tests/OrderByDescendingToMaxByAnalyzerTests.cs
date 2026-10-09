@@ -91,7 +91,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ205", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 94)
-                .WithMessage("Use MaxBy(comparer) instead"));
+                .WithMessage("Use MaxBy(x => x.Length, Comparer<int>.Default) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -116,7 +116,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ205", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 71)
-                .WithMessage("Use MaxBy() instead"));
+                .WithMessage("Use MaxBy(x => x.Length) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

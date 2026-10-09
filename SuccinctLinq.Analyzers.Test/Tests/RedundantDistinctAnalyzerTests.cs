@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using SuccinctLinq.Analyzers.Rules;
 using SuccinctLinq.Analyzers.Test.Helpers;
 
@@ -1451,6 +1453,56 @@ public class RedundantDistinctAnalyzerTests
                 }
             }
             """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Distinct_WithComparer_MessageMentionsComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Distinct(StringComparer.OrdinalIgnoreCase).ToHashSet(StringComparer.OrdinalIgnoreCase);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ101", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 64)
+                .WithMessage("Remove the redundant Distinct(StringComparer.OrdinalIgnoreCase) call"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Distinct_WithoutComparer_MessageOmitsComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static HashSet<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Distinct().ToHashSet();
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ101", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 32)
+                .WithMessage("Remove the redundant Distinct() call"));
 
         // Act & Assert
         return context.RunAsync(Token);

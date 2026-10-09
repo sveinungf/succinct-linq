@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using SuccinctLinq.Analyzers.Rules;
 using SuccinctLinq.Analyzers.Test.Helpers;
 
@@ -324,6 +326,31 @@ public class RedundantElementSelectorAnalyzerTests
                 }
             }
             """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_IdentityElementSelector_MessageContainsSelectorText()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantElementSelectorAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.ToDictionary(x => x.Length, x => x);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ102", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 57)
+                .WithMessage("Remove the redundant \"x => x\" selector"));
 
         // Act & Assert
         return context.RunAsync(Token);

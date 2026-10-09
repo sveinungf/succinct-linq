@@ -14,7 +14,7 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ101",
         title: "Distinct call is redundant",
-        messageFormat: "The Distinct call is redundant; the following ToHashSet call removes duplicates",
+        messageFormat: "Remove the redundant Distinct({0}) call",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -54,7 +54,8 @@ public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
             return;
 
         var location = invocation.GetMethodCallLocation();
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
+        var comparerText = distinct.GetArgument(1)?.GetSingleLineSyntaxText() ?? "";
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
     }
 
     private static IInvocationOperation? GetDistinctInitializer(ILocalReferenceOperation toHashSetLocalReference)

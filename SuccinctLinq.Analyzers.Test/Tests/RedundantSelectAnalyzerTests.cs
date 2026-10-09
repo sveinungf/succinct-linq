@@ -1,3 +1,5 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Testing;
 using SuccinctLinq.Analyzers.Rules;
 using SuccinctLinq.Analyzers.Test.Helpers;
 
@@ -564,6 +566,31 @@ public class RedundantSelectAnalyzerTests
                 }
             }
             """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task Select_IdentitySelector_MessageMentionsSelector()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.Select(x => x);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ103", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 36)
+                .WithMessage("Remove the redundant Select(x => x) call"));
 
         // Act & Assert
         return context.RunAsync(Token);
