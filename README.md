@@ -53,7 +53,7 @@ The rule only reports when both calls use the same equality comparer (both the d
 
 ```csharp
 // Before
-// SLQ101: The Distinct call is redundant; the following ToHashSet call removes duplicates
+// SLQ101: Remove the redundant Distinct() call
 return items.Distinct().ToHashSet();
 
 // After
@@ -80,7 +80,7 @@ A `Select` whose selector simply returns the source element (`x => x`) does not 
 
 ```csharp
 // Before
-// SLQ103: The identity element selector makes the Select call redundant and it can be removed
+// SLQ103: Remove the redundant Select(x => x) call
 var nonEmpty = items.Where(x => x.Length > 0).Select(x => x);
 
 // After
@@ -95,7 +95,7 @@ so replacing with `Index` may require adapting the code to use the index first, 
 
 ```csharp
 // Before
-// SLQ201: Select can be simplified to Index()
+// SLQ201: Use Index() instead
 var indexed = items.Select((item, index) => (index, item));
 
 // After
@@ -109,7 +109,7 @@ The rule only applies to projects targeting .NET 7+.
 
 ```csharp
 // Before
-// SLQ202: OrderBy can be simplified to Order without the (x => x)
+// SLQ202: Use Order() instead
 var sorted = items.OrderBy(x => x);
 
 // After
@@ -123,7 +123,7 @@ The rule only applies to projects targeting .NET 7+.
 
 ```csharp
 // Before
-// SLQ203: OrderByDescending can be simplified to OrderDescending without the (x => x)
+// SLQ203: Use OrderDescending() instead
 var sorted = items.OrderByDescending(x => x);
 
 // After
@@ -137,7 +137,7 @@ The rule only applies to projects targeting .NET 6+ and to sequences whose eleme
 
 ```csharp
 // Before
-// SLQ204: Use MinBy() instead
+// SLQ204: Use MinBy(x => x.Length) instead
 var shortest = items.OrderBy(x => x.Length).FirstOrDefault();
 
 // After
@@ -151,7 +151,7 @@ The rule only applies to projects targeting .NET 6+ and to sequences whose eleme
 
 ```csharp
 // Before
-// SLQ205: Use MaxBy() instead
+// SLQ205: Use MaxBy(x => x.Length) instead
 var longest = items.OrderByDescending(x => x.Length).FirstOrDefault();
 
 // After
@@ -165,7 +165,7 @@ The rule only applies to projects targeting .NET 6+ and to `GroupBy` calls witho
 
 ```csharp
 // Before
-// SLQ206: Use DistinctBy() instead
+// SLQ206: Use DistinctBy(x => x.Id) instead
 var unique = elements.GroupBy(x => x.Id).Select(x => x.First());
 
 // After

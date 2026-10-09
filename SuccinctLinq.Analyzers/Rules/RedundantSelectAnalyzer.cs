@@ -43,7 +43,7 @@ public sealed class RedundantSelectAnalyzer : DiagnosticAnalyzer
             return;
 
         var location = invocation.GetMethodCallLocation();
-        var selectorText = select.GetArgument(1)?.GetSingleLineSyntaxText() ?? "";
+        var selectorText = select.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{elementSelector}";
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, selectorText));
     }
 }
