@@ -13,7 +13,7 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ201",
         title: "Select can be simplified",
-        messageFormat: "Select can be simplified to Index()",
+        messageFormat: "Use Index() instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
