@@ -67,7 +67,7 @@ An element selector of `x => x` is redundant and can be removed.
 
 ```csharp
 // Before
-// SLQ102: The element selector (x => x) is redundant and can be removed
+// SLQ102: Remove the redundant "x => x" selector
 var byLength = words.ToDictionary(x => x.Length, x => x);
 
 // After
