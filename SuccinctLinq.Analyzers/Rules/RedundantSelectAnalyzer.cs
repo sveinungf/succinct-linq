@@ -13,7 +13,7 @@ public sealed class RedundantSelectAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ103",
         title: "Select call is redundant",
-        messageFormat: "The identity element selector makes the Select call redundant and it can be removed",
+        messageFormat: "Remove the redundant Select({0}) call",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
@@ -43,6 +43,7 @@ public sealed class RedundantSelectAnalyzer : DiagnosticAnalyzer
             return;
 
         var location = invocation.GetMethodCallLocation();
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
+        var selectorText = select.GetArgument(1)?.GetSingleLineSyntaxText() ?? "";
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, selectorText));
     }
 }
