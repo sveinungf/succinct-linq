@@ -17,6 +17,11 @@ internal static class OperationExtensions
         public bool IsFunctionBoundary => operation is
             IAnonymousFunctionOperation or ILocalFunctionOperation;
 
+        public bool IsIndexerAccess => operation is IMemberReferenceOperation
+        {
+            Member: IPropertySymbol { IsIndexer: true }
+        };
+
         public bool IsNullOrDefault => operation switch
         {
             IDefaultValueOperation { Type.TypeKind: TypeKind.Class or TypeKind.Interface } => true,
@@ -63,6 +68,15 @@ internal static class OperationExtensions
             }
 
             return operation;
+        }
+
+        public bool IsFirstMethodCallOnParameterType(IParameterSymbol parameter)
+        {
+            return operation.UnwrapPreservingConversions() is IInvocationOperation
+            {
+                TargetMethod.IsFirstOrFirstOrDefaultMethod: true,
+                Arguments: [var source]
+            } && source.Value.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
 
         public bool IsInsideFunctionBoundary()
