@@ -51,7 +51,7 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
         }
 
         if (selector is not IAnonymousFunctionOperation lambda ||
-            !lambda.IsFirstMethodFollowedByMemberAccess(out var memberAccess))
+            !lambda.TryGetMemberNamesOnFirstElement(out var memberNames))
         {
             return;
         }
@@ -71,30 +71,9 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
             ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        var memberText = GetMemberText(lambda, memberAccess);
+        var parameterName = lambda.Symbol.Parameters[0].Name;
+        var memberText = $"{parameterName} => {parameterName}.{string.Join(".", memberNames)}";
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText, memberText));
-    }
-
-    private static string GetMemberText(
-        IAnonymousFunctionOperation lambda,
-        IMemberReferenceOperation memberAccess)
-    {
-        var names = new List<string>();
-        var member = memberAccess;
-
-        while (true)
-        {
-            names.Add(member.Member.Name);
-            if (member.Instance is not IMemberReferenceOperation inner)
-                break;
-
-            member = inner;
-        }
-
-        names.Reverse();
-
-        var parameterName = lambda.Symbol.Parameters[0].Name;
-        return $"{parameterName} => {parameterName}.{string.Join(".", names)}";
     }
 }

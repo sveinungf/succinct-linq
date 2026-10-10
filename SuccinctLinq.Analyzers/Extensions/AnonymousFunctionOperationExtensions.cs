@@ -42,21 +42,22 @@ internal static class AnonymousFunctionOperationExtensions
         }
 
         // A lambda that returns a member of the first element of its first parameter, e.g. group => group.First().Value.
+        // The member names are returned in the order they are accessed, e.g. [Value] for group => group.First().Value.
         // Indexer access, such as group => group.First()[0], is not a member access.
         // Extra parameters, such as the index in Select((group, i) => group.First().Value), may be ignored.
-        public bool IsFirstMethodFollowedByMemberAccess(
-            [NotNullWhen(true)] out IMemberReferenceOperation? memberAccess)
+        public bool TryGetMemberNamesOnFirstElement(
+            [NotNullWhen(true)] out IReadOnlyList<string>? memberNames)
         {
             var parameters = lambda.Symbol.Parameters;
             if (parameters is not [var parameter, ..])
             {
-                memberAccess = null;
+                memberNames = null;
                 return false;
             }
 
             if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
             {
-                memberAccess = null;
+                memberNames = null;
                 return false;
             }
 
@@ -64,7 +65,7 @@ internal static class AnonymousFunctionOperationExtensions
             value = value.UnwrapPreservingConversions();
             if (value is not IMemberReferenceOperation { IsIndexerAccess: false } memberReference)
             {
-                memberAccess = null;
+                memberNames = null;
                 return false;
             }
 
@@ -75,14 +76,30 @@ internal static class AnonymousFunctionOperationExtensions
                 instance = inner;
             }
 
-            if (instance.Instance is { } op && op.IsFirstMethodCallOnParameterType(parameter))
+            if (instance.Instance is not { } firstCall || !firstCall.IsFirstMethodCallOnParameterType(parameter))
             {
-                memberAccess = memberReference;
-                return true;
+                memberNames = null;
+                return false;
             }
 
-            memberAccess = null;
-            return false;
+            var names = new List<string>();
+            var member = memberReference;
+
+            while (true)
+            {
+                names.Add(member.Member.Name);
+                if (ReferenceEquals(member, instance))
+                {
+                    break;
+                }
+
+                // Every instance in the chain was verified as a member reference above.
+                member = (IMemberReferenceOperation)member.Instance!;
+            }
+
+            names.Reverse();
+            memberNames = names;
+            return true;
         }
     }
 }
