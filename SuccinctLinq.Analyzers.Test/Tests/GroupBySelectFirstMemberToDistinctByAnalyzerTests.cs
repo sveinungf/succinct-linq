@@ -516,6 +516,65 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingAfterFirst_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<int> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => g.First()!.Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingInChain_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Address
+            {
+                public string City { get; set; }
+            }
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public Address? Address { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => g.First().Address!.City);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_ThenSelectFirstOrDefaultMemberWithPredicate_NoWarning()
     {
         // Arrange

@@ -1,4 +1,6 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -47,6 +49,8 @@ internal static class AnonymousFunctionOperationExtensions
         // A lambda that returns a member of the first element of its first parameter, e.g. group => group.First().Value.
         // The member names are returned in the order they are accessed, e.g. [Value] for group => group.First().Value.
         // Indexer access, such as group => group.First()[0], is not a member access.
+        // A null-forgiving operator, such as group => group.First()!.Value, is excluded because the
+        // suggested replacement would drop the operator and introduce CS8602 warnings.
         // Extra parameters, such as the index in Select((group, i) => group.First().Value), may be ignored.
         public bool TryGetMemberNamesOnFirstElement(
             [NotNullWhen(true)] out IReadOnlyList<string>? memberNames)
@@ -87,13 +91,16 @@ internal static class AnonymousFunctionOperationExtensions
             {
                 names.Add(member.Member.Name);
 
-                if (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner)
+                if (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner &&
+                    !HasNullForgivingOperator(member.Instance))
                 {
                     member = inner;
                     continue;
                 }
 
-                if (member.Instance is not { } firstCall || !firstCall.IsFirstMethodCallOnParameterType(parameter))
+                if (member.Instance is not { } firstCall ||
+                    HasNullForgivingOperator(member.Instance) ||
+                    !firstCall.IsFirstMethodCallOnParameterType(parameter))
                 {
                     memberNames = null;
                     return false;
@@ -104,5 +111,11 @@ internal static class AnonymousFunctionOperationExtensions
                 return true;
             }
         }
+
+        // A null-forgiving operator (!) on the instance would be dropped by the
+        // suggested replacement, introducing CS8602 warnings.
+        private static bool HasNullForgivingOperator(IOperation operation) =>
+            operation.Syntax?.Parent is PostfixUnaryExpressionSyntax postfix &&
+            postfix.OperatorToken.IsKind(SyntaxKind.ExclamationToken);
     }
 }
