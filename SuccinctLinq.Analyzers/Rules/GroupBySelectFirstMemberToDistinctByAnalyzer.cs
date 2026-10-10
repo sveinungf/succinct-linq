@@ -51,7 +51,7 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
         }
 
         if (selector is not IAnonymousFunctionOperation lambda ||
-            !lambda.TryGetMemberNamesOnFirstElement(out var memberNames))
+            !lambda.TryGetMemberNamesOnFirstElement(out var memberNames, out var trailingNullForgiving))
         {
             return;
         }
@@ -72,7 +72,7 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
             : "";
 
         var parameterName = lambda.Symbol.Parameters[0].Name;
-        var memberText = $"{parameterName} => {parameterName}.{string.Join(".", memberNames)}";
+        var memberText = $"{parameterName} => {parameterName}.{string.Join(".", memberNames)}{(trailingNullForgiving ? "!" : "")}";
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText, memberText));
     }

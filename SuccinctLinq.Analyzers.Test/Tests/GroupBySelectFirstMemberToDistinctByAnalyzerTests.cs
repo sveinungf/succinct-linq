@@ -575,6 +575,37 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithTrailingNullForgiving_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public string? Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => g.First().Value!);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 70)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g.Value!) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_ThenSelectFirstOrDefaultMemberWithPredicate_NoWarning()
     {
         // Arrange

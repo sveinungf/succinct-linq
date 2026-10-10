@@ -51,29 +51,31 @@ internal static class AnonymousFunctionOperationExtensions
         // Indexer access, such as group => group.First()[0], is not a member access.
         // A null-forgiving operator, such as group => group.First()!.Value, is excluded because the
         // suggested replacement would drop the operator and introduce CS8602 warnings.
+        // A trailing null-forgiving operator, such as group => group.First().Value!, is reported with the operator preserved.
         // Extra parameters, such as the index in Select((group, i) => group.First().Value), may be ignored.
         public bool TryGetMemberNamesOnFirstElement(
-            [NotNullWhen(true)] out IReadOnlyList<string>? memberNames)
+            [NotNullWhen(true)] out IReadOnlyList<string>? memberNames,
+            out bool hasTrailingNullForgiving)
         {
+            hasTrailingNullForgiving = false;
             if (lambda.Symbol.IsAsync)
             {
                 memberNames = null;
                 return false;
             }
-
             var parameters = lambda.Symbol.Parameters;
             if (parameters is not [var parameter, ..])
             {
                 memberNames = null;
                 return false;
             }
-
             if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
             {
                 memberNames = null;
                 return false;
             }
 
+            hasTrailingNullForgiving = HasNullForgivingOperator(value);
             // An indexer is a property reference, so it must be excluded.
             value = value.UnwrapPreservingConversions();
             if (value is not IMemberReferenceOperation { IsIndexerAccess: false } memberReference)
@@ -86,7 +88,6 @@ internal static class AnonymousFunctionOperationExtensions
             // to the member whose instance is the First call.
             var names = new List<string>();
             var member = memberReference;
-
             while (true)
             {
                 names.Add(member.Member.Name);
