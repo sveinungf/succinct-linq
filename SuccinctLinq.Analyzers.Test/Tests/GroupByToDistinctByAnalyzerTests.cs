@@ -384,6 +384,32 @@ public class GroupByToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstAsyncLambda_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Task<Item>> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(async g => g.First());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_ThenSelectFirstOrDefault_ReportWarning()
     {
         // Arrange

@@ -1,3 +1,7 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Operations;
+using System.Diagnostics.CodeAnalysis;
+
 namespace SuccinctLinq.Analyzers.Extensions;
 
 internal static class AnonymousFunctionOperationExtensions
@@ -27,6 +31,9 @@ internal static class AnonymousFunctionOperationExtensions
         // Extra parameters, such as the index in Select((group, i) => group.First()), may be ignored.
         public bool IsFirstMethod()
         {
+            if (lambda.Symbol.IsAsync)
+                return false;
+
             var parameters = lambda.Symbol.Parameters;
             if (parameters is not [var parameter, ..])
                 return false;
