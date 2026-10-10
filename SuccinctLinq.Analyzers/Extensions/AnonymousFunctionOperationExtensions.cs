@@ -69,37 +69,31 @@ internal static class AnonymousFunctionOperationExtensions
                 return false;
             }
 
-            // Walk down the member chain to the member whose instance is the First call.
-            var instance = memberReference;
-            while (instance.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner)
-            {
-                instance = inner;
-            }
-
-            if (instance.Instance is not { } firstCall || !firstCall.IsFirstMethodCallOnParameterType(parameter))
-            {
-                memberNames = null;
-                return false;
-            }
-
+            // Walk down the member chain, collecting member names,
+            // to the member whose instance is the First call.
             var names = new List<string>();
             var member = memberReference;
 
             while (true)
             {
                 names.Add(member.Member.Name);
-                if (ReferenceEquals(member, instance))
+
+                if (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner)
                 {
-                    break;
+                    member = inner;
+                    continue;
                 }
 
-                // Every instance in the chain was verified as a member reference above.
-                member = (IMemberReferenceOperation)member.Instance!;
-            }
+                if (member.Instance is not { } firstCall || !firstCall.IsFirstMethodCallOnParameterType(parameter))
+                {
+                    memberNames = null;
+                    return false;
+                }
 
-            names.Reverse();
-            memberNames = names;
-            return true;
+                names.Reverse();
+                memberNames = names;
+                return true;
+            }
         }
     }
 }
