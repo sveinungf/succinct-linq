@@ -1,7 +1,3 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Operations;
-using System.Diagnostics.CodeAnalysis;
-
 namespace SuccinctLinq.Analyzers.Extensions;
 
 internal static class AnonymousFunctionOperationExtensions
@@ -48,6 +44,12 @@ internal static class AnonymousFunctionOperationExtensions
         public bool TryGetMemberNamesOnFirstElement(
             [NotNullWhen(true)] out IReadOnlyList<string>? memberNames)
         {
+            if (lambda.Symbol.IsAsync)
+            {
+                memberNames = null;
+                return false;
+            }
+
             var parameters = lambda.Symbol.Parameters;
             if (parameters is not [var parameter, ..])
             {

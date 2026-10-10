@@ -543,6 +543,33 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstMemberAsyncLambda_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Task<int>> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(async g => g.First().Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_ThenSelectLastMember_NoWarning()
     {
         // Arrange
