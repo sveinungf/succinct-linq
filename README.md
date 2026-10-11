@@ -31,6 +31,7 @@ Install-Package SuccinctLinq.Analyzers
 | [SLQ205](#slq205-orderbydescending-and-firstordefault-can-be-simplified) | Simplification | An `OrderByDescending` followed by a `FirstOrDefault` |
 | [SLQ206](#slq206-groupby-and-select-can-be-simplified) | Simplification | A `GroupBy` followed by a `Select` that takes the first element of each group |
 | [SLQ207](#slq207-groupby-with-element-selector-and-select-can-be-simplified) | Simplification | A `GroupBy` with an element selector followed by a `Select` that takes the first element of each group |
+| [SLQ208](#slq208-groupby-and-select-of-a-member-of-first-can-be-simplified) | Simplification | A `GroupBy` followed by a `Select` that takes a member of the first element of each group |
 
 ### SLQ101: Distinct call is redundant
 
@@ -156,4 +157,17 @@ var unique = elements.GroupBy(x => x.Id, x => x.ToString()).Select(x => x.First(
 
 // After
 var unique = elements.DistinctBy(x => x.Id).Select(x => x.ToString());
+```
+
+### SLQ208: GroupBy and Select of a member of First can be simplified
+
+Only applies to projects targeting .NET 6+ and to `GroupBy` calls without an element selector.
+
+```csharp
+// Before
+// SLQ208: Use DistinctBy(x => x.Id).Select(g => g.Value) instead
+var unique = elements.GroupBy(x => x.Id).Select(g => g.First().Value);
+
+// After
+var unique = elements.DistinctBy(x => x.Id).Select(g => g.Value);
 ```
