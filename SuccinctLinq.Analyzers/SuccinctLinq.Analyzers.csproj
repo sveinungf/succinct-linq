@@ -16,7 +16,7 @@
     <PackageProjectUrl>https://github.com/sveinungf/succinct-linq</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageReleaseNotes>https://github.com/sveinungf/succinct-linq/releases</PackageReleaseNotes>
-    <PackageTags>analyzer</PackageTags>
+    <PackageTags>analyzer, roslyn, linq, static-analysis, code-quality</PackageTags>
     <RepositoryUrl>https://github.com/sveinungf/succinct-linq</RepositoryUrl>
 
     <!-- Analyzer -->
