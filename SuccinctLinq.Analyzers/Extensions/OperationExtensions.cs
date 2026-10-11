@@ -82,7 +82,7 @@ internal static class OperationExtensions
 
         public bool IsFirstMethodCallOnParameterType(IParameterSymbol parameter)
         {
-            return operation.UnwrapPreservingConversions() is IInvocationOperation
+            return operation.UnwrapIdentityConversions() is IInvocationOperation
             {
                 TargetMethod.IsFirstOrFirstOrDefaultMethod: true,
                 Arguments: [var source]
