@@ -28,7 +28,7 @@ Install-Package SuccinctLinq.Analyzers
 
 ## Rules
 
-Every rule is enabled by default and reports as a warning. Note that some rules might not emit any warning if the target framework of the project is below a certain level. For example, rule `SLQ204` requires the target framework to be at least .NET 6, because the suggested `DistinctBy(...)` replacement was introduced in .NET 6.
+Every rule is enabled by default and reports as a warning. Note that some rules might not emit any warning if the target framework of the project is below a certain level. For example, rule `SLQ204` requires the target framework to be at least .NET 6, because the suggested `MinBy(...)` replacement was introduced in .NET 6.
 
 ### SLQ101: Distinct() before ToHashSet() is redundant
 
