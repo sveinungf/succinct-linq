@@ -77,7 +77,7 @@ internal static class AnonymousFunctionOperationExtensions
 
             hasTrailingNullForgiving = HasNullForgivingOperator(value);
             // An indexer is a property reference, so it must be excluded.
-            value = value.UnwrapPreservingConversions();
+            value = value.UnwrapIdentityConversions();
             if (value is not IMemberReferenceOperation { IsIndexerAccess: false } memberReference)
             {
                 memberNames = null;

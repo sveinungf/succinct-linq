@@ -60,6 +60,16 @@ internal static class OperationExtensions
             return operation;
         }
 
+        public IOperation UnwrapIdentityConversions()
+        {
+            while (operation is IConversionOperation { Conversion.IsIdentity: true } conversion)
+            {
+                operation = conversion.Operand;
+            }
+
+            return operation;
+        }
+
         public IOperation UnwrapPreservingConversions()
         {
             while (operation is IConversionOperation { PreservesElement: true } conversion)

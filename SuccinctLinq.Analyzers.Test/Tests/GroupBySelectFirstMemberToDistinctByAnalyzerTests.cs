@@ -805,6 +805,60 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithExplicitResultType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select<IGrouping<int, Item>, object>(g => g.First().Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithCastToResultType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => (object)g.First().Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task SelectFirstMember_WithoutGroupBy_NoWarning()
     {
         // Arrange
