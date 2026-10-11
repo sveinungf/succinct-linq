@@ -8,7 +8,7 @@
     <!-- NuGet package -->
     <IsPackable>true</IsPackable>
     <PackageId>SuccinctLinq.Analyzers</PackageId>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <Authors>sveinungf</Authors>
     <Copyright>Copyright (c) 2026-present Sveinung</Copyright>
     <Description>Succinct LINQ is a set of Roslyn analyzers for C# that flag redundant and verbose LINQ expressions and suggest more concise equivalents.</Description>
