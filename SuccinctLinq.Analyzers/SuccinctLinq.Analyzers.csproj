@@ -20,7 +20,9 @@
     <RepositoryUrl>https://github.com/sveinungf/succinct-linq</RepositoryUrl>
 
     <!-- Analyzer -->
+    <DevelopmentDependency>true</DevelopmentDependency>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
   <ItemGroup>
