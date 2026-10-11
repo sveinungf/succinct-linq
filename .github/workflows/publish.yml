@@ -17,12 +17,8 @@ jobs:
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore --configuration Release
     - name: Pack
-      run: dotnet pack SuccinctLinq.Analyzers --no-build -o ./artifacts
+      run: dotnet pack SuccinctLinq.Analyzers -c Release -o ./artifacts
     - name: NuGet login (OIDC → temp API key)
       uses: NuGet/login@v1
       id: login
