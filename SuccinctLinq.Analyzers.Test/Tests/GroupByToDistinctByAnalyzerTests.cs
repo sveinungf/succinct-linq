@@ -36,6 +36,32 @@ public class GroupByToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstWithExplicitResultType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select<IGrouping<int, Item>, object>(g => g.First());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_ThenSelectFirstInChain_ReportWarning()
     {
         // Arrange
@@ -375,6 +401,32 @@ public class GroupByToDistinctByAnalyzerTests
                 public static IEnumerable<Item> MyMethod(IEnumerable<Item> items)
                 {
                     return items.GroupBy(x => x.Id).Select(g => g.First(y => y.Id > 0));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_ThenSelectFirstAsyncLambda_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Task<Item>> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(async g => g.First());
                 }
             }
             """;

@@ -36,6 +36,32 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_WithElementSelector_ThenSelectFirstWithExplicitResultType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<object> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id, x => x.ToString()).Select<IGrouping<int, string>, object>(g => g.First());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithElementSelector_ThenSelectFirstInChain_ReportWarning()
     {
         // Arrange
@@ -623,6 +649,32 @@ public class GroupByWithElementSelectorToDistinctByAnalyzerTests
                 public static IEnumerable<string> MyMethod(IEnumerable<Item> items)
                 {
                     return items.GroupBy(x => x.Id, x => x.ToString()).Select(g => g.First(y => y.Length > 0));
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithElementSelector_ThenSelectFirstAsyncLambda_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Task<string>> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id, x => x.ToString()).Select(async g => g.First());
                 }
             }
             """;

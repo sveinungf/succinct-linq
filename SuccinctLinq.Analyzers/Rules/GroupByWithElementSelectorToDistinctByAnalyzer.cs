@@ -51,7 +51,7 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
         }
 
         if (selector is not IAnonymousFunctionOperation lambda ||
-            !lambda.IsFirstFunction())
+            !lambda.IsFirstMethod())
         {
             return;
         }
