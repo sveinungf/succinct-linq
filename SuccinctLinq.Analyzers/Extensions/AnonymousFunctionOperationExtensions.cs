@@ -46,6 +46,29 @@ internal static class AnonymousFunctionOperationExtensions
             return value.IsFirstMethodCallOnParameterType(parameter);
         }
 
+        // A lambda that returns the Key property of its first parameter,
+        // e.g. group => group.Key.
+        // Extra parameters, such as the index in Select((group, i) => group.Key), may be ignored.
+        public bool IsKeyProperty()
+        {
+            if (lambda.Symbol.IsAsync)
+                return false;
+
+            var parameters = lambda.Symbol.Parameters;
+            if (parameters is not [var parameter, ..])
+                return false;
+
+            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
+                return false;
+
+            return value.UnwrapIdentityConversions() is IMemberReferenceOperation
+            {
+                IsIndexerAccess: false,
+                Member: IPropertySymbol { Name: "Key", ContainingType.IsSystemLinqIGrouping: true },
+                Instance: { } instance
+            } && instance.UnwrapPreservingConversions().ReferencesParameter(parameter);
+        }
+
         // A lambda that returns a member of the first element of its first parameter, e.g. group => group.First().Value.
         // The member names are returned in the order they are accessed, e.g. [Value] for group => group.First().Value.
         // Indexer access, such as group => group.First()[0], is not a member access.

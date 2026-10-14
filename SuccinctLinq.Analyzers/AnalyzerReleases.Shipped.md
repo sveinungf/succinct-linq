@@ -9,3 +9,16 @@ SLQ102 | Redundancy | Warning | RedundantElementSelectorAnalyzer
 SLQ103 | Redundancy | Warning | RedundantSelectAnalyzer
 SLQ201 | Simplification | Warning | SelectToIndexAnalyzer
 SLQ202 | Simplification | Warning | OrderByIdentityKeyAnalyzer
+
+## Release 0.2.0
+
+### New Rules
+
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+SLQ203 | Simplification | Warning | OrderByDescendingIdentityKeyAnalyzer
+SLQ204 | Simplification | Warning | OrderByToMinByAnalyzer
+SLQ205 | Simplification | Warning | OrderByDescendingToMaxByAnalyzer
+SLQ206 | Simplification | Warning | GroupByToDistinctByAnalyzer
+SLQ207 | Simplification | Warning | GroupByWithElementSelectorToDistinctByAnalyzer
+SLQ208 | Simplification | Warning | GroupBySelectFirstMemberToDistinctByAnalyzer
