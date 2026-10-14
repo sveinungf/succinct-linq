@@ -44,17 +44,11 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
         if (preceding is not IInvocationOperation { TargetMethod.IsGroupByMethod: true } groupBy)
             return;
 
-        var selector = select.GetArgument(1);
-        while (selector is IDelegateCreationOperation creation)
-        {
-            selector = creation.Target;
-        }
-
-        if (selector is not IAnonymousFunctionOperation lambda ||
-            !lambda.TryGetMemberNamesOnFirstElement(out var memberNames, out var trailingNullForgiving))
-        {
+        if (!select.TryGetLambdaArgument(1, out var selectorLambda))
             return;
-        }
+
+        if (!selectorLambda.TryGetMemberNamesOnFirstElement(out var memberNames, out var trailingNullForgiving))
+            return;
 
         if (groupBy.Syntax is not InvocationExpressionSyntax groupByInvocation ||
             select.Syntax is not InvocationExpressionSyntax selectInvocation)
@@ -71,7 +65,7 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
             ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        var parameterName = lambda.Symbol.Parameters[0].Name;
+        var parameterName = selectorLambda.Symbol.Parameters[0].Name;
         var memberText = $"{parameterName} => {parameterName}.{string.Join(".", memberNames)}{(trailingNullForgiving ? "!" : "")}";
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText, memberText));

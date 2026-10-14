@@ -44,17 +44,11 @@ public sealed class GroupByWithElementSelectorToDistinctByAnalyzer : DiagnosticA
         if (preceding is not IInvocationOperation { TargetMethod.IsGroupByWithElementSelectorMethod: true } groupBy)
             return;
 
-        var selector = select.GetArgument(1);
-        while (selector is IDelegateCreationOperation creation)
-        {
-            selector = creation.Target;
-        }
-
-        if (selector is not IAnonymousFunctionOperation lambda ||
-            !lambda.IsFirstMethod())
-        {
+        if (!select.TryGetLambdaArgument(1, out var selectorLambda))
             return;
-        }
+
+        if (!selectorLambda.IsFirstMethod())
+            return;
 
         if (groupBy.Syntax is not InvocationExpressionSyntax groupByInvocation ||
             select.Syntax is not InvocationExpressionSyntax selectInvocation)
