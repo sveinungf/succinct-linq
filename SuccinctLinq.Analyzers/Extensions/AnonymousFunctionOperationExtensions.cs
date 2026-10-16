@@ -93,38 +93,47 @@ internal static class AnonymousFunctionOperationExtensions
             if (value is not IMemberReferenceOperation { IsIndexerAccess: false } memberReference)
                 return false;
 
-            // Walk down the member chain, collecting member accesses,
-            // to the member whose instance is the First call.
-            var accesses = new List<string>();
+            // Walk down the member chain to the member whose instance is the First call.
             var member = memberReference;
-            while (true)
+            while (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner)
             {
-                accesses.Add(HasNullForgivingOperator(member) ? member.Member.Name + "!" : member.Member.Name);
-
-                if (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner)
-                {
-                    member = inner;
-                    continue;
-                }
-
-                if (member.Instance is not { } firstCall ||
-                    !firstCall.IsFirstMethodCallOnParameterType(parameter))
-                {
-                    return false;
-                }
-
-                accesses.Reverse();
-                memberAccess = string.Join(".", accesses);
-                if (memberAccess[0] != '!')
-                    memberAccess = $".{memberAccess}";
-                return true;
+                member = inner;
             }
-        }
 
-        // A null-forgiving operator (!) on the instance would be dropped by the
-        // suggested replacement, introducing CS8602 warnings.
-        private static bool HasNullForgivingOperator(IOperation operation) =>
-            operation.Syntax?.Parent is PostfixUnaryExpressionSyntax postfix &&
-            postfix.OperatorToken.IsKind(SyntaxKind.ExclamationToken);
+            if (member.Instance is not { } firstCall ||
+                !firstCall.IsFirstMethodCallOnParameterType(parameter) ||
+                memberReference.Syntax is not { } syntax ||
+                firstCall.Syntax is not { } firstCallSyntax ||
+                syntax.SpanStart != firstCallSyntax.SpanStart ||
+                firstCallSyntax.Span.End > syntax.Span.End)
+            {
+                return false;
+            }
+
+            // A trailing null-forgiving operator, such as the "!" in
+            // group.First().Value!, is a postfix unary parent of the member
+            // access, so extend the syntax through it.
+            while (syntax.Parent is PostfixUnaryExpressionSyntax unary &&
+                unary.OperatorToken.IsKind(SyntaxKind.ExclamationToken))
+            {
+                syntax = unary;
+            }
+
+            // The instance of a member access is a prefix of the member access,
+            // so the member access relative to the first element is the outer
+            // text with the First call removed, e.g. ".Address!.City" for
+            // group.First().Address!.City.
+            var syntaxText = syntax.ToString();
+            var start = firstCallSyntax.Span.End - syntax.SpanStart;
+            var span = syntaxText.AsSpan(start).TrimStart();
+
+            // A null-forgiving operator on the First call itself, such as the
+            // "!" in group.First()!.Value, is not part of the member chain.
+            if (span.StartsWith('!'))
+                span = span[1..];
+
+            memberAccess = span.ToString();
+            return true;
+        }
     }
 }
