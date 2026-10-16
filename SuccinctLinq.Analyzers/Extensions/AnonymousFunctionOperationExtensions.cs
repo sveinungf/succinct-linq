@@ -103,12 +103,15 @@ internal static class AnonymousFunctionOperationExtensions
             if (member.Instance is not { } firstCall ||
                 !firstCall.IsFirstMethodCallOnParameterType(parameter) ||
                 memberReference.Syntax is not { } syntax ||
-                firstCall.Syntax is not { } firstCallSyntax ||
-                syntax.SpanStart != firstCallSyntax.SpanStart ||
-                firstCallSyntax.Span.End > syntax.Span.End)
+                firstCall.Syntax is not { } firstCallSyntax)
             {
                 return false;
             }
+
+            var syntaxSpan = syntax.Span;
+            var firstCallSpan = firstCallSyntax.Span;
+            if (syntaxSpan.Start != firstCallSpan.Start || firstCallSpan.End > syntaxSpan.End)
+                return false;
 
             // A trailing null-forgiving operator, such as the "!" in
             // group.First().Value!, is a postfix unary parent of the member
@@ -124,14 +127,13 @@ internal static class AnonymousFunctionOperationExtensions
             // text with the First call removed, e.g. ".Address!.City" for
             // group.First().Address!.City.
             var syntaxText = syntax.ToString();
-            var start = firstCallSyntax.Span.End - syntax.SpanStart;
+            var start = firstCallSpan.End - syntaxSpan.Start;
             var span = syntaxText.AsSpan(start).TrimStart();
 
             // A null-forgiving operator on the First call itself, such as the
             // "!" in group.First()!.Value, is not part of the member chain.
             if (span.StartsWith('!'))
                 span = span[1..];
-
             memberAccess = span.ToString();
             return true;
         }
