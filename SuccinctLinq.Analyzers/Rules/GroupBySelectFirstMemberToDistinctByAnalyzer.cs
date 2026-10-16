@@ -47,7 +47,7 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
         if (!select.TryGetLambdaArgument(1, out var selectorLambda))
             return;
 
-        if (!selectorLambda.TryGetMemberNamesOnFirstElement(out var memberNames, out var trailingNullForgiving))
+        if (!selectorLambda.TryGetMemberAccessOnFirstElement(out var memberAccess))
             return;
 
         if (groupBy.Syntax is not InvocationExpressionSyntax groupByInvocation ||
@@ -66,7 +66,7 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
             : "";
 
         var parameterName = selectorLambda.Symbol.Parameters[0].Name;
-        var memberText = $"{parameterName} => {parameterName}.{string.Join(".", memberNames)}{(trailingNullForgiving ? "!" : "")}";
+        var memberText = $"{parameterName} => {parameterName}{memberAccess}";
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText, memberText));
     }

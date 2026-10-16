@@ -70,68 +70,53 @@ internal static class AnonymousFunctionOperationExtensions
         }
 
         // A lambda that returns a member of the first element of its first parameter, e.g. group => group.First().Value.
-        // The member names are returned in the order they are accessed, e.g. [Value] for group => group.First().Value.
+        // The member access is returned relative to the first element, including any null-forgiving operators,
+        // e.g. ".Value" for group => group.First().Value, ".Value!" for group => group.First().Value!,
+        // and ".Address!.City" for group => group.First().Address!.City.
         // Indexer access, such as group => group.First()[0], is not a member access.
-        // A null-forgiving operator, such as group => group.First()!.Value, is excluded because the
-        // suggested replacement would drop the operator and introduce CS8602 warnings.
-        // A trailing null-forgiving operator, such as group => group.First().Value!, is reported with the operator preserved.
         // Extra parameters, such as the index in Select((group, i) => group.First().Value), may be ignored.
-        public bool TryGetMemberNamesOnFirstElement(
-            [NotNullWhen(true)] out IReadOnlyList<string>? memberNames,
-            out bool hasTrailingNullForgiving)
+        public bool TryGetMemberAccessOnFirstElement([NotNullWhen(true)] out string? memberAccess)
         {
-            hasTrailingNullForgiving = false;
+            memberAccess = null;
             if (lambda.Symbol.IsAsync)
-            {
-                memberNames = null;
                 return false;
-            }
+
             var parameters = lambda.Symbol.Parameters;
             if (parameters is not [var parameter, ..])
-            {
-                memberNames = null;
                 return false;
-            }
-            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
-            {
-                memberNames = null;
-                return false;
-            }
 
-            hasTrailingNullForgiving = HasNullForgivingOperator(value);
+            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
+                return false;
+
             // An indexer is a property reference, so it must be excluded.
             value = value.UnwrapIdentityConversions();
             if (value is not IMemberReferenceOperation { IsIndexerAccess: false } memberReference)
-            {
-                memberNames = null;
                 return false;
-            }
 
-            // Walk down the member chain, collecting member names,
+            // Walk down the member chain, collecting member accesses,
             // to the member whose instance is the First call.
-            var names = new List<string>();
+            var accesses = new List<string>();
             var member = memberReference;
             while (true)
             {
-                names.Add(member.Member.Name);
+                accesses.Add(HasNullForgivingOperator(member) ? member.Member.Name + "!" : member.Member.Name);
 
-                if (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner &&
-                    !HasNullForgivingOperator(member.Instance))
+                if (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner)
                 {
                     member = inner;
                     continue;
                 }
 
                 if (member.Instance is not { } firstCall ||
-                    HasNullForgivingOperator(member.Instance) ||
                     !firstCall.IsFirstMethodCallOnParameterType(parameter))
                 {
-                    memberNames = null;
                     return false;
                 }
 
-                names.Reverse();
-                memberNames = names;
+                accesses.Reverse();
+                memberAccess = string.Join(".", accesses);
+                if (memberAccess[0] != '!')
+                    memberAccess = $".{memberAccess}";
                 return true;
             }
         }

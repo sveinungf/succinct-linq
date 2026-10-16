@@ -629,7 +629,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
-    public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithNullForgivingAfterFirst_NoWarning()
+    public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithNullForgivingAfterFirst_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
@@ -650,13 +650,17 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ211", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 88)
+                .WithMessage("Use DistinctBy(x => x.Id).ToDictionary(x => x.Id, g => g.Value) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
     }
 
     [Fact]
-    public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithNullForgivingInChain_NoWarning()
+    public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithNullForgivingInChain_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
@@ -682,6 +686,10 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ211", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 18, 22, 18, 95)
+                .WithMessage("Use DistinctBy(x => x.Id).ToDictionary(x => x.Id, g => g.Address!.City) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

@@ -516,7 +516,7 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
-    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingAfterFirst_NoWarning()
+    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingAfterFirst_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
@@ -537,13 +537,17 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 70)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g.Value) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
     }
 
     [Fact]
-    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingInChain_NoWarning()
+    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingInChain_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
@@ -569,6 +573,10 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 18, 22, 18, 77)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g.Address!.City) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

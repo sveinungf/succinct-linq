@@ -53,7 +53,7 @@ public sealed class GroupByToDictionaryFirstMemberToDistinctByAnalyzer : Diagnos
         if (!toDictionary.TryGetLambdaArgument(2, out var elementSelectorLambda))
             return;
 
-        if (!elementSelectorLambda.TryGetMemberNamesOnFirstElement(out var memberNames, out var trailingNullForgiving))
+        if (!elementSelectorLambda.TryGetMemberAccessOnFirstElement(out var memberAccess))
             return;
 
         if (groupBy.Syntax is not InvocationExpressionSyntax groupByInvocation ||
@@ -72,7 +72,7 @@ public sealed class GroupByToDictionaryFirstMemberToDistinctByAnalyzer : Diagnos
             : "";
 
         var parameterName = elementSelectorLambda.Symbol.Parameters[0].Name;
-        var elementSelectorText = $", {parameterName} => {parameterName}.{string.Join(".", memberNames)}{(trailingNullForgiving ? "!" : "")}";
+        var elementSelectorText = $", {parameterName} => {parameterName}{memberAccess}";
 
         var dictionaryComparerText = toDictionary.GetArgument(3) is { } dictionaryComparerArg
             ? $", {dictionaryComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
