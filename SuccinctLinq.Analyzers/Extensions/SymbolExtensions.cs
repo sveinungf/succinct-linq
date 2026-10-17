@@ -20,6 +20,21 @@ internal static class SymbolExtensions
             }
         };
 
+        public bool IsSystemLinqIGrouping => symbol is INamedTypeSymbol
+        {
+            Name: "IGrouping",
+            Arity: 2,
+            ContainingNamespace:
+            {
+                Name: "Linq",
+                ContainingNamespace:
+                {
+                    Name: "System",
+                    ContainingNamespace.IsGlobalNamespace: true
+                }
+            }
+        };
+
         public bool IsSystemCollectionsGenericNamespace => symbol is
         {
             Name: "Generic",

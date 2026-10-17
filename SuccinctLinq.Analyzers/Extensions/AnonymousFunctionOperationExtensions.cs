@@ -46,77 +46,96 @@ internal static class AnonymousFunctionOperationExtensions
             return value.IsFirstMethodCallOnParameterType(parameter);
         }
 
-        // A lambda that returns a member of the first element of its first parameter, e.g. group => group.First().Value.
-        // The member names are returned in the order they are accessed, e.g. [Value] for group => group.First().Value.
-        // Indexer access, such as group => group.First()[0], is not a member access.
-        // A null-forgiving operator, such as group => group.First()!.Value, is excluded because the
-        // suggested replacement would drop the operator and introduce CS8602 warnings.
-        // A trailing null-forgiving operator, such as group => group.First().Value!, is reported with the operator preserved.
-        // Extra parameters, such as the index in Select((group, i) => group.First().Value), may be ignored.
-        public bool TryGetMemberNamesOnFirstElement(
-            [NotNullWhen(true)] out IReadOnlyList<string>? memberNames,
-            out bool hasTrailingNullForgiving)
+        // A lambda that returns the Key property of its first parameter,
+        // e.g. group => group.Key.
+        // Extra parameters, such as the index in Select((group, i) => group.Key), may be ignored.
+        public bool IsKeyProperty()
         {
-            hasTrailingNullForgiving = false;
             if (lambda.Symbol.IsAsync)
-            {
-                memberNames = null;
                 return false;
-            }
+
             var parameters = lambda.Symbol.Parameters;
             if (parameters is not [var parameter, ..])
-            {
-                memberNames = null;
                 return false;
-            }
-            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
-            {
-                memberNames = null;
-                return false;
-            }
 
-            hasTrailingNullForgiving = HasNullForgivingOperator(value);
+            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
+                return false;
+
+            return value.UnwrapIdentityConversions() is IMemberReferenceOperation
+            {
+                IsIndexerAccess: false,
+                Member: IPropertySymbol { Name: "Key", ContainingType.IsSystemLinqIGrouping: true },
+                Instance: { } instance
+            } && instance.UnwrapPreservingConversions().ReferencesParameter(parameter);
+        }
+
+        // A lambda that returns a member of the first element of its first parameter, e.g. group => group.First().Value.
+        // The member access is returned relative to the first element, including any null-forgiving operators,
+        // e.g. ".Value" for group => group.First().Value, ".Value!" for group => group.First().Value!,
+        // and ".Address!.City" for group => group.First().Address!.City.
+        // Indexer access, such as group => group.First()[0], is not a member access.
+        // Extra parameters, such as the index in Select((group, i) => group.First().Value), may be ignored.
+        public bool TryGetMemberAccessOnFirstElement([NotNullWhen(true)] out string? memberAccess)
+        {
+            memberAccess = null;
+            if (lambda.Symbol.IsAsync)
+                return false;
+
+            var parameters = lambda.Symbol.Parameters;
+            if (parameters is not [var parameter, ..])
+                return false;
+
+            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
+                return false;
+
             // An indexer is a property reference, so it must be excluded.
             value = value.UnwrapIdentityConversions();
             if (value is not IMemberReferenceOperation { IsIndexerAccess: false } memberReference)
+                return false;
+
+            // Walk down the member chain to the member whose instance is the First call.
+            var member = memberReference;
+            while (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner)
             {
-                memberNames = null;
+                member = inner;
+            }
+
+            if (member.Instance is not { } firstCall ||
+                !firstCall.IsFirstMethodCallOnParameterType(parameter) ||
+                memberReference.Syntax is not { } syntax ||
+                firstCall.Syntax is not { } firstCallSyntax)
+            {
                 return false;
             }
 
-            // Walk down the member chain, collecting member names,
-            // to the member whose instance is the First call.
-            var names = new List<string>();
-            var member = memberReference;
-            while (true)
+            var syntaxSpan = syntax.Span;
+            var firstCallSpan = firstCallSyntax.Span;
+            if (syntaxSpan.Start != firstCallSpan.Start || firstCallSpan.End > syntaxSpan.End)
+                return false;
+
+            // A trailing null-forgiving operator, such as the "!" in
+            // group.First().Value!, is a postfix unary parent of the member
+            // access, so extend the syntax through it.
+            while (syntax.Parent is PostfixUnaryExpressionSyntax unary &&
+                unary.OperatorToken.IsKind(SyntaxKind.ExclamationToken))
             {
-                names.Add(member.Member.Name);
-
-                if (member.Instance is IMemberReferenceOperation { IsIndexerAccess: false } inner &&
-                    !HasNullForgivingOperator(member.Instance))
-                {
-                    member = inner;
-                    continue;
-                }
-
-                if (member.Instance is not { } firstCall ||
-                    HasNullForgivingOperator(member.Instance) ||
-                    !firstCall.IsFirstMethodCallOnParameterType(parameter))
-                {
-                    memberNames = null;
-                    return false;
-                }
-
-                names.Reverse();
-                memberNames = names;
-                return true;
+                syntax = unary;
             }
-        }
 
-        // A null-forgiving operator (!) on the instance would be dropped by the
-        // suggested replacement, introducing CS8602 warnings.
-        private static bool HasNullForgivingOperator(IOperation operation) =>
-            operation.Syntax?.Parent is PostfixUnaryExpressionSyntax postfix &&
-            postfix.OperatorToken.IsKind(SyntaxKind.ExclamationToken);
+            // The instance of a member access is a prefix of the member access,
+            // so the member access relative to the first element is the outer
+            // text with the First call removed, e.g. ".Address!.City" for
+            // group.First().Address!.City.
+            var syntaxText = syntax.ToString();
+            var start = firstCallSpan.End - syntaxSpan.Start;
+            var span = syntaxText.AsSpan(start).TrimStart();
+
+            // A null-forgiving operator on the First call itself, such as the
+            // "!" in group.First()!.Value, is not part of the member chain.
+            if (span.StartsWith('!'))
+                span = span[1..];
+            memberAccess = span.ToString();
+            return true;
+        }
     }
 }

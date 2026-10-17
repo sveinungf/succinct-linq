@@ -53,24 +53,16 @@ public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
 
     private static bool HasTwoParameterIdentitySelector(IInvocationOperation select)
     {
-        var argument = select.GetArgument(1);
-        while (argument is IDelegateCreationOperation creation)
-        {
-            argument = creation.Target;
-        }
-
-        if (argument is not IAnonymousFunctionOperation lambda ||
-            lambda.Symbol.Parameters is not [var element, var index])
-        {
+        if (!select.TryGetLambdaArgument(1, out var selectorLambda))
             return false;
-        }
+
+        if (selectorLambda.Symbol.Parameters is not [var element, var index])
+            return false;
 
         // A lambda that simply returns its parameters compiles to a block
         // containing a single return operation.
-        if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
-        {
+        if (selectorLambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
             return false;
-        }
 
         value = value.UnwrapConversions();
 
