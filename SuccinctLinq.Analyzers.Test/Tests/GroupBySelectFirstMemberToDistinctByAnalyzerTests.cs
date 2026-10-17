@@ -540,7 +540,7 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 13, 22, 13, 70)
-                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g.Value) instead"));
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g!.Value) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -577,6 +577,43 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
             new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 18, 22, 18, 77)
                 .WithMessage("Use DistinctBy(x => x.Id).Select(g => g.Address!.City) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithWhitespaceInChain_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Address
+            {
+                public string City { get; set; }
+            }
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public Address? Address { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item?> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => g.First()! .Address
+                    !.City);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 18, 22, 19, 16)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g!.Address!.City) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

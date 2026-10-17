@@ -653,7 +653,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ211", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 13, 22, 13, 88)
-                .WithMessage("Use DistinctBy(x => x.Id).ToDictionary(x => x.Id, g => g.Value) instead"));
+                .WithMessage("Use DistinctBy(x => x.Id).ToDictionary(x => x.Id, g => g!.Value) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

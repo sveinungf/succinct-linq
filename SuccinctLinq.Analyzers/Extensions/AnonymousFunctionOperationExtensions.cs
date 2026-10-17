@@ -3,6 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using System.Diagnostics.CodeAnalysis;
+using System.Text;
 
 namespace SuccinctLinq.Analyzers.Extensions;
 
@@ -122,19 +123,18 @@ internal static class AnonymousFunctionOperationExtensions
                 syntax = unary;
             }
 
-            // The instance of a member access is a prefix of the member access,
-            // so the member access relative to the first element is the outer
-            // text with the First call removed, e.g. ".Address!.City" for
-            // group.First().Address!.City.
-            var syntaxText = syntax.ToString();
-            var start = firstCallSpan.End - syntaxSpan.Start;
-            var span = syntaxText.AsSpan(start).TrimStart();
+            // Concatenate token text without trivia so that multi-line chains
+            // and comments yield a single-line member access.
+            var builder = new StringBuilder();
+            foreach (var token in syntax.DescendantTokens())
+            {
+                if (token.SpanStart < firstCallSpan.End)
+                    continue;
 
-            // A null-forgiving operator on the First call itself, such as the
-            // "!" in group.First()!.Value, is not part of the member chain.
-            if (span.StartsWith('!'))
-                span = span[1..];
-            memberAccess = span.ToString();
+                builder.Append(token.Text);
+            }
+
+            memberAccess = builder.ToString();
             return true;
         }
     }
