@@ -29,6 +29,19 @@ internal static class AnonymousFunctionOperationExtensions
             return value.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
 
+        // A lambda that returns a expression that is likely safe to evaluate
+        // multiple times, e.g. x => x.Id.
+        public bool IsPureExpression()
+        {
+            if (lambda.Symbol.IsAsync)
+                return false;
+
+            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
+                return false;
+
+            return value.IsPureExpression();
+        }
+
         // A lambda that returns the first element of its first parameter,
         // e.g. group => group.First() or group => group.FirstOrDefault().
         // Extra parameters, such as the index in Select((group, i) => group.First()), may be ignored.

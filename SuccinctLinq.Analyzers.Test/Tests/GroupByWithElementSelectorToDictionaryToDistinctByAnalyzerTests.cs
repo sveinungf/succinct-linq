@@ -442,6 +442,66 @@ public class GroupByWithElementSelectorToDictionaryToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_WithElementSelector_KeySelectorWithSideEffect_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDictionaryToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+
+                public string Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<Item> items)
+                {
+                    int n = 0;
+                    return items.GroupBy(x => ++n, x => x.Value).ToDictionary(g => g.Key, g => g.First());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_WithElementSelector_ElementSelectorWithSideEffect_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByWithElementSelectorToDictionaryToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+
+                public int NextValue()
+                {
+                    return ++Id;
+                }
+            }
+
+            public static class MyClass
+            {
+                public static Dictionary<int, int> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id, x => x.NextValue()).ToDictionary(g => g.Key, g => g.First());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithElementSelector_ThenToDictionaryKeyAndFirstWithPredicate_NoWarning()
     {
         // Arrange

@@ -50,6 +50,16 @@ public sealed class GroupByWithElementSelectorToDictionaryToDistinctByAnalyzer :
         if (!keySelectorLambda.IsKeyProperty())
             return;
 
+        // GroupBy evaluates the key selector once per element and caches the key.
+        // But the suggested replacement evaluates it both in DistinctBy and ToDictionary.
+        // So the selector must be safe to repeat and not cause observable side effects.
+        if (!groupBy.TryGetLambdaArgument(1, out var keySelector) || !keySelector.IsPureExpression())
+            return;
+
+        // Same for the element selector.
+        if (!groupBy.TryGetLambdaArgument(2, out var elementSelector) || !elementSelector.IsPureExpression())
+            return;
+
         if (!toDictionary.TryGetLambdaArgument(2, out var elementSelectorLambda))
             return;
 

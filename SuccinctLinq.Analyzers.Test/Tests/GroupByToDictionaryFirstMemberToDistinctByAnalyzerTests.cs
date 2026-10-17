@@ -493,6 +493,34 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_KeySelectorWithSideEffect_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static Dictionary<int, int> MyMethod(IEnumerable<Item> items)
+                {
+                    int n = 0;
+                    return items.GroupBy(x => ++n).ToDictionary(g => g.Key, g => g.First().Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithPredicate_NoWarning()
     {
         // Arrange

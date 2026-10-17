@@ -332,6 +332,33 @@ public class GroupByToDictionaryToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_KeySelectorWithSideEffect_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static Dictionary<int, Item> MyMethod(IEnumerable<Item> items)
+                {
+                    int n = 0;
+                    return items.GroupBy(x => ++n).ToDictionary(g => g.Key, g => g.First());
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_ThenToDictionaryKeyAndFirstWithPredicate_NoWarning()
     {
         // Arrange
