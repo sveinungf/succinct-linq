@@ -1,5 +1,6 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SuccinctLinq.Analyzers.Extensions;
 
@@ -54,13 +55,29 @@ internal static class InvocationOperationExtensions
                 return false;
             }
 
+            return operation.TryGetLambdaArgument(argumentIndex, out var lambda)
+                && lambda.IsIdentityFunction();
+        }
+
+        public bool TryGetLambdaArgument(
+            int argumentIndex,
+            [NotNullWhen(true)] out IAnonymousFunctionOperation? lambda)
+        {
+            lambda = null;
+
             var argument = operation.GetArgument(argumentIndex);
             while (argument is IDelegateCreationOperation creation)
             {
                 argument = creation.Target;
             }
 
-            return argument is IAnonymousFunctionOperation lambda && lambda.IsIdentityFunction();
+            if (argument is IAnonymousFunctionOperation anonymousFunction)
+            {
+                lambda = anonymousFunction;
+                return true;
+            }
+
+            return false;
         }
     }
 }

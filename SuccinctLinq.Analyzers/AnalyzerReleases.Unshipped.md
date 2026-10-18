@@ -2,9 +2,6 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-SLQ203 | Simplification | Warning | OrderByDescendingIdentityKeyAnalyzer
-SLQ204 | Simplification | Warning | OrderByToMinByAnalyzer
-SLQ205 | Simplification | Warning | OrderByDescendingToMaxByAnalyzer
-SLQ206 | Simplification | Warning | GroupByToDistinctByAnalyzer
-SLQ207 | Simplification | Warning | GroupByWithElementSelectorToDistinctByAnalyzer
-SLQ208 | Simplification | Warning | GroupBySelectFirstMemberToDistinctByAnalyzer
+SLQ209 | Simplification | Warning | GroupByToDictionaryToDistinctByAnalyzer
+SLQ210 | Simplification | Warning | GroupByWithElementSelectorToDictionaryToDistinctByAnalyzer
+SLQ211 | Simplification | Warning | GroupByToDictionaryFirstMemberToDistinctByAnalyzer

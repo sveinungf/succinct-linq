@@ -189,6 +189,37 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithEscapedParameter_MessagePreservesEscape()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<int> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(@class => @class.First().Value);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 79)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(@class => @class.Value) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithNullComparer_ThenSelectFirstMember_ReportWarning()
     {
         // Arrange
@@ -516,7 +547,7 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
-    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingAfterFirst_NoWarning()
+    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingAfterFirst_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
@@ -537,13 +568,17 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 70)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g!.Value) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
     }
 
     [Fact]
-    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingInChain_NoWarning()
+    public Task GroupBy_ThenSelectFirstMemberWithNullForgivingInChain_ReportWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
@@ -569,6 +604,47 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 18, 22, 18, 77)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g.Address!.City) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithWhitespaceInChain_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Address
+            {
+                public string City { get; set; }
+            }
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public Address? Address { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<Item?> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(g => g.First()! .Address
+                    !.City);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 18, 22, 19, 16)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(g => g!.Address!.City) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

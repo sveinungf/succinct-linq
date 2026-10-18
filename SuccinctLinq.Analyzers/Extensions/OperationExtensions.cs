@@ -29,6 +29,28 @@ internal static class OperationExtensions
             _ => false
         };
 
+        // An expression that can (likely) be evaluated multiple times without
+        // observable side effects: literals, default, references, member
+        // reads, and combinations of those with conversions, unary, binary,
+        // and conditional operators.
+        public bool IsPureExpression()
+        {
+            return operation switch
+            {
+                ILiteralOperation or
+                IDefaultValueOperation or
+                IParameterReferenceOperation or
+                ILocalReferenceOperation or
+                IIsTypeOperation => true,
+                IConversionOperation conversion => conversion.Operand.IsPureExpression(),
+                IUnaryOperation unary => unary.Operand.IsPureExpression(),
+                IBinaryOperation binary => binary.LeftOperand.IsPureExpression() && binary.RightOperand.IsPureExpression(),
+                IConditionalOperation conditional => conditional.IsPureExpression(),
+                IMemberReferenceOperation member => member.IsPureExpression(),
+                _ => false
+            };
+        }
+
         public bool ContainsOperation(IOperation other)
         {
             for (var node = other.Parent; node is not null; node = node.Parent)
@@ -142,6 +164,26 @@ internal static class OperationExtensions
 
             member = null;
             return false;
+        }
+    }
+
+    extension(IConditionalOperation operation)
+    {
+        private bool IsPureExpression()
+        {
+            return operation.Condition.IsPureExpression() &&
+                operation.WhenTrue.IsPureExpression() &&
+                operation.WhenFalse is { } whenFalse &&
+                whenFalse.IsPureExpression();
+        }
+    }
+
+    extension(IMemberReferenceOperation operation)
+    {
+        private bool IsPureExpression()
+        {
+            return !operation.IsIndexerAccess &&
+                (operation.Instance is not { } instance || instance.IsPureExpression());
         }
     }
 }
