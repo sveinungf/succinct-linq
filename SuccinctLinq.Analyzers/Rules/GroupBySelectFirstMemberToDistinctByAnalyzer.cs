@@ -65,7 +65,7 @@ public sealed class GroupBySelectFirstMemberToDistinctByAnalyzer : DiagnosticAna
             ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        var parameterName = selectorLambda.Symbol.Parameters[0].Name;
+        var parameterName = selectorLambda.GetFirstParameterText() ?? selectorLambda.Symbol.Parameters[0].Name;
         var memberText = $"{parameterName} => {parameterName}{memberAccess}";
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText, memberText));

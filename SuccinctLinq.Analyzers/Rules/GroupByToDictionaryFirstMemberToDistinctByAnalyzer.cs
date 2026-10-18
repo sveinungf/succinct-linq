@@ -77,7 +77,7 @@ public sealed class GroupByToDictionaryFirstMemberToDistinctByAnalyzer : Diagnos
             ? $", {groupComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        var parameterName = elementSelectorLambda.Symbol.Parameters[0].Name;
+        var parameterName = elementSelectorLambda.GetFirstParameterText() ?? elementSelectorLambda.Symbol.Parameters[0].Name;
         var elementSelectorText = $", {parameterName} => {parameterName}{memberAccess}";
 
         var dictionaryComparerText = toDictionary.GetArgument(3) is { } dictionaryComparerArg

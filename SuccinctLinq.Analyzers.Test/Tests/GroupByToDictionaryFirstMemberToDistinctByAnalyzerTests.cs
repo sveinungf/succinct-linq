@@ -189,6 +189,37 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithEscapedParameter_MessagePreservesEscape()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static Dictionary<int, int> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).ToDictionary(g => g.Key, @class => @class.First().Value);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ211", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 97)
+                .WithMessage("Use DistinctBy(x => x.Id).ToDictionary(x => x.Id, @class => @class.Value) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithNullComparer_ThenToDictionaryKeyAndFirstMember_ReportWarning()
     {
         // Arrange

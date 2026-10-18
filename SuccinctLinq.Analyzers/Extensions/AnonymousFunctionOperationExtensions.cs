@@ -150,5 +150,18 @@ internal static class AnonymousFunctionOperationExtensions
             memberAccess = builder.ToString();
             return true;
         }
+
+        // The source text of the lambda's first parameter, preserving any
+        // escape character, e.g. "@class" for a parameter declared as "@class".
+        public string? GetFirstParameterText()
+        {
+            return lambda.Syntax switch
+            {
+                SimpleLambdaExpressionSyntax { } simple => simple.Parameter.Identifier.Text,
+                ParenthesizedLambdaExpressionSyntax { ParameterList.Parameters: [var parameter, ..] } => parameter.Identifier.Text,
+                AnonymousMethodExpressionSyntax { ParameterList.Parameters: [var parameter, ..] } => parameter.Identifier.Text,
+                _ => null
+            };
+        }
     }
 }

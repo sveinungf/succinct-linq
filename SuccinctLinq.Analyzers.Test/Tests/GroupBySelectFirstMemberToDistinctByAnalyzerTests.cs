@@ -189,6 +189,37 @@ public class GroupBySelectFirstMemberToDistinctByAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_ThenSelectFirstMemberWithEscapedParameter_MessagePreservesEscape()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstMemberToDistinctByAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<int> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id).Select(@class => @class.First().Value);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ208", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 79)
+                .WithMessage("Use DistinctBy(x => x.Id).Select(@class => @class.Value) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithNullComparer_ThenSelectFirstMember_ReportWarning()
     {
         // Arrange
