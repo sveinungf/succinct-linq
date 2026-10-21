@@ -4,11 +4,11 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-SLQ101 | Redundancy | Warning | RedundantDistinctAnalyzer
-SLQ102 | Redundancy | Warning | RedundantElementSelectorAnalyzer
-SLQ103 | Redundancy | Warning | RedundantSelectAnalyzer
-SLQ201 | Simplification | Warning | SelectToIndexAnalyzer
-SLQ202 | Simplification | Warning | OrderByIdentityKeyAnalyzer
+SLQ101 | Redundancy | Warning | DistinctToHashSet
+SLQ102 | Redundancy | Warning | RedundantIdentitySelector
+SLQ103 | Redundancy | Warning | SelectIdentity
+SLQ201 | Simplification | Warning | SelectWithIndex
+SLQ202 | Simplification | Warning | OrderByIdentity
 
 ## Release 0.2.0
 
@@ -16,9 +16,9 @@ SLQ202 | Simplification | Warning | OrderByIdentityKeyAnalyzer
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-SLQ203 | Simplification | Warning | OrderByDescendingIdentityKeyAnalyzer
-SLQ204 | Simplification | Warning | OrderByToMinByAnalyzer
-SLQ205 | Simplification | Warning | OrderByDescendingToMaxByAnalyzer
-SLQ206 | Simplification | Warning | GroupByToDistinctByAnalyzer
-SLQ207 | Simplification | Warning | GroupByWithElementSelectorToDistinctByAnalyzer
-SLQ208 | Simplification | Warning | GroupBySelectFirstMemberToDistinctByAnalyzer
+SLQ203 | Simplification | Warning | OrderByDescendingIdentity
+SLQ204 | Simplification | Warning | OrderByFirst
+SLQ205 | Simplification | Warning | OrderByDescendingFirst
+SLQ206 | Simplification | Warning | GroupBySelectFirst
+SLQ207 | Simplification | Warning | ProjectedGroupBySelectFirst
+SLQ208 | Simplification | Warning | GroupBySelectFirstMember

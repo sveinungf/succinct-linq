@@ -8,16 +8,16 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class GroupByToDictionaryFirstMemberToDistinctByAnalyzer : DiagnosticAnalyzer
+public sealed class GroupByToDictionaryFirstAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ211",
-        title: "GroupBy followed by ToDictionary of Key and a member of First can be simplified",
-        messageFormat: "Use DistinctBy({0}{1}).ToDictionary({0}{2}{3}) instead",
+        id: "SLQ209",
+        title: "GroupBy followed by ToDictionary of Key and First can be simplified",
+        messageFormat: "Use DistinctBy({0}{1}).ToDictionary({0}{2}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Grouping elements by a key and mapping each key to a member of the first element of its group keeps the first element of each distinct key and projects a member of it, so DistinctBy followed by ToDictionary expresses the same intent more concisely.");
+        description: "Grouping elements by a key and mapping each key to the first element of its group keeps the first element of each distinct key, so DistinctBy followed by ToDictionary expresses the same intent more concisely.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -59,7 +59,7 @@ public sealed class GroupByToDictionaryFirstMemberToDistinctByAnalyzer : Diagnos
         if (!toDictionary.TryGetLambdaArgument(2, out var elementSelectorLambda))
             return;
 
-        if (!elementSelectorLambda.TryGetMemberAccessOnFirstElement(out var memberAccess))
+        if (!elementSelectorLambda.IsFirstMethod())
             return;
 
         if (groupBy.Syntax is not InvocationExpressionSyntax groupByInvocation ||
@@ -77,13 +77,10 @@ public sealed class GroupByToDictionaryFirstMemberToDistinctByAnalyzer : Diagnos
             ? $", {groupComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        var parameterName = elementSelectorLambda.GetFirstParameterText() ?? elementSelectorLambda.Symbol.Parameters[0].Name;
-        var elementSelectorText = $", {parameterName} => {parameterName}{memberAccess}";
-
         var dictionaryComparerText = toDictionary.GetArgument(3) is { } dictionaryComparerArg
             ? $", {dictionaryComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, groupComparerText, elementSelectorText, dictionaryComparerText));
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, groupComparerText, dictionaryComparerText));
     }
 }

@@ -13,7 +13,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMember_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -40,7 +40,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -67,7 +67,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_WithComparer_ThenToDictionaryKeyAndFirstMember_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -94,7 +94,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_WithComparer_MessageMentionsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -125,7 +125,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_MessageOmitsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -156,7 +156,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_NestedMemberAccess_MessageShowsFullChain()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -192,7 +192,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithEscapedParameter_MessagePreservesEscape()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -223,7 +223,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_WithNullComparer_ThenToDictionaryKeyAndFirstMember_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -250,7 +250,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -277,7 +277,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -304,7 +304,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenStaticToDictionary_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -331,7 +331,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -360,7 +360,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstOrDefaultMember_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -387,7 +387,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryWithComparer_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -414,7 +414,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithTrailingNullForgiving_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -445,7 +445,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_TargetFrameworkNet6_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net60);
         context.TestCode = """
             namespace MyNamespace;
@@ -473,7 +473,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirst_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -500,7 +500,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndLastMember_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -527,7 +527,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_KeySelectorWithSideEffect_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -555,7 +555,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithPredicate_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -582,7 +582,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryOtherKeyAndFirstMember_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -609,7 +609,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_WithElementSelector_ThenToDictionaryKeyAndFirstMember_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -636,7 +636,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_WithResultSelector_ThenToDictionaryKeyAndFirstMember_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -663,7 +663,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryOfOtherExpressionFirstMember_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -691,7 +691,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithNullForgivingAfterFirst_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -722,7 +722,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithNullForgivingInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -758,7 +758,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberIndexer_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -785,7 +785,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberWithIndexerInChain_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -817,7 +817,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndCount_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -844,7 +844,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_ThenToDictionaryKeyAndFirstMemberAsyncLambda_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -871,7 +871,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task ToDictionary_WithoutGroupBy_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -898,7 +898,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_TargetFrameworkBeforeNet6_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net50);
         context.TestCode = """
             namespace MyNamespace;
@@ -926,7 +926,7 @@ public class GroupByToDictionaryFirstMemberToDistinctByAnalyzerTests
     public Task GroupBy_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberToDistinctByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
         context.TestCode = """
             namespace MyNamespace;

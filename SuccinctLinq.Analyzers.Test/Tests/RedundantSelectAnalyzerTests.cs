@@ -13,7 +13,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_IdentitySelector_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -34,7 +34,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_IdentitySelectorInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -55,7 +55,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -76,7 +76,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -97,7 +97,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_NamedSelector_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -118,7 +118,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -139,7 +139,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_IdentitySelectorWithSameTypeCast_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -160,7 +160,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_ExplicitReferenceDowncast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -181,7 +181,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_BoxUnboxRoundTripCast_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -202,7 +202,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_BoxUnboxRoundTripCastWithStructConstraint_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -223,7 +223,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_BoxUnboxRoundTripCastWithInterfaceConstraint_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -244,7 +244,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_UnboxCastThenBoxOnObjectSource_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -265,7 +265,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_UnboxCastThenBoxOnObjectSourceWithStructConstraint_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -286,7 +286,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_IdentitySelectorNullableSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -309,7 +309,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_SelectorChangesNullability_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -332,7 +332,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_ValueChangingCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -353,7 +353,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_UserDefinedConversionCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -380,7 +380,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_GenericSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -401,7 +401,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -425,7 +425,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -446,7 +446,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_DifferentSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -467,7 +467,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_MethodGroupSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -490,7 +490,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_WithIndexSelectorReturningElement_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -511,7 +511,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_IndexReturningSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -532,7 +532,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_QuerySyntax_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -554,7 +554,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_QueryableSelect_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -575,7 +575,7 @@ public class RedundantSelectAnalyzerTests
     public Task Select_IdentitySelector_MessageMentionsSelector()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantSelectAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 

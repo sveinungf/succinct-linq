@@ -2,6 +2,6 @@
 
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
-SLQ209 | Simplification | Warning | GroupByToDictionaryToDistinctByAnalyzer
-SLQ210 | Simplification | Warning | GroupByWithElementSelectorToDictionaryToDistinctByAnalyzer
-SLQ211 | Simplification | Warning | GroupByToDictionaryFirstMemberToDistinctByAnalyzer
+SLQ209 | Simplification | Warning | GroupByToDictionaryFirst
+SLQ210 | Simplification | Warning | ProjectedGroupByToDictionaryFirst
+SLQ211 | Simplification | Warning | GroupByToDictionaryFirstMember

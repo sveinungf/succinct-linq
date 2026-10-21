@@ -8,16 +8,16 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class GroupByToDictionaryToDistinctByAnalyzer : DiagnosticAnalyzer
+public sealed class ProjectedGroupByToDictionaryFirstAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ209",
-        title: "GroupBy followed by ToDictionary of Key and First can be simplified",
-        messageFormat: "Use DistinctBy({0}{1}).ToDictionary({0}{2}) instead",
+        id: "SLQ210",
+        title: "GroupBy with element selector followed by ToDictionary of Key and First can be simplified",
+        messageFormat: "Use DistinctBy({0}{1}).ToDictionary({0}{2}{3}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Grouping elements by a key and mapping each key to the first element of its group keeps the first element of each distinct key, so DistinctBy followed by ToDictionary expresses the same intent more concisely.");
+        description: "Grouping elements by a key, projecting each element, and mapping each key to the first projected element of its group keeps the first projected element of each distinct key, so DistinctBy followed by ToDictionary expresses the same intent more concisely.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -41,7 +41,7 @@ public sealed class GroupByToDictionaryToDistinctByAnalyzer : DiagnosticAnalyzer
             return;
 
         var preceding = toDictionary.GetArgument(0)?.UnwrapPreservingConversions();
-        if (preceding is not IInvocationOperation { TargetMethod.IsGroupByMethod: true } groupBy)
+        if (preceding is not IInvocationOperation { TargetMethod.IsGroupByWithElementSelectorMethod: true } groupBy)
             return;
 
         if (!toDictionary.TryGetLambdaArgument(1, out var keySelectorLambda))
@@ -54,6 +54,10 @@ public sealed class GroupByToDictionaryToDistinctByAnalyzer : DiagnosticAnalyzer
         // But the suggested replacement evaluates it both in DistinctBy and ToDictionary.
         // So the selector must be safe to repeat and not cause observable side effects.
         if (!groupBy.TryGetLambdaArgument(1, out var keySelector) || !keySelector.IsPureExpression())
+            return;
+
+        // Same for the element selector.
+        if (!groupBy.TryGetLambdaArgument(2, out var elementSelector) || !elementSelector.IsPureExpression())
             return;
 
         if (!toDictionary.TryGetLambdaArgument(2, out var elementSelectorLambda))
@@ -73,14 +77,20 @@ public sealed class GroupByToDictionaryToDistinctByAnalyzer : DiagnosticAnalyzer
         var keySelectorText = groupBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
 
         // The comparer argument is optional.
-        var groupComparerText = groupBy.GetArgument(2) is { } groupComparerArg
+        var groupComparerText = groupBy.GetArgument(3) is { } groupComparerArg
             ? $", {groupComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
+
+        // When the element selector is the identity, the ToDictionary
+        // element selector can be omitted.
+        var elementSelectorText = groupBy.HasIdentitySelector(2)
+            ? ""
+            : $", {groupBy.GetArgument(2)?.GetSingleLineSyntaxText() ?? "{elementSelector}"}";
 
         var dictionaryComparerText = toDictionary.GetArgument(3) is { } dictionaryComparerArg
             ? $", {dictionaryComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, groupComparerText, dictionaryComparerText));
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, groupComparerText, elementSelectorText, dictionaryComparerText));
     }
 }

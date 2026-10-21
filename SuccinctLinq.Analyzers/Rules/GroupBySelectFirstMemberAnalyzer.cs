@@ -8,16 +8,16 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
+public sealed class GroupBySelectFirstMemberAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ206",
-        title: "GroupBy followed by Select of First can be simplified",
-        messageFormat: "Use DistinctBy({0}{1}) instead",
+        id: "SLQ208",
+        title: "GroupBy followed by Select of a member of First can be simplified",
+        messageFormat: "Use DistinctBy({0}{1}).Select({2}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "Grouping elements by a key and taking the first element of each group keeps the first element of each distinct key, so DistinctBy expresses the same intent more concisely.");
+        description: "Grouping elements by a key and taking a member of the first element of each group is equivalent to keeping the first element of each distinct key and selecting the member, so DistinctBy followed by Select expresses the same intent more concisely.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -47,7 +47,7 @@ public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
         if (!select.TryGetLambdaArgument(1, out var selectorLambda))
             return;
 
-        if (!selectorLambda.IsFirstMethod())
+        if (!selectorLambda.TryGetMemberAccessOnFirstElement(out var memberAccess))
             return;
 
         if (groupBy.Syntax is not InvocationExpressionSyntax groupByInvocation ||
@@ -65,6 +65,9 @@ public sealed class GroupByToDistinctByAnalyzer : DiagnosticAnalyzer
             ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
             : "";
 
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText));
+        var parameterName = selectorLambda.GetFirstParameterText() ?? selectorLambda.Symbol.Parameters[0].Name;
+        var memberText = $"{parameterName} => {parameterName}{memberAccess}";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText, memberText));
     }
 }

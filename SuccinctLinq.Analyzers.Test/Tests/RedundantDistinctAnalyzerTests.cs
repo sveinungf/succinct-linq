@@ -13,7 +13,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ThenToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -34,7 +34,7 @@ public class RedundantDistinctAnalyzerTests
     public Task ToHashSet_WithoutDistinct_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -55,7 +55,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InLongerChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -76,7 +76,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_IntermediateOperation_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -97,7 +97,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ThenToList_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -118,7 +118,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WithComparer_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -139,7 +139,7 @@ public class RedundantDistinctAnalyzerTests
     public Task ToHashSet_WithComparer_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -160,7 +160,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -181,7 +181,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -202,7 +202,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_StaticToHashSetInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -223,7 +223,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -244,7 +244,7 @@ public class RedundantDistinctAnalyzerTests
     public Task ToHashSet_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -265,7 +265,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameStringComparerInToHashSet_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -286,7 +286,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_NamedComparerInToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -307,7 +307,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -331,7 +331,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ChainedToHashSetPairs_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -352,7 +352,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameParameterComparerInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -374,7 +374,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameParameterComparerInStaticToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -396,7 +396,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameStringComparerPropertyInToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -417,7 +417,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_DifferentStringComparerPropertiesInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -438,7 +438,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameInstancePropertyComparerInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -464,7 +464,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_DifferentInstancePropertyComparersInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -491,7 +491,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_DifferentParameterComparersInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -515,7 +515,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WithNonComparerParameter_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace System.Linq
             {
@@ -550,7 +550,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WithStaticToHashSetAndParameterComparer_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -572,7 +572,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameLocalComparerInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -594,7 +594,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_DifferentLocalComparersInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -617,7 +617,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameComparerFactoryInvocationInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -640,7 +640,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameComparerCreationInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -667,7 +667,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameConditionalComparerInToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -690,7 +690,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameNullComparerInToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -711,7 +711,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_SameDefaultComparerInToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -732,7 +732,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_NonLinqEnumerable_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -759,7 +759,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InLocalVariableThenToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -781,7 +781,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InLocalVariableThenStaticToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -803,7 +803,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InLocalVariableWithSameParameterComparer_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -826,7 +826,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ReassignedToInitializedLocalVariableThenToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -849,7 +849,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ReassignedToUninitializedLocalVariableThenToHashSet_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -872,7 +872,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ReassignedToLocalVariableWithAdditionalUse_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -896,7 +896,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_NonDistinctReassignmentAfter_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -919,7 +919,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InLocalVariableWithAdditionalUse_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -942,7 +942,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InLocalVariableWithDifferentParameterComparers_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -967,7 +967,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InLocalVariableUsedInTwoToHashSetCalls_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -992,7 +992,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_NonDistinctLocalVariableThenToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1014,7 +1014,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_AssignedInBranchThenToHashSetOutside_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1045,7 +1045,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_AssignedInTernaryThenToHashSetOutside_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1067,7 +1067,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_AssignedInLoopThenToHashSetOutside_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1094,7 +1094,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_AssignedInBranchWithToHashSetInSameBranch_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1120,7 +1120,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_AssignedInBranchThenToHashSetInSiblingBranch_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1149,7 +1149,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InTryBodyThenToHashSetInCatch_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1178,7 +1178,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InTryBodyThenToHashSetAfterTry_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1208,7 +1208,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WithToHashSetInTryBody_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1237,7 +1237,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_InOneSwitchCaseThenToHashSetInAnotherCase_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1267,7 +1267,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WithToHashSetInSameSwitchCase_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1295,7 +1295,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_AssignedInAndAlsoSecondOperandThenToHashSetOutside_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1319,7 +1319,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_AssignedInOrElseSecondOperandThenToHashSetOutside_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1343,7 +1343,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WriteInUncalledLambdaThenToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1367,7 +1367,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WriteInAsyncLambdaThenToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1391,7 +1391,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WriteInUncalledLocalFunctionThenToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1415,7 +1415,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ToHashSetInLambdaThenLocalReassigned_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1439,7 +1439,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_ReadInLambdaThenToHashSet_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1462,7 +1462,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WithComparer_MessageMentionsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1487,7 +1487,7 @@ public class RedundantDistinctAnalyzerTests
     public Task Distinct_WithoutComparer_MessageOmitsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantDistinctAnalyzer>();
+        var context = AnalyzerTest.CreateContext<DistinctToHashSetAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 

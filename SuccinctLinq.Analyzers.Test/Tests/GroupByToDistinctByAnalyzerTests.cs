@@ -13,7 +13,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirst_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -39,7 +39,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstWithExplicitResultType_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -65,7 +65,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -91,7 +91,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_WithComparer_ThenSelectFirst_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -117,7 +117,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_WithComparer_MessageMentionsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -147,7 +147,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_MessageOmitsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -177,7 +177,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_WithNullComparer_ThenSelectFirst_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -203,7 +203,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -229,7 +229,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -255,7 +255,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenStaticSelect_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -281,7 +281,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstWithIndex_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -307,7 +307,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -335,7 +335,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_WithElementSelector_ThenSelectFirst_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -361,7 +361,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_WithResultSelector_ThenSelectFirst_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -387,7 +387,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstWithPredicate_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -413,7 +413,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstAsyncLambda_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -439,7 +439,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -465,7 +465,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_WithComparer_ThenSelectFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -491,7 +491,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstOrDefaultWithPredicate_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -517,7 +517,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectLast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -543,7 +543,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectCount_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -569,7 +569,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstOfOtherExpression_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -596,7 +596,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_ThenSelectFirstWithDowncast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -626,7 +626,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task SelectFirst_WithoutGroupBy_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -652,7 +652,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_WithoutSelect_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -678,7 +678,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_TargetFrameworkBeforeNet6_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net50);
         context.TestCode = """
             namespace MyNamespace;
@@ -705,7 +705,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
         context.TestCode = """
             namespace MyNamespace;
@@ -732,7 +732,7 @@ public class GroupByToDistinctByAnalyzerTests
     public Task GroupBy_TargetFrameworkNet6_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<GroupByToDistinctByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net60);
         context.TestCode = """
             namespace MyNamespace;

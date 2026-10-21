@@ -13,7 +13,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_IdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -34,7 +34,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_IdentityLambdaInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -55,7 +55,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_IdentityLambdaWithComparer_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -76,7 +76,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_IdentityLambdaWithComparer_MessageMentionsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -101,7 +101,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_IdentityLambda_MessageOmitsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -126,7 +126,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -147,7 +147,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -168,7 +168,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_OutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -189,7 +189,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -210,7 +210,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_IdentityLambdaWithSameTypeCast_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -231,7 +231,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_ValueChangingCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -252,7 +252,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_GenericSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -273,7 +273,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -297,7 +297,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_DifferentKeySelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -318,7 +318,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_DifferentKeyType_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -339,7 +339,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_NullForgivingKeySelectorOnNullableValueSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -362,7 +362,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_NullForgivingKeySelectorOnNullableReferenceSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -385,7 +385,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_IdentityLambdaOnNullableSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -408,7 +408,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -429,7 +429,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_MethodGroupKeySelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -452,7 +452,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderBy_IdentityLambda_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -473,7 +473,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task ThenByDescending_IdentityLambda_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -494,7 +494,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderDescending_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -515,7 +515,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_WithNonKeySelectorParameter_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace System.Linq
             {
@@ -549,7 +549,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_TargetFrameworkBeforeNet7_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net60);
         context.TestCode = """
             namespace MyNamespace;
@@ -571,7 +571,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
         context.TestCode = """
             namespace MyNamespace;
@@ -593,7 +593,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_TargetFrameworkNet7_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net70);
         context.TestCode = """
             namespace MyNamespace;
@@ -615,7 +615,7 @@ public class OrderByDescendingIdentityKeyAnalyzerTests
     public Task OrderByDescending_WithNonComparerParameter_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityKeyAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
         context.TestCode = """
             namespace System.Linq
             {
