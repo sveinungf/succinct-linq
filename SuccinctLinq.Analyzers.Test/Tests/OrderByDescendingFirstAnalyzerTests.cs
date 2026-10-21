@@ -5,7 +5,7 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class OrderByDescendingToMaxByAnalyzerTests
+public class OrderByDescendingFirstAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
@@ -13,7 +13,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -34,7 +34,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenFirstOrDefaultInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -55,7 +55,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithComparer_ThenFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -76,7 +76,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithComparer_MessageMentionsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -101,7 +101,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_MessageOmitsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -126,7 +126,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithNullComparer_ThenFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -147,7 +147,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithNullComparerAndNullableKey_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -168,7 +168,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithComparerAndReferenceTypeKey_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -189,7 +189,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithComparerAndNullableValueTypeKey_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -210,7 +210,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -231,7 +231,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -252,7 +252,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenStaticFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -273,7 +273,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithInterfaceElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -298,7 +298,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithNullableReferenceElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -321,7 +321,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -344,7 +344,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithValueTypeElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -365,7 +365,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithStructElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -391,7 +391,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithNullableValueTypeElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -412,7 +412,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithUnconstrainedGenericElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -433,7 +433,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithClassConstrainedGenericElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -455,7 +455,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithStructConstrainedGenericElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -477,7 +477,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithReferenceTypeKey_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -498,7 +498,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithNullableValueTypeKey_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -519,7 +519,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithGenericKey_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -541,7 +541,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithStructConstrainedGenericKey_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -564,7 +564,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task FirstOrDefault_WithoutOrderByDescending_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -585,7 +585,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_WithoutFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -606,7 +606,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenFirstOrDefaultWithPredicate_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -627,7 +627,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenFirst_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -648,7 +648,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenSelect_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -669,7 +669,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenToList_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -690,7 +690,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_ThenByDescending_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -711,7 +711,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderBy_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -732,7 +732,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_TargetFrameworkBeforeNet6_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net50);
         context.TestCode = """
             namespace MyNamespace;
@@ -754,7 +754,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
         context.TestCode = """
             namespace MyNamespace;
@@ -776,7 +776,7 @@ public class OrderByDescendingToMaxByAnalyzerTests
     public Task OrderByDescending_TargetFrameworkNet6_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByDescendingToMaxByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByDescendingFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net60);
         context.TestCode = """
             namespace MyNamespace;

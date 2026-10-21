@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class RedundantDistinctAnalyzer : DiagnosticAnalyzer
+public sealed class DistinctToHashSetAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ101",

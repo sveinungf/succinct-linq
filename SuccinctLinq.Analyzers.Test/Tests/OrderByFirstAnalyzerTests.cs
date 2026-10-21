@@ -5,7 +5,7 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class OrderByToMinByAnalyzerTests
+public class OrderByFirstAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
@@ -13,7 +13,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -34,7 +34,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenFirstOrDefaultInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -55,7 +55,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithComparer_ThenFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -76,7 +76,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithComparer_MessageMentionsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -101,7 +101,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_MessageOmitsComparer()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -126,7 +126,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithNullComparer_ThenFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -147,7 +147,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -168,7 +168,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -189,7 +189,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenStaticFirstOrDefault_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -210,7 +210,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithInterfaceElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -235,7 +235,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithNullableReferenceElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -258,7 +258,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -281,7 +281,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithValueTypeElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -302,7 +302,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithStructElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -328,7 +328,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithNullableValueTypeElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -349,7 +349,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithUnconstrainedGenericElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -370,7 +370,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithClassConstrainedGenericElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -392,7 +392,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithStructConstrainedGenericElements_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -414,7 +414,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithReferenceTypeKey_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -435,7 +435,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithNullableValueTypeKey_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -456,7 +456,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithGenericKey_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -478,7 +478,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithStructConstrainedGenericKey_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -501,7 +501,7 @@ public class OrderByToMinByAnalyzerTests
     public Task FirstOrDefault_WithoutOrderBy_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -522,7 +522,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_WithoutFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -543,7 +543,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenFirstOrDefaultWithPredicate_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -564,7 +564,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenFirst_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -585,7 +585,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenSelect_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -606,7 +606,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenToList_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -627,7 +627,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_ThenBy_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -648,7 +648,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderByDescending_ThenFirstOrDefault_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>();
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -669,7 +669,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_TargetFrameworkBeforeNet6_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net50);
         context.TestCode = """
             namespace MyNamespace;
@@ -691,7 +691,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
         context.TestCode = """
             namespace MyNamespace;
@@ -713,7 +713,7 @@ public class OrderByToMinByAnalyzerTests
     public Task OrderBy_TargetFrameworkNet6_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<OrderByToMinByAnalyzer>(
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net60);
         context.TestCode = """
             namespace MyNamespace;

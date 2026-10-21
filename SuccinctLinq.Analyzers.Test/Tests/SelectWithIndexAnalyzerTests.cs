@@ -4,7 +4,7 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class SelectToIndexAnalyzerTests
+public class SelectWithIndexAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
@@ -12,7 +12,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexFirstTuple_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -33,7 +33,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexFirstTupleNamedElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -54,7 +54,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexFirstTupleStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -75,7 +75,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexOffsetTuple_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -96,7 +96,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexOffsetTupleSubtraction_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -117,7 +117,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexWideningCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -138,7 +138,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTuple_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -159,7 +159,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -180,7 +180,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleWithCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -201,7 +201,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleNullableSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -224,7 +224,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleNamedElements_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -245,7 +245,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleStatementBodyLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -266,7 +266,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleGenericSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -287,7 +287,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -308,7 +308,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -329,7 +329,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_NamedSelector_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -350,7 +350,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleFullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -371,7 +371,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleMultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -395,7 +395,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstTupleWithDifferentNames_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -416,7 +416,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexFirstTupleWithDifferentNames_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -437,7 +437,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ElementFirstAnonymousObject_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -458,7 +458,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_IndexFirstAnonymousObject_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -479,7 +479,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_AnonymousObjectWithNamedMembers_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -500,7 +500,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_AnonymousObjectWithCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -521,7 +521,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_DifferentElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -542,7 +542,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_DifferentIndexSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -563,7 +563,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_ThreeElementTuple_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -584,7 +584,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_AnonymousObjectExtraMember_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -605,7 +605,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_AnonymousObjectSingleMember_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -626,7 +626,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_AnonymousObjectMissingIndex_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -647,7 +647,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_NonAnonymousObject_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -670,7 +670,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_SingleArgumentSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -691,7 +691,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_MethodGroupSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -714,7 +714,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_Index_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>();
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -735,7 +735,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_TargetFrameworkBeforeNet9_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>(
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net80);
         context.TestCode = """
             namespace MyNamespace;
@@ -757,7 +757,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_TargetFrameworkNetStandard_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>(
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.NetStandard.NetStandard20);
         context.TestCode = """
             namespace MyNamespace;
@@ -779,7 +779,7 @@ public class SelectToIndexAnalyzerTests
     public Task Select_TargetFrameworkNet9_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<SelectToIndexAnalyzer>(
+        var context = AnalyzerTest.CreateContext<SelectWithIndexAnalyzer>(
             referenceAssemblies: ReferenceAssemblies.Net.Net90);
         context.TestCode = """
             namespace MyNamespace;

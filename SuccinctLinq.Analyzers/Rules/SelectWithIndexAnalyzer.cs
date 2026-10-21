@@ -8,7 +8,7 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class SelectToIndexAnalyzer : DiagnosticAnalyzer
+public sealed class SelectWithIndexAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ201",

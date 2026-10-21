@@ -8,16 +8,16 @@ using System.Collections.Immutable;
 namespace SuccinctLinq.Analyzers.Rules;
 
 [DiagnosticAnalyzer(LanguageNames.CSharp)]
-public sealed class OrderByDescendingIdentityKeyAnalyzer : DiagnosticAnalyzer
+public sealed class OrderByIdentityAnalyzer : DiagnosticAnalyzer
 {
     private static readonly DiagnosticDescriptor Descriptor = new(
-        id: "SLQ203",
-        title: "OrderByDescending can be simplified",
-        messageFormat: "Use OrderDescending({0}) instead",
+        id: "SLQ202",
+        title: "OrderBy can be simplified",
+        messageFormat: "Use Order({0}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "An OrderByDescending with the identity function (x => x) is equivalent to the more concise OrderDescending.");
+        description: "An OrderBy with the identity function (x => x) is equivalent to the more concise Order.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -29,7 +29,7 @@ public sealed class OrderByDescendingIdentityKeyAnalyzer : DiagnosticAnalyzer
         context.EnableConcurrentExecution();
         context.RegisterCompilationStartAction(startContext =>
         {
-            // The OrderDescending() method is only available in .NET 7 and later.
+            // The Order() method is only available in .NET 7 and later.
             if (startContext.Compilation.IsTargetFrameworkAtLeast(7))
                 startContext.RegisterOperationAction(Analyze, OperationKind.Invocation);
         });
@@ -37,20 +37,20 @@ public sealed class OrderByDescendingIdentityKeyAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation orderByDescending ||
-            !orderByDescending.TargetMethod.IsOrderByDescendingMethod ||
-            !orderByDescending.HasIdentitySelector(1, SymbolEqualityComparer.Default))
+        if (context.Operation is not IInvocationOperation orderBy ||
+            !orderBy.TargetMethod.IsOrderByMethod ||
+            !orderBy.HasIdentitySelector(1, SymbolEqualityComparer.Default))
         {
             return;
         }
 
-        if (orderByDescending.Syntax is not InvocationExpressionSyntax invocation)
+        if (orderBy.Syntax is not InvocationExpressionSyntax invocation)
             return;
 
         var location = invocation.GetMethodCallLocation();
 
         // The comparer argument is optional.
-        var comparerText = orderByDescending.GetArgument(2) is { } comparerArg
+        var comparerText = orderBy.GetArgument(2) is { } comparerArg
             ? comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"
             : "";
 
