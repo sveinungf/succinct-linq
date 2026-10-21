@@ -37,21 +37,23 @@ Arguments after `--` are passed to the test host. Supported filters (run
 
 ```sh
 # Run a single test method
-dotnet test -- --filter-method "SuccinctLinq.Analyzers.Test.Tests.RedundantDistinctAnalyzerTests.Distinct_ThenToHashSet_ReportWarning"
+dotnet test -- --filter-method "SuccinctLinq.Analyzers.Test.Tests.DistinctToHashSetAnalyzerTests.Distinct_ThenToHashSet_ReportWarning"
 
 # Run all tests in a class (wildcards supported)
-dotnet test -- --filter-class "SuccinctLinq.Analyzers.Test.Tests.RedundantDistinctAnalyzerTests"
+dotnet test -- --filter-class "SuccinctLinq.Analyzers.Test.Tests.DistinctToHashSetAnalyzerTests"
 
 # Run all tests in a namespace
 dotnet test -- --filter-namespace "SuccinctLinq.Analyzers.Test.Tests"
 
 # VSTest-style filter syntax
-dotnet test -- --filter "FullyQualifiedName~RedundantDistinct"
+dotnet test -- --filter "FullyQualifiedName~DistinctToHashSet"
 ```
 
 ## Adding a new analyzer rule
 
-1. Add a `sealed` class named after the rule (e.g. `RedundantDistinctAnalyzer`) in
+1. Add a `sealed` class named after the expression pattern the rule detects
+   (e.g. `DistinctToHashSetAnalyzer` for `Distinct().ToHashSet()`,
+   `OrderByIdentityAnalyzer` for `OrderBy(x => x)`) in
    `SuccinctLinq.Analyzers/Rules/`, deriving `DiagnosticAnalyzer` and decorated
    with `[DiagnosticAnalyzer(LanguageNames.CSharp)]`.
 2. Assign the next available `SLQ`-prefixed rule ID. Rule IDs are grouped by
@@ -69,8 +71,8 @@ Do not update `README.md` when adding a new rule.
 - One `*Tests` class per analyzer in the namespace `SuccinctLinq.Analyzers.Test.Tests`.
 - Test methods are named `<MethodUnderTest>_<Scenario>_<ExpectedResult>`,
   i.e. prefixed with the LINQ method the test exercises (e.g.
-  `ToDictionary_IdentityElementSelector_ReportWarning` in
-  `RedundantElementSelectorAnalyzerTests`) and return `Task`.
+   `ToDictionary_IdentityElementSelector_ReportWarning` in
+   `IdentityElementSelectorAnalyzerTests`) and return `Task`.
 - Each test class exposes `private static CancellationToken Token =>
   TestContext.Current.CancellationToken;` and passes it to the runner.
 - Build the test with `AnalyzerTest.CreateContext<YourAnalyzer>()`, set
