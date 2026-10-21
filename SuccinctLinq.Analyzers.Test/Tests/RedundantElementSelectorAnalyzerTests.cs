@@ -13,7 +13,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_IdentityElementSelector_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -34,7 +34,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_IdentityElementSelectorInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -55,7 +55,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_IdentityElementSelectorWithComparer_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -76,7 +76,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -97,7 +97,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_StaticInvocationOutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -118,7 +118,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_OutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -139,7 +139,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_OutOfOrderNamedArgumentsWithComparer_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -160,7 +160,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_FullyQualifiedStaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -181,7 +181,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_IdentityElementSelectorWithSameTypeCast_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -202,7 +202,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_ValueChangingCast_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -223,7 +223,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_IdentityElementSelectorNullableSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -246,7 +246,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_ElementSelectorChangesNullability_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -269,7 +269,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_GenericSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -290,7 +290,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_MultipleCalls_ReportWarningForEach()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -314,7 +314,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -335,7 +335,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_IdentityElementSelector_MessageContainsSelectorText()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -360,7 +360,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_DifferentElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -381,7 +381,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_DifferentElementType_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -402,7 +402,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_WithoutElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -423,7 +423,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_IdentityKeySelectorWithoutElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -444,7 +444,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_MethodGroupElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -467,7 +467,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToDictionary_WithNonElementSelectorParameter_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace System.Linq
             {
@@ -502,7 +502,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_IdentityElementSelector_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -523,7 +523,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_IdentityElementSelectorInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -544,7 +544,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_IdentityElementSelectorWithComparer_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -565,7 +565,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -586,7 +586,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_OutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -607,7 +607,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_IdentityElementSelectorWithSameTypeCast_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -628,7 +628,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_IdentityElementSelectorNullableSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -651,7 +651,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_ElementSelectorChangesNullability_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -674,7 +674,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -695,7 +695,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_DifferentElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -716,7 +716,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_DifferentElementType_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -737,7 +737,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task ToLookup_WithoutElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -758,7 +758,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_IdentityElementSelector_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -779,7 +779,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_IdentityElementSelectorInChain_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -800,7 +800,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_IdentityElementSelectorWithComparer_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -821,7 +821,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_StaticInvocation_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -842,7 +842,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_OutOfOrderNamedArguments_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -863,7 +863,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_IdentityElementSelectorWithSameTypeCast_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -884,7 +884,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_IdentityElementSelectorNullableSource_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -907,7 +907,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_ElementSelectorChangesNullability_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             #nullable enable
 
@@ -930,7 +930,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -951,7 +951,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_DifferentElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -972,7 +972,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_DifferentElementType_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -993,7 +993,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_WithoutElementSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 
@@ -1014,7 +1014,7 @@ public class RedundantElementSelectorAnalyzerTests
     public Task GroupBy_WithResultSelector_NoWarning()
     {
         // Arrange
-        var context = AnalyzerTest.CreateContext<RedundantIdentitySelectorAnalyzer>();
+        var context = AnalyzerTest.CreateContext<IdentityElementSelectorAnalyzer>();
         context.TestCode = """
             namespace MyNamespace;
 

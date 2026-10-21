@@ -5,7 +5,7 @@
 Rule ID | Category | Severity | Notes
 --------|----------|----------|--------------------
 SLQ101 | Redundancy | Warning | DistinctToHashSet
-SLQ102 | Redundancy | Warning | RedundantIdentitySelector
+SLQ102 | Redundancy | Warning | IdentityElementSelector
 SLQ103 | Redundancy | Warning | SelectIdentity
 SLQ201 | Simplification | Warning | SelectWithIndex
 SLQ202 | Simplification | Warning | OrderByIdentity
