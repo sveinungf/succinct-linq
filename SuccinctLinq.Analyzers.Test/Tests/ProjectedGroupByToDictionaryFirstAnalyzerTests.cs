@@ -5,7 +5,7 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class GroupByWithElementSelectorToDictionaryToDistinctByAnalyzerTests
+public class ProjectedGroupByToDictionaryFirstAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 

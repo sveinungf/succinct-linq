@@ -5,7 +5,7 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class RedundantSelectAnalyzerTests
+public class SelectIdentityAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 

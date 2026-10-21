@@ -5,7 +5,7 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class RedundantElementSelectorAnalyzerTests
+public class IdentityElementSelectorAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 

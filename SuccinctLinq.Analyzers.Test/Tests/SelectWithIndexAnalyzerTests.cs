@@ -4,7 +4,7 @@ using SuccinctLinq.Analyzers.Test.Helpers;
 
 namespace SuccinctLinq.Analyzers.Test.Tests;
 
-public class SelectToIndexAnalyzerTests
+public class SelectWithIndexAnalyzerTests
 {
     private static CancellationToken Token => TestContext.Current.CancellationToken;
 
