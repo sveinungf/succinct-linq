@@ -12,6 +12,13 @@ internal static class MethodSymbolExtensions
             ContainingType.IsSystemLinqEnumerable: true
         };
 
+        public bool IsDistinctByMethod => symbol is
+        {
+            Name: "DistinctBy",
+            ContainingType.IsSystemLinqEnumerable: true,
+            SelectorFirst: true
+        };
+
         public bool IsOrderByMethod => symbol is
         {
             Name: "OrderBy",
