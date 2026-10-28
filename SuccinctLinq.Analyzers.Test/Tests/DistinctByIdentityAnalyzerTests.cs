@@ -313,7 +313,28 @@ public class DistinctByIdentityAnalyzerTests
     }
 
     [Fact]
-    public Task DistinctBy_WithComparer_NoWarning()
+    public Task DistinctBy_WithComparer_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<DistinctByIdentityAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<string> items)
+                {
+                    return items.{|SLQ212:DistinctBy(x => x, StringComparer.Ordinal)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task DistinctBy_WithComparer_MessageSuggestsDistinctWithComparer()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<DistinctByIdentityAnalyzer>();
@@ -328,6 +349,10 @@ public class DistinctByIdentityAnalyzerTests
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ212", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 64)
+                .WithMessage("Use Distinct(StringComparer.Ordinal) instead"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -345,10 +370,14 @@ public class DistinctByIdentityAnalyzerTests
             {
                 public static IEnumerable<string> MyMethod(IEnumerable<string> items)
                 {
-                    return items.{|SLQ212:DistinctBy(x => x, null)|};
+                    return items.DistinctBy(x => x, null);
                 }
             }
             """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ212", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 46)
+                .WithMessage("Use Distinct() instead"));
 
         // Act & Assert
         return context.RunAsync(Token);

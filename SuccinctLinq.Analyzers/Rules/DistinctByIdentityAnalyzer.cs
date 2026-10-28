@@ -13,11 +13,11 @@ public sealed class DistinctByIdentityAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ212",
         title: "DistinctBy can be simplified",
-        messageFormat: "Use Distinct() instead",
+        messageFormat: "Use Distinct({0}) instead",
         category: "Simplification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
-        description: "A DistinctBy with the identity function (x => x) is equivalent to just Distinct.");
+        description: "A DistinctBy with the identity function (x => x) is equivalent to Distinct.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
 
@@ -34,8 +34,7 @@ public sealed class DistinctByIdentityAnalyzer : DiagnosticAnalyzer
     {
         if (context.Operation is not IInvocationOperation distinctBy ||
             !distinctBy.TargetMethod.IsDistinctByMethod ||
-            !distinctBy.HasIdentitySelector(1, SymbolEqualityComparer.Default) ||
-            distinctBy.HasNonNullArgument(2))
+            !distinctBy.HasIdentitySelector(1, SymbolEqualityComparer.Default))
         {
             return;
         }
@@ -44,6 +43,13 @@ public sealed class DistinctByIdentityAnalyzer : DiagnosticAnalyzer
             return;
 
         var location = invocation.GetMethodCallLocation();
-        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location));
+
+        // The comparer argument is optional.
+        var comparerArg = distinctBy.GetArgument(2)?.UnwrapConversions();
+        var comparerText = comparerArg is { IsNullOrDefault: false }
+            ? comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"
+            : "";
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
     }
 }
