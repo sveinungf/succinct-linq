@@ -31,6 +31,20 @@ internal static class InvocationOperationExtensions
             return null;
         }
 
+        public string GetComparerArgumentSyntaxText(int index, string? prefix)
+        {
+            var argument = operation.GetArgument(index);
+            if (argument is null)
+                return "";
+
+            argument = argument.UnwrapConversions();
+            if (argument.IsNullOrDefault)
+                return "";
+
+            var text = argument.GetSingleLineSyntaxText() ?? "{comparer}";
+            return prefix + text;
+        }
+
         public bool HasNonNullArgument(int index)
         {
             var argument = operation.GetArgument(index)?.UnwrapConversions();

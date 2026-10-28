@@ -50,9 +50,7 @@ public sealed class OrderByIdentityAnalyzer : DiagnosticAnalyzer
         var location = invocation.GetMethodCallLocation();
 
         // The comparer argument is optional.
-        var comparerText = orderBy.GetArgument(2) is { } comparerArg
-            ? comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"
-            : "";
+        var comparerText = orderBy.GetComparerArgumentSyntaxText(2, prefix: null);
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
     }

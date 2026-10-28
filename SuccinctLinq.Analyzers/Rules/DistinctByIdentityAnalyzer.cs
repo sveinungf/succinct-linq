@@ -45,10 +45,7 @@ public sealed class DistinctByIdentityAnalyzer : DiagnosticAnalyzer
         var location = invocation.GetMethodCallLocation();
 
         // The comparer argument is optional.
-        var comparerArg = distinctBy.GetArgument(2)?.UnwrapConversions();
-        var comparerText = comparerArg is { IsNullOrDefault: false }
-            ? comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"
-            : "";
+        var comparerText = distinctBy.GetComparerArgumentSyntaxText(2, prefix: null);
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
     }

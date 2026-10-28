@@ -66,9 +66,7 @@ public sealed class OrderByFirstAnalyzer : DiagnosticAnalyzer
         var keySelectorText = orderBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
 
         // The comparer argument is optional.
-        var comparerText = orderBy.GetArgument(2) is { } comparerArg
-            ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
-            : "";
+        var comparerText = orderBy.GetComparerArgumentSyntaxText(2, prefix: ", ");
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText));
     }

@@ -174,6 +174,36 @@ public class GroupBySelectFirstAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_WithNullComparer_MessageOmitsComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupBySelectFirstAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static IEnumerable<Item> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id, null).Select(g => g.First());
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ206", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 12, 22, 12, 69)
+                .WithMessage("Use DistinctBy(x => x.Id) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_WithNullComparer_ThenSelectFirst_ReportWarning()
     {
         // Arrange

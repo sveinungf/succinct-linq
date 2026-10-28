@@ -72,14 +72,9 @@ public sealed class GroupByToDictionaryFirstAnalyzer : DiagnosticAnalyzer
 
         var keySelectorText = groupBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
 
-        // The comparer argument is optional.
-        var groupComparerText = groupBy.GetArgument(2) is { } groupComparerArg
-            ? $", {groupComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
-            : "";
-
-        var dictionaryComparerText = toDictionary.GetArgument(3) is { } dictionaryComparerArg
-            ? $", {dictionaryComparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
-            : "";
+        // The comparer arguments are optional.
+        var groupComparerText = groupBy.GetComparerArgumentSyntaxText(2, prefix: ", ");
+        var dictionaryComparerText = toDictionary.GetComparerArgumentSyntaxText(3, prefix: ", ");
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, groupComparerText, dictionaryComparerText));
     }
