@@ -41,7 +41,7 @@ internal static class InvocationOperationExtensions
             if (argument.IsNullOrDefault)
                 return "";
 
-            var text = argument.GetSingleLineSyntaxText() ?? "{comparer}";
+            var text = argument.Syntax.GetSingleLineText() ?? "{comparer}";
             return prefix + text;
         }
 
