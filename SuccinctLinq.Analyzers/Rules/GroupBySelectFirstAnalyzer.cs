@@ -61,9 +61,7 @@ public sealed class GroupBySelectFirstAnalyzer : DiagnosticAnalyzer
         var keySelectorText = groupBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
 
         // The comparer argument is optional.
-        var comparerText = groupBy.GetArgument(2) is { } comparerArg
-            ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
-            : "";
+        var comparerText = groupBy.GetComparerArgumentSyntaxText(2, prefix: ", ");
 
         context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, keySelectorText, comparerText));
     }

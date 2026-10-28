@@ -153,6 +153,37 @@ public class GroupByToDictionaryFirstMemberAnalyzerTests
     }
 
     [Fact]
+    public Task GroupBy_WithNullComparer_MessageOmitsComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<GroupByToDictionaryFirstMemberAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public class Item
+            {
+                public int Id { get; set; }
+                public int Value { get; set; }
+            }
+
+            public static class MyClass
+            {
+                public static Dictionary<int, int> MyMethod(IEnumerable<Item> items)
+                {
+                    return items.GroupBy(x => x.Id, null).ToDictionary(g => g.Key, g => g.First().Value);
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ211", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 13, 22, 13, 93)
+                .WithMessage("Use DistinctBy(x => x.Id).ToDictionary(x => x.Id, g => g.Value) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task GroupBy_NestedMemberAccess_MessageShowsFullChain()
     {
         // Arrange

@@ -61,9 +61,7 @@ public sealed class GroupBySelectFirstMemberAnalyzer : DiagnosticAnalyzer
         var keySelectorText = groupBy.GetArgument(1)?.GetSingleLineSyntaxText() ?? "{keySelector}";
 
         // The comparer argument is optional.
-        var comparerText = groupBy.GetArgument(2) is { } comparerArg
-            ? $", {comparerArg.GetSingleLineSyntaxText() ?? "{comparer}"}"
-            : "";
+        var comparerText = groupBy.GetComparerArgumentSyntaxText(2, prefix: ", ");
 
         var parameterName = selectorLambda.GetFirstParameterText() ?? selectorLambda.Symbol.Parameters[0].Name;
         var memberText = $"{parameterName} => {parameterName}{memberAccess}";

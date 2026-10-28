@@ -123,6 +123,31 @@ public class OrderByFirstAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_WithNullComparer_MessageOmitsComparer()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByFirstAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static string MyMethod(IEnumerable<string> items)
+                {
+                    return items.OrderBy(x => x.Length, null).FirstOrDefault();
+                }
+            }
+            """;
+        context.TestState.ExpectedDiagnostics.Add(
+            new DiagnosticResult("SLQ204", DiagnosticSeverity.Warning)
+                .WithSpan("/0/Test1.cs", 7, 22, 7, 67)
+                .WithMessage("Use MinBy(x => x.Length) instead"));
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderBy_WithNullComparer_ThenFirstOrDefault_ReportWarning()
     {
         // Arrange
