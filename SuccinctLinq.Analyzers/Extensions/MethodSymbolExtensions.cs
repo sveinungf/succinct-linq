@@ -6,6 +6,13 @@ internal static class MethodSymbolExtensions
 {
     extension(IMethodSymbol symbol)
     {
+        public bool IsCountMethod => symbol is
+        {
+            Name: "Count",
+            ContainingType.IsSystemLinqEnumerable: true,
+            Parameters.Length: 1
+        };
+
         public bool IsDistinctMethod => symbol is
         {
             Name: "Distinct",

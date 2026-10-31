@@ -102,6 +102,15 @@ internal static class OperationExtensions
             return operation;
         }
 
+        public bool IsCountMethodCallOnParameterType(IParameterSymbol parameter)
+        {
+            return operation.UnwrapIdentityConversions() is IInvocationOperation
+            {
+                TargetMethod.IsCountMethod: true,
+                Arguments: [var source]
+            } && source.Value.UnwrapPreservingConversions().ReferencesParameter(parameter);
+        }
+
         public bool IsFirstMethodCallOnParameterType(IParameterSymbol parameter)
         {
             return operation.UnwrapIdentityConversions() is IInvocationOperation

@@ -42,6 +42,24 @@ internal static class AnonymousFunctionOperationExtensions
             return value.IsPureExpression();
         }
 
+        // A lambda that returns the number of elements of its first parameter,
+        // e.g. group => group.Count().
+        // Extra parameters, such as the index in Select((group, i) => group.Count()), may be ignored.
+        public bool IsCountMethod()
+        {
+            if (lambda.Symbol.IsAsync)
+                return false;
+
+            var parameters = lambda.Symbol.Parameters;
+            if (parameters is not [var parameter, ..])
+                return false;
+
+            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
+                return false;
+
+            return value.IsCountMethodCallOnParameterType(parameter);
+        }
+
         // A lambda that returns the first element of its first parameter,
         // e.g. group => group.First() or group => group.FirstOrDefault().
         // Extra parameters, such as the index in Select((group, i) => group.First()), may be ignored.
