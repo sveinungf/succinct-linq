@@ -102,7 +102,7 @@ internal static class OperationExtensions
             return operation;
         }
 
-        public bool IsCountMethodCallOnParameterType(IParameterSymbol parameter)
+        public bool IsCountMethodOn(IParameterSymbol parameter)
         {
             return operation.UnwrapIdentityConversions() is IInvocationOperation
             {
@@ -111,13 +111,23 @@ internal static class OperationExtensions
             } && source.Value.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
 
-        public bool IsFirstMethodCallOnParameterType(IParameterSymbol parameter)
+        public bool IsFirstMethodOn(IParameterSymbol parameter)
         {
             return operation.UnwrapIdentityConversions() is IInvocationOperation
             {
                 TargetMethod.IsFirstOrFirstOrDefaultMethod: true,
                 Arguments: [var source]
             } && source.Value.UnwrapPreservingConversions().ReferencesParameter(parameter);
+        }
+
+        public bool IsKeyPropertyOn(IParameterSymbol parameter)
+        {
+            return operation.UnwrapIdentityConversions() is IMemberReferenceOperation
+            {
+                IsIndexerAccess: false,
+                Member: IPropertySymbol { Name: "Key", ContainingType.IsSystemLinqIGrouping: true },
+                Instance: { } instance
+            } && instance.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
 
         public bool IsInsideFunctionBoundary()
