@@ -11,26 +11,10 @@ internal static class AnonymousFunctionOperationExtensions
 {
     extension(IAnonymousFunctionOperation lambda)
     {
-        public bool IsIdentityFunction()
-        {
-            var parameters = lambda.Symbol.Parameters;
-            if (parameters is not [var parameter, ..])
-                return false;
-
-            // A lambda that simply returns its first parameter compiles to a
-            // block containing a single return operation. Extra parameters,
-            // such as the index in Select((x, i) => x), may be ignored.
-            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
-                return false;
-
-            // Only strip conversions that are guaranteed to yield the same
-            // element; a cast such as (double)(int)x compiles to conversions
-            // around a parameter reference but changes the value.
-            return value.UnwrapPreservingConversions().ReferencesParameter(parameter);
-        }
-
-        // A lambda that returns a expression that is likely safe to evaluate
-        // multiple times, e.g. x => x.Id.
+        /// <summary>
+        /// A lambda that returns a expression that is likely safe to evaluate
+        /// multiple times, e.g. x => x.Id.
+        /// </summary>
         public bool IsPureExpression()
         {
             if (lambda.Symbol.IsAsync)
@@ -42,10 +26,34 @@ internal static class AnonymousFunctionOperationExtensions
             return value.IsPureExpression();
         }
 
-        // A lambda that returns the first element of its first parameter,
-        // e.g. group => group.First() or group => group.FirstOrDefault().
-        // Extra parameters, such as the index in Select((group, i) => group.First()), may be ignored.
-        public bool IsFirstMethod()
+        /// <summary>
+        /// A lambda like "x => x.Count()".
+        /// </summary>
+        public bool IsCountMethod() =>
+            lambda.IsSimpleSelector(static (value, parameter) => value.IsCountMethodOn(parameter));
+
+        /// <summary>
+        /// A lambda like "x => x.First()" or "x => x.FirstOrDefault()".
+        /// </summary>
+        public bool IsFirstMethod() =>
+            lambda.IsSimpleSelector(static (value, parameter) => value.IsFirstMethodOn(parameter));
+
+        /// <summary>
+        /// A lambda like "x => x".
+        /// </summary>
+        public bool IsIdentityFunction() =>
+            lambda.IsSimpleSelector(static (value, parameter) => value.UnwrapPreservingConversions().ReferencesParameter(parameter));
+
+        /// <summary>
+        /// A lambda like "x => x.Key".
+        /// </summary>
+        public bool IsKeyProperty() =>
+            lambda.IsSimpleSelector(static (value, parameter) => value.IsKeyPropertyOn(parameter));
+
+        // A simple selector is a lambda that returns an expression that depends only on the parameter,
+        // such as a method call or member access on the parameter (e.g. x => x.Count()).
+        // Extra parameters, such as the index in Select((group, i) => group.Count()), is ignored.
+        private bool IsSimpleSelector(Func<IOperation, IParameterSymbol, bool> predicate)
         {
             if (lambda.Symbol.IsAsync)
                 return false;
@@ -57,30 +65,7 @@ internal static class AnonymousFunctionOperationExtensions
             if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
                 return false;
 
-            return value.IsFirstMethodCallOnParameterType(parameter);
-        }
-
-        // A lambda that returns the Key property of its first parameter,
-        // e.g. group => group.Key.
-        // Extra parameters, such as the index in Select((group, i) => group.Key), may be ignored.
-        public bool IsKeyProperty()
-        {
-            if (lambda.Symbol.IsAsync)
-                return false;
-
-            var parameters = lambda.Symbol.Parameters;
-            if (parameters is not [var parameter, ..])
-                return false;
-
-            if (lambda.Body.Operations is not [IReturnOperation { ReturnedValue: { } value }])
-                return false;
-
-            return value.UnwrapIdentityConversions() is IMemberReferenceOperation
-            {
-                IsIndexerAccess: false,
-                Member: IPropertySymbol { Name: "Key", ContainingType.IsSystemLinqIGrouping: true },
-                Instance: { } instance
-            } && instance.UnwrapPreservingConversions().ReferencesParameter(parameter);
+            return predicate(value, parameter);
         }
 
         // A lambda that returns a member of the first element of its first parameter, e.g. group => group.First().Value.
@@ -115,7 +100,7 @@ internal static class AnonymousFunctionOperationExtensions
             }
 
             if (member.Instance is not { } firstCall ||
-                !firstCall.IsFirstMethodCallOnParameterType(parameter) ||
+                !firstCall.IsFirstMethodOn(parameter) ||
                 memberReference.Syntax is not { } syntax ||
                 firstCall.Syntax is not { } firstCallSyntax)
             {
