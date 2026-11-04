@@ -37,11 +37,26 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
 
     private static void Analyze(OperationAnalysisContext context)
     {
-        if (context.Operation is not IInvocationOperation { TargetMethod.IsToDictionaryWithElementSelectorMethod: true } toDictionary)
+        if (context.Operation is not IInvocationOperation
+            {
+                TargetMethod:
+                {
+                    IsToDictionaryWithElementSelectorMethod: true,
+                    TypeArguments: [var sourceType, _, var elementType]
+                }
+            } toDictionary)
+        {
             return;
+        }
 
-        if (toDictionary.TargetMethod.TypeArguments[0] is not INamedTypeSymbol { IsSystemCollectionsGenericKeyValuePair: true } keyValuePair)
+        if (sourceType is not INamedTypeSymbol
+            {
+                IsSystemCollectionsGenericKeyValuePair: true,
+                TypeArguments: [var sourceKeyType, var sourceValueType]
+            })
+        {
             return;
+        }
 
         if (!toDictionary.TryGetLambdaArgument(1, out var keySelector) ||
             !keySelector.IsKeyValuePairKeyProperty())
@@ -56,12 +71,15 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
         }
 
         // The parameterless overload infers the key and value types from the
-        // source, so the selectors must not change the nullability of the
-        // resulting dictionary, e.g. x => x.Value! on a nullable value, and
-        // explicit type arguments must not change the value type.
-        if (!keySelector.Symbol.ReturnType.PreservesNullability(keyValuePair.TypeArguments[0]) ||
-            !elementSelector.Symbol.ReturnType.PreservesNullability(keyValuePair.TypeArguments[1]) ||
-            !elementSelector.Symbol.ReturnType.PreservesNullability(toDictionary.TargetMethod.TypeArguments[2]))
+        // source, so the key selector must not change the nullability of the
+        // resulting dictionary, e.g. x => x.Key! on a nullable value.
+        if (!keySelector.Symbol.ReturnType.PreservesNullability(sourceKeyType))
+            return;
+
+        // The value type of the resulting dictionary must match the source's
+        // value type, including nullability in either direction.
+        if (!SymbolEqualityComparer.Default.Equals(sourceValueType, elementType) ||
+            sourceValueType.NullableAnnotation != elementType.NullableAnnotation)
         {
             return;
         }

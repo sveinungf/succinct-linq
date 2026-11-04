@@ -276,6 +276,52 @@ public class ToDictionaryKeyValuePairAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_ExplicitNonNullableElementOnNullableSource_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<ToDictionaryKeyValuePairAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<KeyValuePair<int, string?>> pairs)
+                {
+                    return pairs.ToDictionary<KeyValuePair<int, string?>, int, string>(x => x.Key, x => x.Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_ExplicitNullableElementOnNonNullableSource_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<ToDictionaryKeyValuePairAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string?> MyMethod(IEnumerable<KeyValuePair<int, string>> pairs)
+                {
+                    return pairs.ToDictionary<KeyValuePair<int, string>, int, string?>(x => x.Key, x => x.Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_WithComparer_ReportWarning()
     {
         // Arrange
