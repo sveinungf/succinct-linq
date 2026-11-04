@@ -57,9 +57,11 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
 
         // The parameterless overload infers the key and value types from the
         // source, so the selectors must not change the nullability of the
-        // resulting dictionary, e.g. x => x.Value! on a nullable value.
+        // resulting dictionary, e.g. x => x.Value! on a nullable value, and
+        // explicit type arguments must not change the value type.
         if (!keySelector.Symbol.ReturnType.PreservesNullability(keyValuePair.TypeArguments[0]) ||
-            !elementSelector.Symbol.ReturnType.PreservesNullability(keyValuePair.TypeArguments[1]))
+            !elementSelector.Symbol.ReturnType.PreservesNullability(keyValuePair.TypeArguments[1]) ||
+            !elementSelector.Symbol.ReturnType.PreservesNullability(toDictionary.TargetMethod.TypeArguments[2]))
         {
             return;
         }

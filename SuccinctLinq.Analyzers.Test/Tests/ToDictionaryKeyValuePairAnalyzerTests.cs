@@ -414,6 +414,27 @@ public class ToDictionaryKeyValuePairAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_ExplicitTypeArgumentsChangeValueType_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<ToDictionaryKeyValuePairAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, object> MyMethod(IEnumerable<KeyValuePair<int, string>> pairs)
+                {
+                    return pairs.ToDictionary<KeyValuePair<int, string>, int, object>(x => x.Key, x => x.Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_NonKeyValuePairSource_NoWarning()
     {
         // Arrange
