@@ -70,6 +70,13 @@ internal static class SymbolExtensions
             ContainingNamespace.IsSystemCollectionsGenericNamespace: true
         };
 
+        public bool IsSystemCollectionsGenericKeyValuePair => symbol is INamedTypeSymbol
+        {
+            Name: "KeyValuePair",
+            Arity: 2,
+            ContainingNamespace.IsSystemCollectionsGenericNamespace: true
+        };
+
         public bool IsSystemFuncWithArity2 => symbol is INamedTypeSymbol
         {
             IsSystemFunc: true,
