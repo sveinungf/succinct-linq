@@ -206,9 +206,8 @@ public class ToDictionaryKeyValuePairAnalyzerTests
         return context.RunAsync(Token);
     }
 
-    // TODO: This case should not cause a warning.
     [Fact]
-    public Task ToDictionary_NullForgivingValueSelectorOnNullableValueSource_ReportWarning()
+    public Task ToDictionary_NullForgivingValueSelectorOnNullableValueSource_NoWarning()
     {
         // Arrange
         var context = AnalyzerTest.CreateContext<ToDictionaryKeyValuePairAnalyzer>();
@@ -221,7 +220,53 @@ public class ToDictionaryKeyValuePairAnalyzerTests
             {
                 public static Dictionary<int, string> MyMethod(IEnumerable<KeyValuePair<int, string?>> pairs)
                 {
-                    return pairs.{|SLQ104:ToDictionary(x => x.Key, x => x.Value!)|};
+                    return pairs.ToDictionary(x => x.Key, x => x.Value!);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_NullForgivingKeySelectorOnNullableKeySource_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<ToDictionaryKeyValuePairAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<string, int> MyMethod(IEnumerable<KeyValuePair<string?, int>> pairs)
+                {
+                    return pairs.ToDictionary(x => x.Key!, x => x.Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task ToDictionary_IdentitySelectorsOnNullableSource_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<ToDictionaryKeyValuePairAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string?> MyMethod(IEnumerable<KeyValuePair<int, string?>> pairs)
+                {
+                    return pairs.{|SLQ104:ToDictionary(x => x.Key, x => x.Value)|};
                 }
             }
             """;

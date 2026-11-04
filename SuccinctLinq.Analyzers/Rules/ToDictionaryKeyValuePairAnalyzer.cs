@@ -40,9 +40,7 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
         if (context.Operation is not IInvocationOperation { TargetMethod.IsToDictionaryWithElementSelectorMethod: true } toDictionary)
             return;
 
-        // Only the ToDictionary<TSource, TKey, TElement> overload whose source
-        // is a sequence of KeyValuePair<TKey, TValue> has a parameterless equivalent.
-        if (toDictionary.TargetMethod.TypeArguments[0] is not { IsSystemCollectionsGenericKeyValuePair: true })
+        if (toDictionary.TargetMethod.TypeArguments[0] is not INamedTypeSymbol { IsSystemCollectionsGenericKeyValuePair: true } keyValuePair)
             return;
 
         if (!toDictionary.TryGetLambdaArgument(1, out var keySelector) ||
@@ -53,6 +51,15 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
 
         if (!toDictionary.TryGetLambdaArgument(2, out var elementSelector) ||
             !elementSelector.IsKeyValuePairValueProperty())
+        {
+            return;
+        }
+
+        // The parameterless overload infers the key and value types from the
+        // source, so the selectors must not change the nullability of the
+        // resulting dictionary, e.g. x => x.Value! on a nullable value.
+        if (!keySelector.Symbol.ReturnType.PreservesNullability(keyValuePair.TypeArguments[0]) ||
+            !elementSelector.Symbol.ReturnType.PreservesNullability(keyValuePair.TypeArguments[1]))
         {
             return;
         }
