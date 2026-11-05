@@ -50,6 +50,18 @@ internal static class AnonymousFunctionOperationExtensions
         public bool IsKeyProperty() =>
             lambda.IsSimpleSelector(static (value, parameter) => value.IsKeyPropertyOn(parameter));
 
+        /// <summary>
+        /// A lambda like "x => x.Key" on a KeyValuePair.
+        /// </summary>
+        public bool IsKeyValuePairKeyProperty() =>
+            lambda.IsSimpleSelector(static (value, parameter) => value.IsKeyValuePairPropertyOn(parameter, "Key"));
+
+        /// <summary>
+        /// A lambda like "x => x.Value" on a KeyValuePair.
+        /// </summary>
+        public bool IsKeyValuePairValueProperty() =>
+            lambda.IsSimpleSelector(static (value, parameter) => value.IsKeyValuePairPropertyOn(parameter, "Value"));
+
         // A simple selector is a lambda that returns an expression that depends only on the parameter,
         // such as a method call or member access on the parameter (e.g. x => x.Count()).
         // Extra parameters, such as the index in Select((group, i) => group.Count()), is ignored.

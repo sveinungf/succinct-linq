@@ -430,6 +430,52 @@ public class OrderByIdentityAnalyzerTests
     }
 
     [Fact]
+    public Task OrderBy_ExplicitTypeArgumentsChangeKeyNullability_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.OrderBy<string?, string>(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
+    public Task OrderBy_ConditionalAccessExplicitTypeArgumentsChangeKeyNullability_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByIdentityAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string>? MyMethod(IEnumerable<string?>? items)
+                {
+                    return items?.OrderBy<string?, string>(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderBy_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange
