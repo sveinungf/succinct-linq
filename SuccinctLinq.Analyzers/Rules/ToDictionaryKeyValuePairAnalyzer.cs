@@ -42,7 +42,7 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
                 TargetMethod:
                 {
                     IsToDictionaryWithElementSelectorMethod: true,
-                    TypeArguments: [var sourceType, _, var elementType]
+                    TypeArguments: [var sourceType, var keyType, var elementType]
                 }
             } toDictionary)
         {
@@ -71,10 +71,13 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
         }
 
         // The parameterless overload infers the key and value types from the
-        // source, so the key selector must not change the nullability of the
-        // resulting dictionary, e.g. x => x.Key! on a nullable value.
-        if (!keySelector.Symbol.ReturnType.PreservesNullability(sourceKeyType))
+        // source, so the key type must match the source's key type, including
+        // nullability in either direction, e.g. x => x.Key! on a nullable key.
+        if (!SymbolEqualityComparer.Default.Equals(sourceKeyType, keyType) ||
+            sourceKeyType.NullableAnnotation != keyType.NullableAnnotation)
+        {
             return;
+        }
 
         // The value type of the resulting dictionary must match the source's
         // value type, including nullability in either direction.
