@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using System.Diagnostics.CodeAnalysis;
 
@@ -50,7 +51,7 @@ internal static class InvocationOperationExtensions
             var argument = operation.GetArgument(index)?.UnwrapConversions();
 
             // An absent argument or a null literal means the default value is used at runtime.
-            return argument is not null && !argument.IsNullOrDefault;
+            return argument is { IsNullOrDefault: false };
         }
 
         public bool HasIdentitySelector(int argumentIndex, SymbolEqualityComparer? comparer = null)
@@ -61,7 +62,15 @@ internal static class InvocationOperationExtensions
 
             // The element type must equal the source type,
             // otherwise the selector is not the identity function.
-            var actualComparer = comparer ?? SymbolEqualityComparer.IncludeNullability;
+            // Explicit type arguments are the user's intent, so they must
+            // match the source type exactly, including nullability.
+            var actualComparer = operation.Syntax is InvocationExpressionSyntax
+                {
+                    Expression: GenericNameSyntax { TypeArgumentList: not null }
+                        or MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList: not null } }
+                }
+                ? SymbolEqualityComparer.IncludeNullability
+                : comparer ?? SymbolEqualityComparer.IncludeNullability;
 
             if (method.TypeArguments.Length < argumentIndex + 1 ||
                 !actualComparer.Equals(method.TypeArguments[0], method.TypeArguments[argumentIndex]))

@@ -453,6 +453,29 @@ public class DistinctByIdentityAnalyzerTests
     }
 
     [Fact]
+    public Task DistinctBy_ExplicitTypeArgumentsChangeKeyNullability_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<DistinctByIdentityAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IEnumerable<string> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.DistinctBy<string?, string>(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task Distinct_NoWarning()
     {
         // Arrange

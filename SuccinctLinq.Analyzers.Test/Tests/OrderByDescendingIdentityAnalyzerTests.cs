@@ -430,6 +430,29 @@ public class OrderByDescendingIdentityAnalyzerTests
     }
 
     [Fact]
+    public Task OrderByDescending_ExplicitTypeArgumentsChangeKeyNullability_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<OrderByDescendingIdentityAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static IOrderedEnumerable<string> MyMethod(IEnumerable<string?> items)
+                {
+                    return items.OrderByDescending<string?, string>(x => x);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task OrderByDescending_StatementBodyIdentityLambda_ReportWarning()
     {
         // Arrange

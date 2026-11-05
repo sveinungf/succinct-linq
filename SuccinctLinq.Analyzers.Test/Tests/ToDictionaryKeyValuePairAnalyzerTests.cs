@@ -481,6 +481,29 @@ public class ToDictionaryKeyValuePairAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_ExplicitNonNullableKeyOnNullableSource_NoWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<ToDictionaryKeyValuePairAnalyzer>();
+        context.TestCode = """
+            #nullable enable
+
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<string, int> MyMethod(IEnumerable<KeyValuePair<string?, int>> pairs)
+                {
+                    return pairs.ToDictionary<KeyValuePair<string?, int>, string, int>(x => x.Key, x => x.Value);
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_NonKeyValuePairSource_NoWarning()
     {
         // Arrange
