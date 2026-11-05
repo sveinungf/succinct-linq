@@ -64,11 +64,15 @@ internal static class InvocationOperationExtensions
             // otherwise the selector is not the identity function.
             // Explicit type arguments are the user's intent, so they must
             // match the source type exactly, including nullability.
-            var actualComparer = operation.Syntax is InvocationExpressionSyntax
+            var hasExplicitTypeArguments =
+                operation.Syntax is InvocationExpressionSyntax
                 {
-                    Expression: GenericNameSyntax { TypeArgumentList: not null }
-                        or MemberAccessExpressionSyntax { Name: GenericNameSyntax { TypeArgumentList: not null } }
-                }
+                    Expression: GenericNameSyntax
+                        or MemberAccessExpressionSyntax { Name: GenericNameSyntax }
+                        or MemberBindingExpressionSyntax { Name: GenericNameSyntax }
+                };
+
+            var actualComparer = hasExplicitTypeArguments
                 ? SymbolEqualityComparer.IncludeNullability
                 : comparer ?? SymbolEqualityComparer.IncludeNullability;
 
