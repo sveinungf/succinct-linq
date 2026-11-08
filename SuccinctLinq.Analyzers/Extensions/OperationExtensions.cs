@@ -130,6 +130,18 @@ internal static class OperationExtensions
             } && instance.UnwrapPreservingConversions().ReferencesParameter(parameter);
         }
 
+        public bool IsKeyValuePairPropertyOn(IParameterSymbol parameter, string propertyName)
+        {
+            return operation.UnwrapIdentityConversions() is IMemberReferenceOperation
+                {
+                    IsIndexerAccess: false,
+                    Member: IPropertySymbol { ContainingType.IsSystemCollectionsGenericKeyValuePair: true } member,
+                    Instance: { } instance
+                }
+                && propertyName.Equals(member.Name, StringComparison.Ordinal)
+                && instance.UnwrapPreservingConversions().ReferencesParameter(parameter);
+        }
+
         public bool IsInsideFunctionBoundary()
         {
             var node = operation.Parent;
