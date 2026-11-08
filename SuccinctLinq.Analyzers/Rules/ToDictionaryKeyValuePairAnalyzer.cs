@@ -72,17 +72,16 @@ public sealed class ToDictionaryKeyValuePairAnalyzer : DiagnosticAnalyzer
 
         // The parameterless overload infers the key and value types from the
         // source, so the key type must match the source's key type, including
-        // nullability in either direction, e.g. x => x.Key! on a nullable key.
-        if (!SymbolEqualityComparer.Default.Equals(sourceKeyType, keyType) ||
-            sourceKeyType.NullableAnnotation != keyType.NullableAnnotation)
+        // nullability in either direction at any level of the type.
+        if (!SymbolEqualityComparer.IncludeNullability.Equals(sourceKeyType, keyType))
         {
             return;
         }
 
         // The value type of the resulting dictionary must match the source's
-        // value type, including nullability in either direction.
-        if (!SymbolEqualityComparer.Default.Equals(sourceValueType, elementType) ||
-            sourceValueType.NullableAnnotation != elementType.NullableAnnotation)
+        // value type, including nullability in either direction at any level
+        // of the type.
+        if (!SymbolEqualityComparer.IncludeNullability.Equals(sourceValueType, elementType))
         {
             return;
         }
