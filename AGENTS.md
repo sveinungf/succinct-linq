@@ -4,9 +4,9 @@ Succinct LINQ is a set of Roslyn analyzers for C# that suggest more succinct LIN
 expressions. The solution contains:
 
 - `SuccinctLinq.Analyzers` — the analyzer package (targets `netstandard2.0`)
-- `SuccinctLinq.Analyzers.Test` — xUnit v3 tests (targets `net10.0`, Microsoft.Testing.Platform)
+- `SuccinctLinq.Analyzers.Test` — xUnit v3 tests (targets `net11.0`, Microsoft.Testing.Platform)
 
-Requires the .NET 10 SDK.
+Requires the .NET 11 SDK.
 
 ## Building
 

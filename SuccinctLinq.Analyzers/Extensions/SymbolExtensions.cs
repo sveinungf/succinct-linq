@@ -49,27 +49,6 @@ internal static class SymbolExtensions
             }
         };
 
-        public bool IsSystemCollectionsGenericIComparer => symbol is INamedTypeSymbol
-        {
-            Name: "IComparer",
-            Arity: 1,
-            ContainingNamespace.IsSystemCollectionsGenericNamespace: true
-        };
-
-        public bool IsSystemCollectionsGenericIEnumerable => symbol is INamedTypeSymbol
-        {
-            Name: "IEnumerable",
-            Arity: 1,
-            ContainingNamespace.IsSystemCollectionsGenericNamespace: true
-        };
-
-        public bool IsSystemCollectionsGenericIEqualityComparer => symbol is INamedTypeSymbol
-        {
-            Name: "IEqualityComparer",
-            Arity: 1,
-            ContainingNamespace.IsSystemCollectionsGenericNamespace: true
-        };
-
         public bool IsSystemCollectionsGenericKeyValuePair => symbol is INamedTypeSymbol
         {
             Name: "KeyValuePair",
