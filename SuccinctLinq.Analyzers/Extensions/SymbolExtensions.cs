@@ -56,6 +56,17 @@ internal static class SymbolExtensions
             ContainingNamespace.IsSystemCollectionsGenericNamespace: true
         };
 
+        public bool IsSystemValueTupleWithArity2 => symbol is INamedTypeSymbol
+        {
+            Name: "ValueTuple",
+            Arity: 2,
+            ContainingNamespace:
+            {
+                Name: "System",
+                ContainingNamespace.IsGlobalNamespace: true
+            }
+        };
+
         public bool IsSystemFuncWithArity2 => symbol is INamedTypeSymbol
         {
             IsSystemFunc: true,
