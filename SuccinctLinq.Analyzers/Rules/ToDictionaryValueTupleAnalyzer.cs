@@ -13,7 +13,7 @@ public sealed class ToDictionaryValueTupleAnalyzer : DiagnosticAnalyzer
     private static readonly DiagnosticDescriptor Descriptor = new(
         id: "SLQ105",
         title: "Redundant Key and Value selectors in ToDictionary",
-        messageFormat: "Use ToDictionary({0}) instead",
+        messageFormat: "Simplify to just ToDictionary({0})",
         category: "Redundancy",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true,
