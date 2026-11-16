@@ -70,7 +70,7 @@ public class ToDictionaryKeyValuePairAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ104", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 60)
-                .WithMessage("Use ToDictionary() instead"));
+                .WithMessage("Simplify to just ToDictionary()"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -384,7 +384,7 @@ public class ToDictionaryKeyValuePairAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ104", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 84)
-                .WithMessage("Use ToDictionary(StringComparer.Ordinal) instead"));
+                .WithMessage("Simplify to just ToDictionary(StringComparer.Ordinal)"));
 
         // Act & Assert
         return context.RunAsync(Token);
@@ -409,7 +409,7 @@ public class ToDictionaryKeyValuePairAnalyzerTests
         context.TestState.ExpectedDiagnostics.Add(
             new DiagnosticResult("SLQ104", DiagnosticSeverity.Warning)
                 .WithSpan("/0/Test1.cs", 7, 22, 7, 66)
-                .WithMessage("Use ToDictionary() instead"));
+                .WithMessage("Simplify to just ToDictionary()"));
 
         // Act & Assert
         return context.RunAsync(Token);
