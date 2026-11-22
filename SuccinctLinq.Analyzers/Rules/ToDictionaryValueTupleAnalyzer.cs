@@ -1,0 +1,92 @@
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Operations;
+using SuccinctLinq.Analyzers.Extensions;
+using System.Collections.Immutable;
+
+namespace SuccinctLinq.Analyzers.Rules;
+
+[DiagnosticAnalyzer(LanguageNames.CSharp)]
+public sealed class ToDictionaryValueTupleAnalyzer : DiagnosticAnalyzer
+{
+    private static readonly DiagnosticDescriptor Descriptor = new(
+        id: "SLQ105",
+        title: "Redundant Key and Value selectors in ToDictionary",
+        messageFormat: "Simplify to just ToDictionary({0})",
+        category: "Redundancy",
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true,
+        description: "Calling ToDictionary on a sequence of ValueTuple with selectors is redundant; the parameterless ToDictionary() is equivalent.");
+
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Descriptor];
+
+    public override void Initialize(AnalysisContext context)
+    {
+        ArgumentNullException.ThrowIfNull(context);
+
+        context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
+        context.EnableConcurrentExecution();
+        context.RegisterCompilationStartAction(startContext =>
+        {
+            // The parameterless ToDictionary() overload is only available in .NET 8 and later.
+            if (startContext.Compilation.IsTargetFrameworkAtLeast(8))
+                startContext.RegisterOperationAction(Analyze, OperationKind.Invocation);
+        });
+    }
+
+    private static void Analyze(OperationAnalysisContext context)
+    {
+        if (context.Operation is not IInvocationOperation
+            {
+                TargetMethod:
+                {
+                    IsToDictionaryWithElementSelectorMethod: true,
+                    TypeArguments:
+                    [
+                        INamedTypeSymbol
+                    {
+                        IsSystemValueTupleWithArity2: true,
+                        TypeArguments: [var sourceKeyType, var sourceValueType]
+                    } sourceType,
+                        var keyType,
+                        var elementType
+                    ]
+                }
+            } toDictionary)
+        {
+            return;
+        }
+
+        if (!toDictionary.TryGetLambdaArgument(1, out var keySelector) ||
+            !keySelector.IsValueTupleFirstElement(sourceType))
+        {
+            return;
+        }
+
+        if (!toDictionary.TryGetLambdaArgument(2, out var elementSelector) ||
+            !elementSelector.IsValueTupleSecondElement(sourceType))
+        {
+            return;
+        }
+
+        // The parameterless overload infers the key and value types from the
+        // source, so the key type must match the source's Item1 type.
+        if (!SymbolEqualityComparer.IncludeNullability.Equals(sourceKeyType, keyType))
+            return;
+
+        // The value type of the resulting dictionary must match the source's Item2 type.
+        if (!SymbolEqualityComparer.IncludeNullability.Equals(sourceValueType, elementType))
+            return;
+
+        if (toDictionary.Syntax is not InvocationExpressionSyntax invocation)
+            return;
+
+        var location = invocation.GetMethodCallLocation();
+
+        // The comparer argument is optional.
+        var comparerText = toDictionary.GetComparerArgumentSyntaxText(3, prefix: null);
+
+        context.ReportDiagnostic(Diagnostic.Create(Descriptor, location, comparerText));
+    }
+}

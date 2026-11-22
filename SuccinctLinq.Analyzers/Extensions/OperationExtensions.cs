@@ -133,13 +133,37 @@ internal static class OperationExtensions
         public bool IsKeyValuePairPropertyOn(IParameterSymbol parameter, string propertyName)
         {
             return operation.UnwrapIdentityConversions() is IMemberReferenceOperation
-                {
-                    IsIndexerAccess: false,
-                    Member: IPropertySymbol { ContainingType.IsSystemCollectionsGenericKeyValuePair: true } member,
-                    Instance: { } instance
-                }
+            {
+                IsIndexerAccess: false,
+                Member: IPropertySymbol { ContainingType.IsSystemCollectionsGenericKeyValuePair: true } member,
+                Instance: { } instance
+            }
                 && propertyName.Equals(member.Name, StringComparison.Ordinal)
                 && instance.UnwrapPreservingConversions().ReferencesParameter(parameter);
+        }
+
+        // Tuple element access, such as x.Item1, is a field reference on ValueTuple.
+        // A named tuple element can be accessed by its element name (e.g. x.Key)
+        // as well as its positional name (e.g. x.Item1).
+        public bool IsValueTupleElementAccessOn(INamedTypeSymbol tupleType, IParameterSymbol parameter, int element)
+        {
+            if (operation.UnwrapIdentityConversions() is not IFieldReferenceOperation
+                {
+                    Member: IFieldSymbol { ContainingType.IsSystemValueTupleWithArity2: true } field,
+                    Instance: { } instance
+                } ||
+                !instance.UnwrapPreservingConversions().ReferencesParameter(parameter))
+            {
+                return false;
+            }
+
+            var tupleField = tupleType.TupleElements.ElementAtOrDefault(element);
+            if (tupleField is null)
+                return false;
+
+            return field.CorrespondingTupleField is { } accessedField &&
+                   tupleField.CorrespondingTupleField is { } tupleElementField &&
+                   accessedField.Name.Equals(tupleElementField.Name, StringComparison.Ordinal);
         }
 
         public bool IsInsideFunctionBoundary()
