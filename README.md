@@ -130,41 +130,23 @@ var longest = items.OrderByDescending(x => x.Length).FirstOrDefault();
 var longest = items.MaxBy(x => x.Length);
 ```
 
-### SLQ206: Use DistinctBy(a) instead of GroupBy(a).Select(x => x.First())
+### SLQ206, SLQ207, SLQ208: Use DistinctBy() instead of GroupBy()
 
-Only applies to projects targeting .NET 6+.
+Only applies to projects targeting .NET 6+. These rules suggest replacing a `GroupBy` that selects the first element of each group with a `DistinctBy` equivalent:
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ206 | `GroupBy(a).Select(g => g.First())` | `DistinctBy(a)` |
+| SLQ207 | `GroupBy(a, b).Select(g => g.First())` | `DistinctBy(a).Select(b)` |
+| SLQ208 | `GroupBy(a).Select(g => g.First().b)` | `DistinctBy(a).Select(g => g.b)` |
 
 ```csharp
 // Before
 // SLQ206: Use DistinctBy(x => x.Id) instead
-var unique = elements.GroupBy(x => x.Id).Select(x => x.First());
+var unique = elements.GroupBy(x => x.Id).Select(g => g.First());
 
 // After
 var unique = elements.DistinctBy(x => x.Id);
 ```
 
-### SLQ207: Use DistinctBy(a).Select(b) instead of GroupBy(a, b).Select(x => x.First())
-
-Only applies to projects targeting .NET 6+. Note that `GroupBy` invokes the element selector for every element, whereas the suggested `DistinctBy` followed by `Select` invokes it only for the first element of each distinct key. If the selector has side effects or can throw, the refactored code may behave differently.
-
-```csharp
-// Before
-// SLQ207: Use DistinctBy(x => x.Id).Select(x => x.ToString()) instead
-var unique = elements.GroupBy(x => x.Id, x => x.ToString()).Select(x => x.First());
-
-// After
-var unique = elements.DistinctBy(x => x.Id).Select(x => x.ToString());
-```
-
-### SLQ208: Use DistinctBy(a).Select(x => x.b) instead of GroupBy(a).Select(x => x.First().b)
-
-Only applies to projects targeting .NET 6+ and to `GroupBy` calls without an element selector.
-
-```csharp
-// Before
-// SLQ208: Use DistinctBy(x => x.Id).Select(g => g.Value) instead
-var unique = elements.GroupBy(x => x.Id).Select(g => g.First().Value);
-
-// After
-var unique = elements.DistinctBy(x => x.Id).Select(g => g.Value);
-```
+Note that `GroupBy` invokes the element selector for every element, whereas the suggested `DistinctBy` followed by `Select` invokes it only for the first element of each distinct key. If the selector has side effects or can throw, the refactored code may behave differently.
