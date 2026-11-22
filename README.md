@@ -65,6 +65,24 @@ var nonEmpty = items.Where(x => x.Length > 0).Select(x => x);
 var nonEmpty = items.Where(x => x.Length > 0);
 ```
 
+### SLQ104, SLQ105: Redundant Key and Value selectors in ToDictionary
+
+Only applies to projects targeting .NET 8+. These rules suggest replacing a `ToDictionary` call that selects each element's key and value with the parameterless `ToDictionary()` overload:
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ104 | `pairs.ToDictionary(x => x.Key, x => x.Value)` | `pairs.ToDictionary()` |
+| SLQ105 | `tuples.ToDictionary(x => x.Item1, x => x.Item2)` | `tuples.ToDictionary()` |
+
+```csharp
+// Before
+// SLQ104: Simplify to just ToDictionary()
+var dictionary = pairs.ToDictionary(x => x.Key, x => x.Value);
+
+// After
+var dictionary = pairs.ToDictionary();
+```
+
 ### SLQ201: Use Index() instead of Select with index parameter
 
 Only applies to projects targeting .NET 9+. Note that `Index` yields the index before the element, so the replacement may require adapting the code, such as `(x, i) => (i, x)`.
@@ -150,3 +168,52 @@ var unique = elements.DistinctBy(x => x.Id);
 ```
 
 Note that `GroupBy` invokes the element selector for every element, whereas the suggested `DistinctBy` followed by `Select` invokes it only for the first element of each distinct key. If the selector has side effects or can throw, the refactored code may behave differently.
+
+### SLQ209, SLQ210, SLQ211: Use DistinctBy() and ToDictionary() instead of GroupBy() and ToDictionary()
+
+Only applies to projects targeting .NET 6+ and to key selectors that are pure expressions. These rules suggest replacing a `GroupBy` followed by a `ToDictionary` that maps each key to the first element of its group (or a member of it) with a `DistinctBy` followed by a `ToDictionary`:
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ209 | `GroupBy(a).ToDictionary(g => g.Key, g => g.First())` | `DistinctBy(a).ToDictionary(a)` |
+| SLQ210 | `GroupBy(a, b).ToDictionary(g => g.Key, g => g.First())` | `DistinctBy(a).ToDictionary(a, b)` |
+| SLQ211 | `GroupBy(a).ToDictionary(g => g.Key, g => g.First().m)` | `DistinctBy(a).ToDictionary(a, g => g.m)` |
+
+For SLQ210, when the element selector is the identity, the `ToDictionary` element selector can be omitted: `GroupBy(a, x => x).ToDictionary(g => g.Key, g => g.First())` simplifies to `DistinctBy(a).ToDictionary(a)`.
+
+```csharp
+// Before
+// SLQ209: Use DistinctBy(x => x.Id).ToDictionary(x => x.Id) instead
+var byId = items.GroupBy(x => x.Id).ToDictionary(g => g.Key, g => g.First());
+
+// After
+var byId = items.DistinctBy(x => x.Id).ToDictionary(x => x.Id);
+```
+
+Note that `GroupBy` evaluates the key selector once per element and caches the result, whereas the suggested `DistinctBy` followed by `ToDictionary` evaluates it twice. This is why the key selector must be a pure expression.
+
+### SLQ212: Use Distinct() instead of DistinctBy(x => x)
+
+Only applies to projects targeting .NET 6+.
+
+```csharp
+// Before
+// SLQ212: Use Distinct() instead
+var unique = items.DistinctBy(x => x);
+
+// After
+var unique = items.Distinct();
+```
+
+### SLQ213: Use CountBy() and ToDictionary() instead of GroupBy() and ToDictionary()
+
+Only applies to projects targeting .NET 9+.
+
+```csharp
+// Before
+// SLQ213: Use CountBy(x => x.Id).ToDictionary() instead
+var counts = items.GroupBy(x => x.Id).ToDictionary(g => g.Key, g => g.Count());
+
+// After
+var counts = items.CountBy(x => x.Id).ToDictionary();
+```
