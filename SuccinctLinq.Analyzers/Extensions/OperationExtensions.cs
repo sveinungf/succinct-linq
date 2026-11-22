@@ -161,11 +161,9 @@ internal static class OperationExtensions
             if (tupleField is null)
                 return false;
 
-            if (field.Name.Equals(tupleField.Name, StringComparison.Ordinal))
-                return true;
-
-            return tupleField.CorrespondingTupleField?.Name is { } defaultName &&
-                   field.Name.Equals(defaultName, StringComparison.Ordinal);
+            return field.CorrespondingTupleField is { } accessedField &&
+                   tupleField.CorrespondingTupleField is { } tupleElementField &&
+                   accessedField.Name.Equals(tupleElementField.Name, StringComparison.Ordinal);
         }
 
         public bool IsInsideFunctionBoundary()

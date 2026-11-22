@@ -203,6 +203,27 @@ public class ToDictionaryValueTupleAnalyzerTests
     }
 
     [Fact]
+    public Task ToDictionary_RenamedTupleParameterSelectorsAccessingOppositePositions_ReportWarning()
+    {
+        // Arrange
+        var context = AnalyzerTest.CreateContext<ToDictionaryValueTupleAnalyzer>();
+        context.TestCode = """
+            namespace MyNamespace;
+
+            public static class MyClass
+            {
+                public static Dictionary<int, string> MyMethod(IEnumerable<(int Key, string Value)> tuples)
+                {
+                    return tuples.{|SLQ105:ToDictionary(((int Value, string Key) x) => x.Value, ((int Value, string Key) x) => x.Key)|};
+                }
+            }
+            """;
+
+        // Act & Assert
+        return context.RunAsync(Token);
+    }
+
+    [Fact]
     public Task ToDictionary_ElementNamedItem_ReportWarning()
     {
         // Arrange
