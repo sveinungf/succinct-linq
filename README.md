@@ -216,6 +216,9 @@ Target framework: .NET 6+
 Note that `GroupBy` evaluates the key selector once per element and the result is cached, while in the suggested replacement the key selector is evaluated twice.
 The key selector must be a pure expression to avoid changing the behavior of the code.
 
+Note that for SLQ210, `GroupBy` invokes the element selector (`b` in the table above) for every element, while in the suggested `DistinctBy` replacement it is invoked only for the first element of each distinct key.
+If the selector has side effects, the suggested replacement may behave differently.
+
 ### Use `Distinct()` instead of `DistinctBy(x => x)`
 
 Distinct by the identity function `(x => x)` is equivalent to the more concise `Distinct()`.
