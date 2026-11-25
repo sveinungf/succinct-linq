@@ -1,12 +1,12 @@
-# Succinct LINQ
+# SuccinctLinq
 
-Succinct LINQ is a set of Roslyn analyzers for C# that flag redundant and verbose LINQ expressions and suggest more concise equivalents.
+SuccinctLinq is a set of Roslyn analyzers for C# that flag redundant and verbose LINQ expressions and suggest more concise equivalents.
 
 Add the package to any C# project and the rules run as part of the normal build.
 
 ## How to install
 
-Succinct LINQ is available as a [package on nuget.org](https://www.nuget.org/packages/SuccinctLinq.Analyzers).
+SuccinctLinq is available as a [package on nuget.org](https://www.nuget.org/packages/SuccinctLinq.Analyzers).
 
 ### .NET CLI
 
@@ -20,151 +20,235 @@ dotnet add package SuccinctLinq.Analyzers
 Install-Package SuccinctLinq.Analyzers
 ```
 
-### Directory.Packages.props (Central Package Management)
+### Directory.Packages.props
 
 ```xml
-<GlobalPackageReference Include="SuccinctLinq.Analyzers" Version="0.2.0" />
+<GlobalPackageReference Include="SuccinctLinq.Analyzers" Version="0.3.0" />
 ```
 
 ## Rules
 
 Every rule is enabled by default and reports as a warning. Note that some rules might not emit any warning if the target framework of the project is below a certain level. For example, rule `SLQ204` requires the target framework to be at least .NET 6, because the suggested `MinBy(...)` replacement was introduced in .NET 6.
 
-### SLQ101: Distinct() before ToHashSet() is redundant
+### Redundant `Distinct()` call
 
-Only reports when both calls use the same equality comparer (both the default, or the same `StringComparer` member).
+This rule suggests removing `Distinct()` calls that are immediately followed by `ToHashSet()`, since `ToHashSet()` already removes duplicates.
 
-```csharp
-// Before
-// SLQ101: Remove the redundant Distinct() call
-return items.Distinct().ToHashSet();
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ101 | `Distinct().ToHashSet()` | `ToHashSet()` |
 
-// After
-return items.ToHashSet();
+```diff
+// Example that emits warning SLQ101:
+- return items.Distinct().ToHashSet();
+
+// Suggested replacement:
++ return items.ToHashSet();
 ```
 
-### SLQ102: Redundant "x => x" element selector
+If a comparer is used, both `Distinct()` and `ToHashSet()` must use the same comparer.
+Otherwise the behavior of the code may change, and the analyzer will not suggest the replacement.
 
-```csharp
-// Before
-// SLQ102: Remove the redundant "x => x" selector
-var byLength = words.ToDictionary(x => x.Length, x => x);
+### Redundant identity element selector
 
-// After
-var byLength = words.ToDictionary(x => x.Length);
+This rule suggests removing `x => x` element selectors when there is an equivalent overload that does not require it.
+The rule checks `GroupBy`, `ToDictionary`, and `ToLookup` calls.
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ102 | `ToDictionary(a, x => x)` | `ToDictionary(a)` |
+
+```diff
+// Example that emits warning SLQ102:
+- var byLength = words.GroupBy(x => x.Length, x => x);
+
+// Suggested replacement:
++ var byLength = words.GroupBy(x => x.Length);
 ```
 
-### SLQ103: Select(x => x) is redundant
+### Redundant `Select(x => x)` call
 
-```csharp
-// Before
-// SLQ103: Remove the redundant Select(x => x) call
-var nonEmpty = items.Where(x => x.Length > 0).Select(x => x);
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ103 | `items.Select(x => x)` | `items` |
 
-// After
-var nonEmpty = items.Where(x => x.Length > 0);
+```diff
+// Example that emits warning SLQ103:
+- var nonEmpty = items.Where(x => x.Length > 0).Select(x => x);
+
+// Suggested replacement:
++ var nonEmpty = items.Where(x => x.Length > 0);
 ```
 
-### SLQ201: Use Index() instead of Select with index parameter
+### Redundant `Key` and `Value` selectors in `ToDictionary`
 
-Only applies to projects targeting .NET 9+. Note that `Index` yields the index before the element, so the replacement may require adapting the code, such as `(x, i) => (i, x)`.
+These rules suggest removing redundant selectors in a `ToDictionary` call when there is an equivalent parameterless overload.
 
-```csharp
-// Before
-// SLQ201: Use Index() instead
-var indexed = items.Select((item, index) => (index, item));
+Target framework: .NET 8+
 
-// After
-var indexed = items.Index();
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ104 | `keyValuePairs.ToDictionary(x => x.Key, x => x.Value)` | `keyValuePairs.ToDictionary()` |
+| SLQ105 | `tuples.ToDictionary(x => x.Item1, x => x.Item2)` | `tuples.ToDictionary()` |
+
+```diff
+var tuples = new List<(int Id, string Name)>();
+
+// Example that emits warning SLQ105:
+- var dictionary = tuples.ToDictionary(x => x.Id, x => x.Name);
+
+// Suggested replacement:
++ var dictionary = tuples.ToDictionary();
 ```
 
-### SLQ202: Use Order() instead of OrderBy(x => x)
+### Use `Index()` instead of `Select` with index parameter
 
-Only applies to projects targeting .NET 7+.
+`Select` has an overload that provides the index of each element.
+If only a tuple of the element and index are needed, the more concise `Index()` method can be used instead.
 
-```csharp
-// Before
-// SLQ202: Use Order() instead
-var sorted = items.OrderBy(x => x);
+Target framework: .NET 9+
 
-// After
-var sorted = items.Order();
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ201 | `Select((x, i) => (i, x))` | `Index()` |
+
+
+```diff
+// Example that emits warning SLQ201:
+- var indexed = items.Select((item, index) => (index, item));
+
+// Suggested replacement:
++ var indexed = items.Index();
 ```
 
-### SLQ203: Use OrderDescending() instead of OrderByDescending(x => x)
+Note that `Index()` yields the index before the element, so the replacement may require changing the order of the tuple elements.
 
-Only applies to projects targeting .NET 7+.
+### Use `Order()` instead of `OrderBy(x => x)`
 
-```csharp
-// Before
-// SLQ203: Use OrderDescending() instead
-var sorted = items.OrderByDescending(x => x);
+Ordering by the identity function `(x => x)` is equivalent to the more concise `Order()`.
+Same goes for `OrderDescending()`.
 
-// After
-var sorted = items.OrderDescending();
+Target framework: .NET 7+
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ202 | `OrderBy(x => x)` | `Order()` |
+| SLQ203 | `OrderByDescending(x => x)` | `OrderDescending()` |
+
+```diff
+// Example that emits warning SLQ203:
+- var sorted = items.OrderByDescending(x => x);
+
+// Suggested replacement:
++ var sorted = items.OrderDescending();
 ```
 
-### SLQ204: Use MinBy(a) instead of OrderBy(a).FirstOrDefault()
 
-Only applies to projects targeting .NET 6+ and to sequences whose elements are nullable types and whose key type is a non-nullable value type.
+### Use `MinBy()`/`MaxBy()` instead of ordering followed by `FirstOrDefault()`
 
-```csharp
-// Before
-// SLQ204: Use MinBy(x => x.Length) instead
-var shortest = items.OrderBy(x => x.Length).FirstOrDefault();
+These rules suggest replacing ordering with a `MinBy()` or a `MaxBy()` when only the first element is needed.
 
-// After
-var shortest = items.MinBy(x => x.Length);
+Target framework: .NET 6+
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ204 | `OrderBy(a).FirstOrDefault()` | `MinBy(a)` |
+| SLQ205 | `OrderByDescending(a).FirstOrDefault()` | `MaxBy(a)` |
+
+```diff
+// Example that emits warning SLQ204:
+- var shortest = items.OrderBy(x => x.Length).FirstOrDefault();
+
+// Suggested replacement:
++ var shortest = items.MinBy(x => x.Length);
 ```
 
-### SLQ205: Use MaxBy(a) instead of OrderByDescending(a).FirstOrDefault()
+Note that this applies only to sequences whose elements are nullable types, because on an empty sequence of non-nullable value types the behavior would change: `MinBy`/`MaxBy` throw, while `FirstOrDefault` returns the default value.
 
-Only applies to projects targeting .NET 6+ and to sequences whose elements are nullable types. When a non-null custom comparer is supplied, the key type must also be a non-nullable value type.
+The key type must also be a non-nullable value type.
+For SLQ204 because `OrderBy` orders null keys first while `MinBy` ignores them.
+For SLQ205 when a custom comparer is used, because the comparer may rank null keys above non-null keys.
 
-```csharp
-// Before
-// SLQ205: Use MaxBy(x => x.Length) instead
-var longest = items.OrderByDescending(x => x.Length).FirstOrDefault();
+### Use `DistinctBy()` instead of `GroupBy()` with `First()`
 
-// After
-var longest = items.MaxBy(x => x.Length);
+These rules suggest replacing a `GroupBy` that selects the first element of each group with a `DistinctBy` equivalent.
+
+Target framework: .NET 6+
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ206 | `GroupBy(a).Select(g => g.First())` | `DistinctBy(a)` |
+| SLQ207 | `GroupBy(a, b).Select(g => g.First())` | `DistinctBy(a).Select(b)` |
+| SLQ208 | `GroupBy(a).Select(g => g.First().b)` | `DistinctBy(a).Select(g => g.b)` |
+
+```diff
+// Example that emits warning SLQ206:
+- var unique = elements.GroupBy(x => x.Id).Select(g => g.First());
+
+// Suggested replacement:
++ var unique = elements.DistinctBy(x => x.Id);
 ```
 
-### SLQ206: Use DistinctBy(a) instead of GroupBy(a).Select(x => x.First())
+Note that for the case covered by rule SLQ207, the `GroupBy` invokes the element selector (`b` in the table above) for every element.
+However in the suggested `DistinctBy` replacement, the selector is invoked only for the first element of each distinct key.
+If the selector has side effects or can throw, the refactored code may behave differently.
 
-Only applies to projects targeting .NET 6+.
+### Use `DistinctBy()` instead of `GroupBy()` when creating a dictionary of firsts
 
-```csharp
-// Before
-// SLQ206: Use DistinctBy(x => x.Id) instead
-var unique = elements.GroupBy(x => x.Id).Select(x => x.First());
+These rules suggest replacing a `GroupBy` followed by a `ToDictionary` that maps each key to the first element of its group (or a member of it) with a `DistinctBy` followed by a `ToDictionary`.
 
-// After
-var unique = elements.DistinctBy(x => x.Id);
+Target framework: .NET 6+
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ209 | `GroupBy(a).ToDictionary(g => g.Key, g => g.First())` | `DistinctBy(a).ToDictionary(a)` |
+| SLQ210 | `GroupBy(a, b).ToDictionary(g => g.Key, g => g.First())` | `DistinctBy(a).ToDictionary(a, b)` |
+| SLQ211 | `GroupBy(a).ToDictionary(g => g.Key, g => g.First().m)` | `DistinctBy(a).ToDictionary(a, g => g.m)` |
+
+```diff
+// Example that emits warning SLQ209:
+- var byId = items.GroupBy(x => x.Id).ToDictionary(g => g.Key, g => g.First());
+
+// Suggested replacement:
++ var byId = items.DistinctBy(x => x.Id).ToDictionary(x => x.Id);
 ```
 
-### SLQ207: Use DistinctBy(a).Select(b) instead of GroupBy(a, b).Select(x => x.First())
+Note that `GroupBy` evaluates the key selector once per element and the result is cached, while in the suggested replacement the key selector is evaluated twice.
+The key selector must be a pure expression to avoid changing the behavior of the code.
 
-Only applies to projects targeting .NET 6+. Note that `GroupBy` invokes the element selector for every element, whereas the suggested `DistinctBy` followed by `Select` invokes it only for the first element of each distinct key. If the selector has side effects or can throw, the refactored code may behave differently.
+Note that for SLQ210, `GroupBy` invokes the element selector (`b` in the table above) for every element, while in the suggested `DistinctBy` replacement it is invoked only for the first element of each distinct key.
+If the selector has side effects, the suggested replacement may behave differently.
 
-```csharp
-// Before
-// SLQ207: Use DistinctBy(x => x.Id).Select(x => x.ToString()) instead
-var unique = elements.GroupBy(x => x.Id, x => x.ToString()).Select(x => x.First());
+### Use `Distinct()` instead of `DistinctBy(x => x)`
 
-// After
-var unique = elements.DistinctBy(x => x.Id).Select(x => x.ToString());
+Distinct by the identity function `(x => x)` is equivalent to the more concise `Distinct()`.
+
+Target framework: .NET 6+
+
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ212 | `DistinctBy(x => x)` | `Distinct()` |
+
+```diff
+// Example that emits warning SLQ212:
+- var unique = items.DistinctBy(x => x);
+
+// Suggested replacement:
++ var unique = items.Distinct();
 ```
 
-### SLQ208: Use DistinctBy(a).Select(x => x.b) instead of GroupBy(a).Select(x => x.First().b)
+### Use `CountBy()` instead of `GroupBy()` when creating a dictionary of counts
 
-Only applies to projects targeting .NET 6+ and to `GroupBy` calls without an element selector.
+Target framework: .NET 9+
 
-```csharp
-// Before
-// SLQ208: Use DistinctBy(x => x.Id).Select(g => g.Value) instead
-var unique = elements.GroupBy(x => x.Id).Select(g => g.First().Value);
+| Rule | Before | After |
+| --- | --- | --- |
+| SLQ213 | `GroupBy(x => x.Id).ToDictionary(g => g.Key, g => g.Count())` | `CountBy(x => x.Id).ToDictionary()` |
 
-// After
-var unique = elements.DistinctBy(x => x.Id).Select(g => g.Value);
+```diff
+// Example that emits warning SLQ213:
+- var counts = items.GroupBy(x => x.Id).ToDictionary(g => g.Key, g => g.Count());
+
+// Suggested replacement:
++ var counts = items.CountBy(x => x.Id).ToDictionary();
 ```

@@ -22,3 +22,17 @@ SLQ205 | Simplification | Warning | OrderByDescendingFirst
 SLQ206 | Simplification | Warning | GroupBySelectFirst
 SLQ207 | Simplification | Warning | ProjectedGroupBySelectFirst
 SLQ208 | Simplification | Warning | GroupBySelectFirstMember
+
+## Release 0.3.0
+
+### New Rules
+
+Rule ID | Category | Severity | Notes
+--------|----------|----------|--------------------
+SLQ104 | Redundancy | Warning | ToDictionaryKeyValuePair
+SLQ105 | Redundancy | Warning | ToDictionaryValueTuple
+SLQ209 | Simplification | Warning | GroupByToDictionaryFirst
+SLQ210 | Simplification | Warning | ProjectedGroupByToDictionaryFirst
+SLQ211 | Simplification | Warning | GroupByToDictionaryFirstMember
+SLQ212 | Simplification | Warning | DistinctByIdentity
+SLQ213 | Simplification | Warning | GroupByToDictionaryCount
