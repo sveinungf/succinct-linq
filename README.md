@@ -23,7 +23,7 @@ Install-Package SuccinctLinq.Analyzers
 ### Directory.Packages.props
 
 ```xml
-<GlobalPackageReference Include="SuccinctLinq.Analyzers" Version="0.2.0" />
+<GlobalPackageReference Include="SuccinctLinq.Analyzers" Version="0.3.0" />
 ```
 
 ## Rules
