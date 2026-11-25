@@ -160,10 +160,11 @@ Target framework: .NET 6+
 + var shortest = items.MinBy(x => x.Length);
 ```
 
-Note that this applies only to sequences whose elements are nullable types.
-When a custom comparer is used, the key type must also be a non-nullable value type.
-This is because the behavior could otherwise change, for example for an empty sequence.
+Note that this applies only to sequences whose elements are nullable types, because on an empty sequence of non-nullable value types the behavior would change: `MinBy`/`MaxBy` throw, while `FirstOrDefault` returns the default value.
 
+The key type must also be a non-nullable value type.
+For SLQ204 because `OrderBy` orders null keys first while `MinBy` ignores them.
+For SLQ205 when a custom comparer is used, because the comparer may rank null keys above non-null keys.
 
 ### Use `DistinctBy()` instead of `GroupBy()` with `First()`
 
