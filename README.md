@@ -46,6 +46,9 @@ This rule suggests removing `Distinct()` calls that are immediately followed by 
 + return items.ToHashSet();
 ```
 
+If a comparer is used, both `Distinct()` and `ToHashSet()` must use the same comparer.
+Otherwise the behavior of the code may change, and the analyzer will not suggest the replacement.
+
 ### Redundant identity element selector
 
 This rule suggests removing `x => x` element selectors when there is an equivalent overload that does not require it.
@@ -107,7 +110,7 @@ Target framework: .NET 9+
 
 | Rule | Before | After |
 | --- | --- | --- |
-| SLQ201 | `Select((x, i) => (x, i))` | `Index()` |
+| SLQ201 | `Select((x, i) => (i, x))` | `Index()` |
 
 
 ```diff
